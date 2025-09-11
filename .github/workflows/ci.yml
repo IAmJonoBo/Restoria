@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: "3.10"
+            extras: "-E dev -E torch1"
+            basicsr_master: "false"
+          - python-version: "3.11"
+            extras: "-E dev -E torch2"
+            basicsr_master: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Sync environment (${{ matrix.extras }})
+        run: uv sync ${{ matrix.extras }}
+
+      - name: Optional: install Basicsr master for Torch 2.x
+        if: matrix.basicsr_master == 'true'
+        run: uv pip install --no-cache-dir --upgrade "git+https://github.com/xinntao/BasicSR@master"
+
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run black --check .
+
+      - name: Run tests
+        run: uv run pytest -q

@@ -138,6 +138,18 @@ Usage: python inference_gfpgan.py -i inputs/whole_imgs -o results -v 1.3 -s 2 [o
 
 If you want to use the original model in our paper, please see [PaperModel.md](PaperModel.md) for installation and inference.
 
+## Development (uv)
+
+We use uv for fast, reproducible Python environments and locking.
+
+- Quick start (Python 3.11 + Torch 2.x default):
+  - `scripts/setup_uv.sh --python 3.11 --track torch2`
+  - `scripts/test.sh`
+  - `scripts/lint.sh` / `scripts/fmt.sh`
+
+- Torch 2.x migration (Python 3.11+): see `docs/TORCH2.md`.
+- Details and Apple Silicon notes: see `docs/DEV_ENV.md`.
+
 ## :european_castle: Model Zoo
 
 | Version | Model Name  | Description |

@@ -1,0 +1,3 @@
+#!/Users/jonathanbotha/GitHub/GFPGAN/.venv310/bin/python
+from numba.pycc import main
+main()
