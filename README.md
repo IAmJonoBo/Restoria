@@ -9,13 +9,10 @@
     <img src="https://user-images.githubusercontent.com/17445847/187162058-c764ced6-952f-404b-ac85-ba95cce18e7b.png" width="4%" alt="" />
 </a> -->
 
-[![download](https://img.shields.io/github/downloads/TencentARC/GFPGAN/total.svg)](https://github.com/TencentARC/GFPGAN/releases)
+[![Fork CI](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml/badge.svg)](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml)
+[![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/gfpgan)](https://pypi.org/project/gfpgan/)
-[![Open issue](https://img.shields.io/github/issues/TencentARC/GFPGAN)](https://github.com/TencentARC/GFPGAN/issues)
-[![Closed issue](https://img.shields.io/github/issues-closed/TencentARC/GFPGAN)](https://github.com/TencentARC/GFPGAN/issues)
-[![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/TencentARC/GFPGAN/blob/master/LICENSE)
-[![python lint](https://github.com/TencentARC/GFPGAN/actions/workflows/pylint.yml/badge.svg)](https://github.com/TencentARC/GFPGAN/blob/master/.github/workflows/pylint.yml)
-[![Publish-pip](https://github.com/TencentARC/GFPGAN/actions/workflows/publish-pip.yml/badge.svg)](https://github.com/TencentARC/GFPGAN/blob/master/.github/workflows/publish-pip.yml)
+[![Upstream Project](https://img.shields.io/badge/upstream-TencentARC%2FGFPGAN-blue)](https://github.com/TencentARC/GFPGAN)
 </div>
 
 1. :boom: **Updated** online demo: [![Replicate](https://img.shields.io/static/v1?label=Demo&message=Replicate&color=blue)](https://replicate.com/tencentarc/gfpgan). Here is the [backup](https://replicate.com/xinntao/gfpgan).
@@ -81,7 +78,7 @@ If you want to use the original model in our paper, please see [PaperModel.md](P
 1. Clone repo
 
     ```bash
-    git clone https://github.com/TencentARC/GFPGAN.git
+  git clone https://github.com/IAmJonoBo/GFPGAN.git
     cd GFPGAN
     ```
 
