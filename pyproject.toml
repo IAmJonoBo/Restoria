@@ -1,0 +1,89 @@
+[build-system]
+requires = ["setuptools>=67", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gfpgan"
+dynamic = ["version"]
+description = "GFPGAN aims at developing Practical Algorithms for Real-world Face Restoration"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "Xintao Wang", email = "xintao.wang@outlook.com" }]
+keywords = [
+  "computer vision",
+  "pytorch",
+  "image restoration",
+  "super-resolution",
+  "face restoration",
+  "gan",
+  "gfpgan",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+  "basicsr>=1.4.2",
+  "facexlib>=0.2.5",
+  "lmdb",
+  # Numpy/scipy/skimage/opencv differ across tracks; use markers for 3.10 stability
+  "numpy<2; python_version < '3.11'",
+  "numpy>=2; python_version >= '3.11'",
+  "scikit-image<0.20; python_version < '3.11'",
+  "scikit-image>=0.22; python_version >= '3.11'",
+  "scipy<1.11; python_version < '3.11'",
+  "scipy>=1.12; python_version >= '3.11'",
+  "opencv-python<4.8; python_version < '3.11'",
+  "opencv-python>=4.8; python_version >= '3.11'",
+  "PyYAML",
+  "tensorboard",
+  "tqdm",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pre-commit",
+  "black",
+  "ruff",
+  "codespell",
+]
+torch1 = [
+  "torch>=1.12,<2.0; python_version < '3.11'",
+  "torchvision<0.15; python_version < '3.11'",
+]
+torch2 = [
+  "torch>=2.2,<3; python_version >= '3.11'",
+  "torchvision>=0.17,<0.20; python_version >= '3.11'",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["options", "datasets", "experiments", "results", "tb_logger", "wandb"]
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }
+
+[tool.uv]
+# Uv reads dependencies from [project]; no extra config required.
+python-preference = "only-system" # respect system python; CI will specify version
+
+[tool.black]
+line-length = 120
+target-version = ["py38"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py38"
+lint.select = ["E", "F", "I"]

@@ -137,3 +137,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# uv local cache
+.uv/
+
+# Local virtualenvs
+.venv*/

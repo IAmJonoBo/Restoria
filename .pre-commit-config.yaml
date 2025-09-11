@@ -1,38 +1,27 @@
 repos:
-  # flake8
-  - repo: https://github.com/PyCQA/flake8
-    rev: 3.8.3
+  # ruff: fast linter and import sorter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
     hooks:
-      - id: flake8
-        args: ["--config=setup.cfg", "--ignore=W504, W503"]
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
 
-  # modify known_third_party
-  - repo: https://github.com/asottile/seed-isort-config
-    rev: v2.2.0
+  # black: opinionated formatter
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
     hooks:
-      - id: seed-isort-config
-
-  # isort
-  - repo: https://github.com/timothycrosley/isort
-    rev: 5.2.2
-    hooks:
-      - id: isort
-
-  # yapf
-  - repo: https://github.com/pre-commit/mirrors-yapf
-    rev: v0.30.0
-    hooks:
-      - id: yapf
+      - id: black
 
   # codespell
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.1.0
+    rev: v2.4.1
     hooks:
       - id: codespell
 
   # pre-commit-hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace  # Trim trailing whitespace
       - id: check-yaml  # Attempt to load all yaml files to verify syntax
