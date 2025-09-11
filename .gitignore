@@ -140,3 +140,6 @@ dmypy.json
 
 # uv local cache
 .uv/
+
+# Local virtualenvs
+.venv*/
