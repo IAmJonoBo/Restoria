@@ -51,6 +51,14 @@ Other recommended projects:<br>
 
 ---
 
+### Quickstart & Docs
+
+- Quickstart: `docs/quickstart.md`
+- CLI: `docs/usage/cli.md`
+- Colab Guide: `docs/usage/colab.md`
+- Compatibility Matrix: `docs/COMPATIBILITY.md`
+- Contributing: `docs/contributing.md`
+
 ### Quick CLI Usage (fork)
 
 - Install (editable): `pip install -e .[dev]`
@@ -66,7 +74,7 @@ Note: on CPU, Real-ESRGAN background upsampling is disabled for speed.
 ### Colab (fork)
 
 - Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
-- Features: interactive UI for uploads, URLs, options; preview; ZIP download.
+- Features: interactive UI for uploads, URLs, options; preview (grid + slider); ZIP download.
 - Compatibility: the notebook installs BasicSR master to match modern torchvision.
 
 ### Compatibility notes (Torch/Torchvision/Basicsr)
