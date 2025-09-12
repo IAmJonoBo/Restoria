@@ -14,6 +14,7 @@ usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
                     [--manifest MANIFEST] [--print-env]
                     [--deterministic-cuda] [--eye-dist-threshold EYE_DIST_THRESHOLD]
                     [--max-images MAX_IMAGES] [--skip-existing] [--workers WORKERS]
+                    [--auto] [--auto-hw] [--select-by {sharpness,identity}]
                     [--verbose]
 ```
 
@@ -25,6 +26,8 @@ usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
   - Weight sweep: `gfpgan-infer -i img.jpg -v 1.4 --sweep-weight 0.3,0.5,0.7 --manifest out.json`
   - Deterministic CUDA: `gfpgan-infer -i img.jpg -v 1.4 --deterministic-cuda --seed 123`
   - Quality controls: `--jpg-quality 95 --png-compress 3 --webp-quality 90`
+  - Autopilot: `gfpgan-infer -i img.jpg -v 1.4 --auto --select-by sharpness`
+  - Hardware-aware defaults: `gfpgan-infer -i img.jpg -v 1.3 --auto-hw`
 
 - Notes
   - On CPU, Real-ESRGAN background upsampling is disabled automatically.
@@ -36,6 +39,8 @@ usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
   - `--print-env` prints torch/torchvision/basicsr/facexlib versions and CUDA availability.
   - `--workers N` enables experimental CPU-only parallelization across images (spawns multiple processes).
   - Quality controls apply by file extension (jpg/png/webp) when saving outputs.
+  - `--auto` tries a couple of model/weight combos and picks the best by `--select-by`.
+  - `--auto-hw` sets sensible tiles/precision/workers based on detected hardware.
 
 Model weights
 - Download utility: `gfpgan-download-weights --list` to view; `gfpgan-download-weights -v 1.4` to fetch.

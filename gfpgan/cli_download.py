@@ -4,7 +4,9 @@ import os
 import sys
 from urllib.request import urlretrieve
 
-REGISTRY = {
+import yaml
+
+BUILTIN_REGISTRY = {
     "GFPGANv1": {
         "url": "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth",
         "fname": "GFPGANv1.pth",
@@ -26,6 +28,27 @@ REGISTRY = {
         "fname": "RestoreFormer.pth",
     },
 }
+
+
+def load_registry():
+    # Try to load models/registry.yml; fall back to builtin
+    cfg_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "registry.yml")
+    if os.path.exists(cfg_path):
+        try:
+            with open(cfg_path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+            # Build alias map
+            reg = {}
+            for name, meta in data.items():
+                meta = meta or {}
+                reg[name] = {"url": meta.get("url"), "fname": f"{name}.pth"}
+                for alias in meta.get("aliases") or []:
+                    reg[alias] = reg[name]
+            return reg
+        except Exception:
+            pass
+    # fallback
+    return BUILTIN_REGISTRY
 
 
 def sha256sum(path: str) -> str:
@@ -71,26 +94,31 @@ def main():
     parser.add_argument("--list", action="store_true", help="List available models and exit")
     args = parser.parse_args()
 
+    registry = load_registry()
     if args.list:
         print("Available models:")
-        for k, v in REGISTRY.items():
+        seen = set()
+        for k, v in registry.items():
+            if v["url"] in seen:
+                continue
+            seen.add(v["url"])
             print(f"- {k}: {v['url']}")
         return
 
     to_get = []
     if args.all:
-        to_get = list(REGISTRY.keys())
+        to_get = list({v["url"]: k for k, v in registry.items()}.values())
     elif args.version:
         model_key = resolve_model_name(args.version)
-        if model_key not in REGISTRY:
-            print(f"Unknown model '{args.version}'. Known: {', '.join(REGISTRY.keys())}")
+        if model_key not in registry:
+            print(f"Unknown model '{args.version}'. Known: {', '.join(sorted(registry.keys()))}")
             sys.exit(1)
         to_get = [model_key]
     else:
         parser.error("Provide --version or --all or --list")
 
     for name in to_get:
-        meta = REGISTRY[name]
+        meta = registry[name]
         dst = os.path.join(args.dir, meta["fname"])
         if os.path.exists(dst):
             print(f"Exists: {dst} (sha256={sha256sum(dst)[:12]}...)")

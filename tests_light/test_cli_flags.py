@@ -58,3 +58,9 @@ def test_cli_sweep_skip_max_and_printenv(tmp_path):
 def test_cli_workers_dry_run():
     # Ensure the parser accepts workers flag; no execution on --dry-run
     run_ok(["--device", "cpu", "--no-download", "-v", "1.4", "--workers", "2"])
+
+
+def test_cli_auto_flags():
+    # Autopilot flags parse
+    run_ok(["--device", "cpu", "--no-download", "-v", "1.4", "--auto", "--select-by", "sharpness"])
+    run_ok(["--device", "cpu", "--no-download", "-v", "1.4", "--auto-hw"])

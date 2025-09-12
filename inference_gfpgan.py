@@ -250,6 +250,15 @@ def main():
         default=1,
         help="Experimental: number of parallel CPU workers (CPU only)",
     )
+    parser.add_argument("--auto", action="store_true", help="Autopilot: try models/weights and select best by metric")
+    parser.add_argument("--auto-hw", action="store_true", help="Autotune tile/precision/workers based on hardware")
+    parser.add_argument(
+        "--select-by",
+        type=str,
+        default="sharpness",
+        choices=["sharpness", "identity"],
+        help="Metric used for autopilot selection",
+    )
     parser.add_argument("--verbose", action="store_true", help="Verbose logging")
     args = parser.parse_args()
 
@@ -286,6 +295,19 @@ def main():
     device = "cuda" if (args.device == "auto" and torch.cuda.is_available()) else args.device.replace("auto", "cpu")
     if args.verbose:
         print(f"Device: {device}")
+    # Hardware-aware defaults
+    if args.auto_hw:
+        try:
+            if device == "cuda":
+                total = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+                args.bg_precision = "fp16"
+                args.bg_tile = 0 if total >= 10 else (600 if total >= 6 else 400)
+            else:
+                import os as _os
+
+                args.workers = max(args.workers, min(4, (_os.cpu_count() or 2)))
+        except Exception:
+            pass
     if args.print_env:
         try:
             import basicsr as _basicsr
@@ -481,6 +503,75 @@ def main():
             input_img = cv2.imread(img_path, cv2.IMREAD_COLOR)
 
             # restore faces and background if necessary
+            best = None
+            if args.auto:
+                try:
+                    from gfpgan.metrics import identity_distance, sharpness_score
+                except Exception:
+                    sharpness_score = None  # type: ignore
+                    identity_distance = None  # type: ignore
+                # Candidate versions to try
+                if args.version in {"1.2", "1.3"}:
+                    cand_versions = [args.version, ("1.3" if args.version == "1.2" else "1.2")]
+                elif args.version == "1.4":
+                    cand_versions = ["1.4", "1.3"]
+                else:
+                    cand_versions = [args.version]
+                cand_weights = [0.3, 0.5]
+                for v in cand_versions:
+                    if v == "1":
+                        _arch = "original"
+                        _cm = 1
+                        _model = "GFPGANv1"
+                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth"
+                    elif v == "1.2":
+                        _arch = "clean"
+                        _cm = 2
+                        _model = "GFPGANCleanv1-NoCE-C2"
+                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth"
+                    elif v == "1.3":
+                        _arch = "clean"
+                        _cm = 2
+                        _model = "GFPGANv1.3"
+                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth"
+                    elif v == "1.4":
+                        _arch = "clean"
+                        _cm = 2
+                        _model = "GFPGANv1.4"
+                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth"
+                    else:
+                        continue
+                    _mp = os.path.join("experiments/pretrained_models", _model + ".pth")
+                    if not os.path.isfile(_mp):
+                        _alt = os.path.join("gfpgan/weights", _model + ".pth")
+                        _mp = _mp if os.path.isfile(_mp) else (_alt if os.path.isfile(_alt) else _url)
+                    _rest = GFPGANer(
+                        model_path=_mp,
+                        upscale=args.upscale,
+                        arch=_arch,
+                        channel_multiplier=_cm,
+                        bg_upsampler=bg_upsampler,
+                        device=torch.device(device),
+                        det_model=args.detector,
+                        use_parse=not args.no_parse,
+                    )
+                    for w in cand_weights:
+                        _cf, _rf, _ri = _rest.enhance(
+                            input_img,
+                            has_aligned=args.aligned,
+                            only_center_face=args.only_center_face,
+                            paste_back=True,
+                            weight=w,
+                        )
+                        if _ri is None:
+                            continue
+                        if args.select_by == "identity" and identity_distance is not None:
+                            score = identity_distance(input_img, _ri)
+                            score = -score if score is not None else -0.0
+                        else:
+                            score = sharpness_score(_ri) if sharpness_score is not None else 0.0
+                        if (best is None) or (score > best[0]):
+                            best = (score, v, w, _ri, _rf, _cf)
             # Determine weights to run
             if args.sweep_weight:
                 try:
@@ -489,6 +580,10 @@ def main():
                     raise ValueError("Invalid --sweep-weight; expected comma-separated floats")
             else:
                 weights = [args.weight]
+            # If autopilot selected best, override
+            if args.auto and best is not None:
+                _, sel_v, sel_w, restored_img, restored_faces, cropped_faces = best
+                weights = [sel_w]
 
             face_paths = []
             crop_paths = []
