@@ -134,9 +134,7 @@ def main():
         model_path = os.path.join("gfpgan/weights", model_name + ".pth")
     if not os.path.isfile(model_path):
         if args.no_download:
-            raise FileNotFoundError(
-                f"Model weights {model_name}.pth not found locally and --no-download is set."
-            )
+            raise FileNotFoundError(f"Model weights {model_name}.pth not found locally and --no-download is set.")
         # download pre-trained models from url
         model_path = url
 
@@ -155,6 +153,7 @@ def main():
     try:
         from tqdm import tqdm
     except Exception:  # pragma: no cover
+
         def _tqdm_passthrough(x):  # E731: use def instead of lambda
             return x
 
