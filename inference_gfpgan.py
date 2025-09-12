@@ -7,11 +7,15 @@ import numpy as np
 import torch
 from basicsr.utils import imwrite
 
-from gfpgan import GFPGANer
-
 
 def main():
-    """Inference demo for GFPGAN (for users)."""
+    """Inference demo for GFPGAN (for users).
+
+    Added UX flags:
+    - --device: force cpu/cuda/auto
+    - --dry-run: validate args and exit without loading models
+    - --no-download: do not fetch remote weights if missing
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-i", "--input", type=str, default="inputs/whole_imgs", help="Input image or folder. Default: inputs/whole_imgs"
@@ -44,8 +48,13 @@ def main():
         help="Image extension. Options: auto | jpg | png, auto means using the same extension as inputs. Default: auto",
     )
     parser.add_argument("-w", "--weight", type=float, default=0.5, help="Adjustable weights.")
-    args = parser.parse_args()
-
+    parser.add_argument(
+        "--device", type=str, default="auto", choices=["auto", "cpu", "cuda"], help="Device to use (default: auto)"
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Parse args and exit early.")
+    parser.add_argument(
+        "--no-download", action="store_true", help="Do not download remote weights when not present locally."
+    )
     args = parser.parse_args()
 
     # ------------------------ input & output ------------------------
@@ -58,15 +67,20 @@ def main():
 
     os.makedirs(args.output, exist_ok=True)
 
+    if args.dry_run:
+        print("Dry run OK. Parsed arguments:")
+        print(vars(args))
+        return
+
+    # Resolve device
+    device = "cuda" if (args.device == "auto" and torch.cuda.is_available()) else args.device.replace("auto", "cpu")
+
     # ------------------------ set up background upsampler ------------------------
     if args.bg_upsampler == "realesrgan":
-        if not torch.cuda.is_available():  # CPU
+        if device == "cpu":  # CPU
             import warnings
 
-            warnings.warn(
-                "The unoptimized RealESRGAN is slow on CPU. We do not use it. "
-                "If you really want to use it, please modify the corresponding codes."
-            )
+            warnings.warn("RealESRGAN on CPU is slow; background upsampling disabled.")
             bg_upsampler = None
         else:
             from basicsr.archs.rrdbnet_arch import RRDBNet
@@ -81,7 +95,7 @@ def main():
                 tile_pad=10,
                 pre_pad=0,
                 half=True,
-            )  # need to set False in CPU mode
+            )
     else:
         bg_upsampler = None
 
@@ -119,8 +133,15 @@ def main():
     if not os.path.isfile(model_path):
         model_path = os.path.join("gfpgan/weights", model_name + ".pth")
     if not os.path.isfile(model_path):
+        if args.no_download:
+            raise FileNotFoundError(
+                f"Model weights {model_name}.pth not found locally and --no-download is set."
+            )
         # download pre-trained models from url
         model_path = url
+
+    # Delay heavy import until after dry-run
+    from gfpgan import GFPGANer
 
     restorer = GFPGANer(
         model_path=model_path,
@@ -131,7 +152,12 @@ def main():
     )
 
     # ------------------------ restore ------------------------
-    for img_path in img_list:
+    try:
+        from tqdm import tqdm
+    except Exception:  # pragma: no cover
+        tqdm = lambda x: x  # type: ignore
+
+    for img_path in tqdm(img_list):
         # read image
         img_name = os.path.basename(img_path)
         print(f"Processing {img_name} ...")

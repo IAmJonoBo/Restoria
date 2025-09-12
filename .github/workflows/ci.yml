@@ -68,5 +68,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .[dev,torch2]
+          # Ensure Basicsr master to match latest torchvision API
+          pip install --no-cache-dir --upgrade "git+https://github.com/xinntao/BasicSR@master"
       - name: Run light tests
         run: pytest -q tests_light

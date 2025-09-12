@@ -31,6 +31,9 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
 ]
 
+[project.scripts]
+gfpgan-infer = "inference_gfpgan:main"
+
 dependencies = [
   "basicsr>=1.4.2",
   "facexlib>=0.2.5",
