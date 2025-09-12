@@ -382,6 +382,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Recipes
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -393,6 +406,34 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#performance-autopilot-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance &amp; Autopilot Tips
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -514,6 +555,23 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#performance-autopilot-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance &amp; Autopilot Tips
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -559,6 +617,34 @@
 <p>Print environment versions and run</p>
 </li>
 <li><code>gfpgan-infer -i img.jpg -v 1.4 --print-env --verbose</code></li>
+</ul>
+<h2 id="performance-autopilot-tips">Performance &amp; Autopilot Tips<a class="headerlink" href="#performance-autopilot-tips" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Autopilot (<code>--auto</code>):</li>
+<li>For common photos, try: <code>--auto --select-by sharpness</code>.</li>
+<li>For portraits where identity matters: <code>--auto --select-by identity</code> (falls back to sharpness if identity backend is unavailable).</li>
+<li>
+<p>Autopilot tries a small set of model/weight combos (e.g., 1.2/1.3 with 0.3/0.5) and picks the best by the metric on the restored image.</p>
+</li>
+<li>
+<p>Hardware-aware defaults (<code>--auto-hw</code>):</p>
+</li>
+<li>On CUDA: sets <code>--bg_precision fp16</code> and tiles based on VRAM (0/600/400 for high/med/low VRAM).</li>
+<li>
+<p>On CPU: sets a sensible <code>--workers</code> value up to 4.</p>
+</li>
+<li>
+<p>CPU concurrency (<code>--workers N</code>):</p>
+</li>
+<li>Parallelizes images across processes; each worker maintains its own restorer.</li>
+<li>
+<p>Start with 2–4 workers depending on core count and memory; avoid high values.</p>
+</li>
+<li>
+<p>Quality/perf trade-offs:</p>
+</li>
+<li>Increase <code>--bg_tile</code> or disable background (<code>--bg_upsampler none</code>) if you encounter OOM.</li>
+<li>Lower <code>--upscale</code> for faster throughput on large batches.</li>
 </ul>
 
 
