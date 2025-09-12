@@ -1,5 +1,6 @@
-import cv2
 import os
+
+import cv2
 import torch
 from basicsr.utils import img2tensor, tensor2img
 from basicsr.utils.download_util import load_file_from_url

@@ -1,8 +1,8 @@
 import math
 import random
 
-from basicsr.utils.registry import ARCH_REGISTRY
 import torch
+from basicsr.utils.registry import ARCH_REGISTRY
 from torch import nn
 
 from .gfpganv1_arch import ResUpBlock

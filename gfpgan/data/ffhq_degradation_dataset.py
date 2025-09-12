@@ -1,7 +1,8 @@
-import cv2
 import math
-import numpy as np
 import os.path as osp
+
+import cv2
+import numpy as np
 import torch
 import torch.utils.data as data
 from basicsr.data import degradations as degradations

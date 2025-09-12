@@ -1,5 +1,6 @@
 import math
 import random
+
 import torch
 from basicsr.archs.stylegan2_arch import (
     ConvLayer,

@@ -1,4 +1,5 @@
 import tempfile
+
 import torch
 import yaml
 from basicsr.archs.stylegan2_arch import StyleGAN2Discriminator
