@@ -51,6 +51,30 @@ Other recommended projects:<br>
 
 ---
 
+### Quick CLI Usage (fork)
+
+- Install (editable): `pip install -e .[dev]`
+- Inference: `gfpgan-infer --input inputs/whole_imgs --version 1.4 --upscale 2 --device auto`
+- Helpful flags:
+  - `--dry-run`: validate args and exit fast
+  - `--no-download`: require local weights only
+  - `--device {auto,cpu,cuda}`: choose runtime
+  - `--bg_upsampler realesrgan|none`: disable background upsample with `none`
+
+Note: on CPU, Real-ESRGAN background upsampling is disabled for speed.
+
+### Colab (fork)
+
+- Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
+- Features: interactive UI for uploads, URLs, options; preview; ZIP download.
+- Compatibility: the notebook installs BasicSR master to match modern torchvision.
+
+### Compatibility notes (Torch/Torchvision/Basicsr)
+
+- Python 3.10: Torch 1.x track via optional deps `-E torch1`
+- Python 3.11: Torch 2.x track via optional deps `-E torch2` (default in CI)
+- Basicsr: master branch in CI/Colab for torchvision functional API compatibility
+
 ### :book: GFP-GAN: Towards Real-World Blind Face Restoration with Generative Facial Prior
 
 > [[Paper](https://arxiv.org/abs/2101.04061)] &emsp; [[Project Page](https://xinntao.github.io/projects/gfpgan)] &emsp; [Demo] <br>
