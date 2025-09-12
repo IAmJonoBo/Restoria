@@ -55,6 +55,9 @@ def main():
     parser.add_argument(
         "--no-download", action="store_true", help="Do not download remote weights when not present locally."
     )
+    parser.add_argument("--model-path", type=str, default=None, help="Override model weights path (local file)")
+    parser.add_argument("--seed", type=int, default=None, help="Random seed for reproducibility")
+    parser.add_argument("--no-cmp", action="store_true", help="Do not save side-by-side comparison tiles")
     args = parser.parse_args()
 
     # ------------------------ input & output ------------------------
@@ -129,14 +132,17 @@ def main():
         raise ValueError(f"Wrong model version {args.version}.")
 
     # determine model paths
-    model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
-    if not os.path.isfile(model_path):
-        model_path = os.path.join("gfpgan/weights", model_name + ".pth")
-    if not os.path.isfile(model_path):
-        if args.no_download:
-            raise FileNotFoundError(f"Model weights {model_name}.pth not found locally and --no-download is set.")
-        # download pre-trained models from url
-        model_path = url
+    if args.model_path:
+        model_path = args.model_path
+    else:
+        model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
+        if not os.path.isfile(model_path):
+            model_path = os.path.join("gfpgan/weights", model_name + ".pth")
+        if not os.path.isfile(model_path):
+            if args.no_download:
+                raise FileNotFoundError(f"Model weights {model_name}.pth not found locally and --no-download is set.")
+            # download pre-trained models from url
+            model_path = url
 
     # Delay heavy import until after dry-run
     from gfpgan import GFPGANer
@@ -148,6 +154,25 @@ def main():
         channel_multiplier=channel_multiplier,
         bg_upsampler=bg_upsampler,
     )
+
+    # Optional seeding
+    if args.seed is not None:
+        try:
+            import random
+
+            random.seed(args.seed)
+        except Exception:
+            pass
+        try:
+            import numpy as _np
+
+            _np.random.seed(args.seed)
+        except Exception:
+            pass
+        try:
+            torch.manual_seed(args.seed)
+        except Exception:
+            pass
 
     # ------------------------ restore ------------------------
     try:
@@ -188,8 +213,9 @@ def main():
             save_restore_path = os.path.join(args.output, "restored_faces", save_face_name)
             imwrite(restored_face, save_restore_path)
             # save comparison image
-            cmp_img = np.concatenate((cropped_face, restored_face), axis=1)
-            imwrite(cmp_img, os.path.join(args.output, "cmp", f"{basename}_{idx:02d}.png"))
+            if not args.no_cmp:
+                cmp_img = np.concatenate((cropped_face, restored_face), axis=1)
+                imwrite(cmp_img, os.path.join(args.output, "cmp", f"{basename}_{idx:02d}.png"))
 
         # save restored img
         if restored_img is not None:
