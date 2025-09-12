@@ -180,6 +180,9 @@ jobs:
           pip install -q opencv-python-headless pyyaml
           # Project in editable mode (no extras) so module imports succeed if needed
           pip install -q -e .
+          # Ensure Basicsr master to match latest torchvision API
+          pip uninstall -y basicsr || true
+          pip install --no-cache-dir --force-reinstall "git+https://github.com/xinntao/BasicSR@master"
       - name: Register kernel (explicit)
         run: python -m ipykernel install --user --name python3
       - name: Run nbmake (smoke)
