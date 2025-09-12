@@ -55,6 +55,17 @@ jobs:
         run: |
           python -m compileall -q gfpgan scripts inference_gfpgan.py || exit 1
 
+  links:
+    name: links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Colab notebook link
+        run: |
+          URL="https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb"
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+          echo "Colab URL status: $code"
+          [ "$code" -eq 200 ]
+
   tests-light:
     name: tests (light)
     runs-on: ubuntu-latest
@@ -68,5 +79,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .[dev,torch2]
+          # Ensure Basicsr master to match latest torchvision API
+          pip install --no-cache-dir --upgrade "git+https://github.com/xinntao/BasicSR@master"
       - name: Run light tests
         run: pytest -q tests_light

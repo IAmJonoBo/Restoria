@@ -66,6 +66,9 @@ torch2 = [
   "torchvision>=0.17,<0.20; python_version >= '3.11'",
 ]
 
+[project.scripts]
+gfpgan-infer = "inference_gfpgan:main"
+
 [tool.setuptools]
 include-package-data = true
 
@@ -87,3 +90,6 @@ target-version = ["py38"]
 line-length = 120
 target-version = "py38"
 lint.select = ["E", "F", "I", "W"]
+exclude = [
+  "notebooks/**"
+]
