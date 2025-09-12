@@ -544,7 +544,7 @@
                     [--model-path MODEL_PATH] [--seed SEED] [--no-cmp]
                     [--manifest MANIFEST] [--print-env]
                     [--deterministic-cuda] [--eye-dist-threshold EYE_DIST_THRESHOLD]
-                    [--max-images MAX_IMAGES] [--skip-existing]
+                    [--max-images MAX_IMAGES] [--skip-existing] [--workers WORKERS]
                     [--verbose]
 </code></pre>
 <ul>
@@ -568,6 +568,7 @@
 <li><code>--manifest out.json</code> writes a manifest of inputs and outputs for automation.</li>
 <li><code>--skip-existing</code> avoids re-writing outputs; <code>--max-images</code> caps processing.</li>
 <li><code>--print-env</code> prints torch/torchvision/basicsr/facexlib versions and CUDA availability.</li>
+<li><code>--workers N</code> enables experimental CPU-only parallelization across images (spawns multiple processes).</li>
 <li>Quality controls apply by file extension (jpg/png/webp) when saving outputs.</li>
 </ul>
 <p>Model weights
