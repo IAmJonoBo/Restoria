@@ -175,11 +175,11 @@ jobs:
           python -m pip install --upgrade pip
           # Kernel + pytest plugin deps
           pip install -q ipykernel pytest nbmake
-          # Minimal project runtime for smoke execution (CPU Torch is fine)
-          pip install -q -e .[torch2] || true
-          # Ensure Basicsr master to match latest torchvision API (as in tests-light)
-          pip uninstall -y basicsr || true
-          pip install --no-cache-dir --force-reinstall "git+https://github.com/xinntao/BasicSR@master"
+          # Minimal runtime deps for the notebook (CPU-only Torch wheels + headless OpenCV)
+          pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
+          pip install -q opencv-python-headless pyyaml
+          # Project in editable mode (no extras) so module imports succeed if needed
+          pip install -q -e .
       - name: Register kernel (explicit)
         run: python -m ipykernel install --user --name python3
       - name: Run nbmake (smoke)
@@ -188,4 +188,5 @@ jobs:
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
         run: |
           # Run only the Colab notebook as a test with a known kernel; skip heavy cells via NB_CI_SMOKE
-          pytest --nbmake --nbmake-kernel=python3 --nbmake-timeout=600 notebooks/GFPGAN_Colab.ipynb -q
+          # Ignore tests/ during collection to avoid importing unit tests
+          pytest --nbmake --nbmake-kernel=python3 --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
