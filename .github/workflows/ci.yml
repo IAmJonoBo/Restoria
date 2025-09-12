@@ -25,12 +25,10 @@ jobs:
         run: pip install --disable-pip-version-check --no-input ruff black
 
       - name: Lint (ruff)
-        run: ruff check .
-        continue-on-error: true
+        run: ruff check . || true
 
       - name: Format check (black)
-        run: black --check .
-        continue-on-error: true
+        run: black --check . || true
 
       - name: Smoke import
         run: |
@@ -43,3 +41,16 @@ jobs:
               # Do not fail CI while tests stabilize
               print(f"Import warning: {e}", file=sys.stderr)
           PY
+
+  smoke:
+    name: smoke (3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check (compileall)
+        run: |
+          python -m compileall -q gfpgan scripts inference_gfpgan.py || exit 1
