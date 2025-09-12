@@ -155,7 +155,10 @@ def main():
     try:
         from tqdm import tqdm
     except Exception:  # pragma: no cover
-        tqdm = lambda x: x  # type: ignore
+        def _tqdm_passthrough(x):  # E731: use def instead of lambda
+            return x
+
+        tqdm = _tqdm_passthrough  # type: ignore
 
     for img_path in tqdm(img_list):
         # read image

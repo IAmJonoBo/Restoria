@@ -90,3 +90,6 @@ target-version = ["py38"]
 line-length = 120
 target-version = "py38"
 lint.select = ["E", "F", "I", "W"]
+exclude = [
+  "notebooks/**"
+]
