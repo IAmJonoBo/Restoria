@@ -11,13 +11,13 @@ from gfpgan.models.gfpgan_model import GFPGANModel
 
 
 def test_gfpgan_model():
-    with open('tests/data/test_gfpgan_model.yml', mode='r') as f:
+    with open("tests/data/test_gfpgan_model.yml", mode="r") as f:
         opt = yaml.load(f, Loader=yaml.FullLoader)
 
     # build model
     model = GFPGANModel(opt)
     # test attributes
-    assert model.__class__.__name__ == 'GFPGANModel'
+    assert model.__class__.__name__ == "GFPGANModel"
     assert isinstance(model.net_g, GFPGANv1)  # generator
     assert isinstance(model.net_d, StyleGAN2Discriminator)  # discriminator
     # facial component discriminators
@@ -57,9 +57,22 @@ def test_gfpgan_model():
     assert isinstance(model.log_dict, dict)
     # check returned keys
     expected_keys = [
-        'l_g_pix', 'l_g_percep', 'l_g_style', 'l_g_gan', 'l_g_gan_left_eye', 'l_g_gan_right_eye', 'l_g_gan_mouth',
-        'l_g_comp_style_loss', 'l_identity', 'l_d', 'real_score', 'fake_score', 'l_d_r1', 'l_d_left_eye',
-        'l_d_right_eye', 'l_d_mouth'
+        "l_g_pix",
+        "l_g_percep",
+        "l_g_style",
+        "l_g_gan",
+        "l_g_gan_left_eye",
+        "l_g_gan_right_eye",
+        "l_g_gan_mouth",
+        "l_g_comp_style_loss",
+        "l_identity",
+        "l_d",
+        "real_score",
+        "fake_score",
+        "l_d_r1",
+        "l_d_left_eye",
+        "l_d_right_eye",
+        "l_d_mouth",
     ]
     assert set(expected_keys).issubset(set(model.log_dict.keys()))
 
@@ -70,23 +83,36 @@ def test_gfpgan_model():
     assert isinstance(model.log_dict, dict)
     # check returned keys
     expected_keys = [
-        'l_g_pix', 'l_g_percep', 'l_g_style', 'l_g_gan', 'l_g_gan_left_eye', 'l_g_gan_right_eye', 'l_g_gan_mouth',
-        'l_g_comp_style_loss', 'l_identity', 'l_d', 'real_score', 'fake_score', 'l_d_r1', 'l_d_left_eye',
-        'l_d_right_eye', 'l_d_mouth'
+        "l_g_pix",
+        "l_g_percep",
+        "l_g_style",
+        "l_g_gan",
+        "l_g_gan_left_eye",
+        "l_g_gan_right_eye",
+        "l_g_gan_mouth",
+        "l_g_comp_style_loss",
+        "l_identity",
+        "l_d",
+        "real_score",
+        "fake_score",
+        "l_d_r1",
+        "l_d_left_eye",
+        "l_d_right_eye",
+        "l_d_mouth",
     ]
     assert set(expected_keys).issubset(set(model.log_dict.keys()))
 
     # ----------------- test save -------------------- #
     with tempfile.TemporaryDirectory() as tmpdir:
-        model.opt['path']['models'] = tmpdir
-        model.opt['path']['training_states'] = tmpdir
+        model.opt["path"]["models"] = tmpdir
+        model.opt["path"]["training_states"] = tmpdir
         model.save(0, 1)
 
     # ----------------- test the test function -------------------- #
     model.test()
     assert model.output.shape == (1, 3, 512, 512)
     # delete net_g_ema
-    model.__delattr__('net_g_ema')
+    model.__delattr__("net_g_ema")
     model.test()
     assert model.output.shape == (1, 3, 512, 512)
     assert model.net_g.training is True  # should back to training mode after testing
@@ -94,39 +120,40 @@ def test_gfpgan_model():
     # ----------------- test nondist_validation -------------------- #
     # construct dataloader
     dataset_opt = dict(
-        name='Demo',
-        dataroot_gt='tests/data/gt',
-        dataroot_lq='tests/data/gt',
-        io_backend=dict(type='disk'),
+        name="Demo",
+        dataroot_gt="tests/data/gt",
+        dataroot_lq="tests/data/gt",
+        io_backend=dict(type="disk"),
         scale=4,
-        phase='val')
+        phase="val",
+    )
     dataset = PairedImageDataset(dataset_opt)
     dataloader = torch.utils.data.DataLoader(dataset=dataset, batch_size=1, shuffle=False, num_workers=0)
     assert model.is_train is True
     with tempfile.TemporaryDirectory() as tmpdir:
-        model.opt['path']['visualization'] = tmpdir
+        model.opt["path"]["visualization"] = tmpdir
         model.nondist_validation(dataloader, 1, None, save_img=True)
         assert model.is_train is True
         # check metric_results
-        assert 'psnr' in model.metric_results
-        assert isinstance(model.metric_results['psnr'], float)
+        assert "psnr" in model.metric_results
+        assert isinstance(model.metric_results["psnr"], float)
 
     # validation
     with tempfile.TemporaryDirectory() as tmpdir:
-        model.opt['is_train'] = False
-        model.opt['val']['suffix'] = 'test'
-        model.opt['path']['visualization'] = tmpdir
-        model.opt['val']['pbar'] = True
+        model.opt["is_train"] = False
+        model.opt["val"]["suffix"] = "test"
+        model.opt["path"]["visualization"] = tmpdir
+        model.opt["val"]["pbar"] = True
         model.nondist_validation(dataloader, 1, None, save_img=True)
         # check metric_results
-        assert 'psnr' in model.metric_results
-        assert isinstance(model.metric_results['psnr'], float)
+        assert "psnr" in model.metric_results
+        assert isinstance(model.metric_results["psnr"], float)
 
         # if opt['val']['suffix'] is None
-        model.opt['val']['suffix'] = None
-        model.opt['name'] = 'demo'
-        model.opt['path']['visualization'] = tmpdir
+        model.opt["val"]["suffix"] = None
+        model.opt["name"] = "demo"
+        model.opt["path"]["visualization"] = tmpdir
         model.nondist_validation(dataloader, 1, None, save_img=True)
         # check metric_results
-        assert 'psnr' in model.metric_results
-        assert isinstance(model.metric_results['psnr'], float)
+        assert "psnr" in model.metric_results
+        assert isinstance(model.metric_results["psnr"], float)

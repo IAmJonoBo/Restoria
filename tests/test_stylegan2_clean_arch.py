@@ -8,8 +8,11 @@ def test_stylegan2generatorclean():
 
     # model init and forward (gpu)
     if torch.cuda.is_available():
-        net = StyleGAN2GeneratorClean(
-            out_size=32, num_style_feat=512, num_mlp=8, channel_multiplier=1, narrow=0.5).cuda().eval()
+        net = (
+            StyleGAN2GeneratorClean(out_size=32, num_style_feat=512, num_mlp=8, channel_multiplier=1, narrow=0.5)
+            .cuda()
+            .eval()
+        )
         style = torch.rand((1, 512), dtype=torch.float32).cuda()
         output = net([style], input_is_latent=False)
         assert output[0].shape == (1, 3, 32, 32)

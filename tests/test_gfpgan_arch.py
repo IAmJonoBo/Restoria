@@ -9,15 +9,20 @@ def test_stylegan2generatorsft():
 
     # model init and forward (gpu)
     if torch.cuda.is_available():
-        net = StyleGAN2GeneratorSFT(
-            out_size=32,
-            num_style_feat=512,
-            num_mlp=8,
-            channel_multiplier=1,
-            resample_kernel=(1, 3, 3, 1),
-            lr_mlp=0.01,
-            narrow=1,
-            sft_half=False).cuda().eval()
+        net = (
+            StyleGAN2GeneratorSFT(
+                out_size=32,
+                num_style_feat=512,
+                num_mlp=8,
+                channel_multiplier=1,
+                resample_kernel=(1, 3, 3, 1),
+                lr_mlp=0.01,
+                narrow=1,
+                sft_half=False,
+            )
+            .cuda()
+            .eval()
+        )
         style = torch.rand((1, 512), dtype=torch.float32).cuda()
         condition1 = torch.rand((1, 512, 8, 8), dtype=torch.float32).cuda()
         condition2 = torch.rand((1, 512, 16, 16), dtype=torch.float32).cuda()
@@ -50,20 +55,25 @@ def test_gfpganv1():
 
     # model init and forward (gpu)
     if torch.cuda.is_available():
-        net = GFPGANv1(
-            out_size=32,
-            num_style_feat=512,
-            channel_multiplier=1,
-            resample_kernel=(1, 3, 3, 1),
-            decoder_load_path=None,
-            fix_decoder=True,
-            # for stylegan decoder
-            num_mlp=8,
-            lr_mlp=0.01,
-            input_is_latent=False,
-            different_w=False,
-            narrow=1,
-            sft_half=True).cuda().eval()
+        net = (
+            GFPGANv1(
+                out_size=32,
+                num_style_feat=512,
+                channel_multiplier=1,
+                resample_kernel=(1, 3, 3, 1),
+                decoder_load_path=None,
+                fix_decoder=True,
+                # for stylegan decoder
+                num_mlp=8,
+                lr_mlp=0.01,
+                input_is_latent=False,
+                different_w=False,
+                narrow=1,
+                sft_half=True,
+            )
+            .cuda()
+            .eval()
+        )
         img = torch.rand((1, 3, 32, 32), dtype=torch.float32).cuda()
         output = net(img)
         assert output[0].shape == (1, 3, 32, 32)
@@ -74,20 +84,25 @@ def test_gfpganv1():
         assert output[1][2].shape == (1, 3, 32, 32)
 
         # -------------------- with different_w = True ----------------------- #
-        net = GFPGANv1(
-            out_size=32,
-            num_style_feat=512,
-            channel_multiplier=1,
-            resample_kernel=(1, 3, 3, 1),
-            decoder_load_path=None,
-            fix_decoder=True,
-            # for stylegan decoder
-            num_mlp=8,
-            lr_mlp=0.01,
-            input_is_latent=False,
-            different_w=True,
-            narrow=1,
-            sft_half=True).cuda().eval()
+        net = (
+            GFPGANv1(
+                out_size=32,
+                num_style_feat=512,
+                channel_multiplier=1,
+                resample_kernel=(1, 3, 3, 1),
+                decoder_load_path=None,
+                fix_decoder=True,
+                # for stylegan decoder
+                num_mlp=8,
+                lr_mlp=0.01,
+                input_is_latent=False,
+                different_w=True,
+                narrow=1,
+                sft_half=True,
+            )
+            .cuda()
+            .eval()
+        )
         img = torch.rand((1, 3, 32, 32), dtype=torch.float32).cuda()
         output = net(img)
         assert output[0].shape == (1, 3, 32, 32)
@@ -124,8 +139,13 @@ def test_stylegan2generatorcsft():
 
     # model init and forward (gpu)
     if torch.cuda.is_available():
-        net = StyleGAN2GeneratorCSFT(
-            out_size=32, num_style_feat=512, num_mlp=8, channel_multiplier=1, narrow=1, sft_half=False).cuda().eval()
+        net = (
+            StyleGAN2GeneratorCSFT(
+                out_size=32, num_style_feat=512, num_mlp=8, channel_multiplier=1, narrow=1, sft_half=False
+            )
+            .cuda()
+            .eval()
+        )
         style = torch.rand((1, 512), dtype=torch.float32).cuda()
         condition1 = torch.rand((1, 512, 8, 8), dtype=torch.float32).cuda()
         condition2 = torch.rand((1, 512, 16, 16), dtype=torch.float32).cuda()
@@ -158,18 +178,23 @@ def test_gfpganv1clean():
 
     # model init and forward (gpu)
     if torch.cuda.is_available():
-        net = GFPGANv1Clean(
-            out_size=32,
-            num_style_feat=512,
-            channel_multiplier=1,
-            decoder_load_path=None,
-            fix_decoder=True,
-            # for stylegan decoder
-            num_mlp=8,
-            input_is_latent=False,
-            different_w=False,
-            narrow=1,
-            sft_half=True).cuda().eval()
+        net = (
+            GFPGANv1Clean(
+                out_size=32,
+                num_style_feat=512,
+                channel_multiplier=1,
+                decoder_load_path=None,
+                fix_decoder=True,
+                # for stylegan decoder
+                num_mlp=8,
+                input_is_latent=False,
+                different_w=False,
+                narrow=1,
+                sft_half=True,
+            )
+            .cuda()
+            .eval()
+        )
 
         img = torch.rand((1, 3, 32, 32), dtype=torch.float32).cuda()
         output = net(img)
@@ -181,18 +206,23 @@ def test_gfpganv1clean():
         assert output[1][2].shape == (1, 3, 32, 32)
 
         # -------------------- with different_w = True ----------------------- #
-        net = GFPGANv1Clean(
-            out_size=32,
-            num_style_feat=512,
-            channel_multiplier=1,
-            decoder_load_path=None,
-            fix_decoder=True,
-            # for stylegan decoder
-            num_mlp=8,
-            input_is_latent=False,
-            different_w=True,
-            narrow=1,
-            sft_half=True).cuda().eval()
+        net = (
+            GFPGANv1Clean(
+                out_size=32,
+                num_style_feat=512,
+                channel_multiplier=1,
+                decoder_load_path=None,
+                fix_decoder=True,
+                # for stylegan decoder
+                num_mlp=8,
+                input_is_latent=False,
+                different_w=True,
+                narrow=1,
+                sft_half=True,
+            )
+            .cuda()
+            .eval()
+        )
         img = torch.rand((1, 3, 32, 32), dtype=torch.float32).cuda()
         output = net(img)
         assert output[0].shape == (1, 3, 32, 32)

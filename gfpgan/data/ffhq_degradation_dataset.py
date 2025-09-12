@@ -9,8 +9,13 @@ from basicsr.data.data_util import paths_from_folder
 from basicsr.data.transforms import augment
 from basicsr.utils import FileClient, get_root_logger, imfrombytes, img2tensor
 from basicsr.utils.registry import DATASET_REGISTRY
-from torchvision.transforms.functional import (adjust_brightness, adjust_contrast, adjust_hue, adjust_saturation,
-                                               normalize)
+from torchvision.transforms.functional import (
+    adjust_brightness,
+    adjust_contrast,
+    adjust_hue,
+    adjust_saturation,
+    normalize,
+)
 
 
 @DATASET_REGISTRY.register()
@@ -34,46 +39,46 @@ class FFHQDegradationDataset(data.Dataset):
         self.opt = opt
         # file client (io backend)
         self.file_client = None
-        self.io_backend_opt = opt['io_backend']
+        self.io_backend_opt = opt["io_backend"]
 
-        self.gt_folder = opt['dataroot_gt']
-        self.mean = opt['mean']
-        self.std = opt['std']
-        self.out_size = opt['out_size']
+        self.gt_folder = opt["dataroot_gt"]
+        self.mean = opt["mean"]
+        self.std = opt["std"]
+        self.out_size = opt["out_size"]
 
-        self.crop_components = opt.get('crop_components', False)  # facial components
-        self.eye_enlarge_ratio = opt.get('eye_enlarge_ratio', 1)  # whether enlarge eye regions
+        self.crop_components = opt.get("crop_components", False)  # facial components
+        self.eye_enlarge_ratio = opt.get("eye_enlarge_ratio", 1)  # whether enlarge eye regions
 
         if self.crop_components:
             # load component list from a pre-process pth files
-            self.components_list = torch.load(opt.get('component_path'))
+            self.components_list = torch.load(opt.get("component_path"))
 
         # file client (lmdb io backend)
-        if self.io_backend_opt['type'] == 'lmdb':
-            self.io_backend_opt['db_paths'] = self.gt_folder
-            if not self.gt_folder.endswith('.lmdb'):
+        if self.io_backend_opt["type"] == "lmdb":
+            self.io_backend_opt["db_paths"] = self.gt_folder
+            if not self.gt_folder.endswith(".lmdb"):
                 raise ValueError(f"'dataroot_gt' should end with '.lmdb', but received {self.gt_folder}")
-            with open(osp.join(self.gt_folder, 'meta_info.txt')) as fin:
-                self.paths = [line.split('.')[0] for line in fin]
+            with open(osp.join(self.gt_folder, "meta_info.txt")) as fin:
+                self.paths = [line.split(".")[0] for line in fin]
         else:
             # disk backend: scan file list from a folder
             self.paths = paths_from_folder(self.gt_folder)
 
         # degradation configurations
-        self.blur_kernel_size = opt['blur_kernel_size']
-        self.kernel_list = opt['kernel_list']
-        self.kernel_prob = opt['kernel_prob']
-        self.blur_sigma = opt['blur_sigma']
-        self.downsample_range = opt['downsample_range']
-        self.noise_range = opt['noise_range']
-        self.jpeg_range = opt['jpeg_range']
+        self.blur_kernel_size = opt["blur_kernel_size"]
+        self.kernel_list = opt["kernel_list"]
+        self.kernel_prob = opt["kernel_prob"]
+        self.blur_sigma = opt["blur_sigma"]
+        self.downsample_range = opt["downsample_range"]
+        self.noise_range = opt["noise_range"]
+        self.jpeg_range = opt["jpeg_range"]
 
         # color jitter
-        self.color_jitter_prob = opt.get('color_jitter_prob')
-        self.color_jitter_pt_prob = opt.get('color_jitter_pt_prob')
-        self.color_jitter_shift = opt.get('color_jitter_shift', 20)
+        self.color_jitter_prob = opt.get("color_jitter_prob")
+        self.color_jitter_pt_prob = opt.get("color_jitter_pt_prob")
+        self.color_jitter_shift = opt.get("color_jitter_shift", 20)
         # to gray
-        self.gray_prob = opt.get('gray_prob')
+        self.gray_prob = opt.get("gray_prob")
 
         logger = get_root_logger()
         logger.info(f'Blur: blur_kernel_size {self.blur_kernel_size}, sigma: [{", ".join(map(str, self.blur_sigma))}]')
@@ -82,10 +87,10 @@ class FFHQDegradationDataset(data.Dataset):
         logger.info(f'JPEG compression: [{", ".join(map(str, self.jpeg_range))}]')
 
         if self.color_jitter_prob is not None:
-            logger.info(f'Use random color jitter. Prob: {self.color_jitter_prob}, shift: {self.color_jitter_shift}')
+            logger.info(f"Use random color jitter. Prob: {self.color_jitter_prob}, shift: {self.color_jitter_shift}")
         if self.gray_prob is not None:
-            logger.info(f'Use random gray. Prob: {self.gray_prob}')
-        self.color_jitter_shift /= 255.
+            logger.info(f"Use random gray. Prob: {self.gray_prob}")
+        self.color_jitter_shift /= 255.0
 
     @staticmethod
     def color_jitter(img, shift):
@@ -119,23 +124,23 @@ class FFHQDegradationDataset(data.Dataset):
 
     def get_component_coordinates(self, index, status):
         """Get facial component (left_eye, right_eye, mouth) coordinates from a pre-loaded pth file"""
-        components_bbox = self.components_list[f'{index:08d}']
+        components_bbox = self.components_list[f"{index:08d}"]
         if status[0]:  # hflip
             # exchange right and left eye
-            tmp = components_bbox['left_eye']
-            components_bbox['left_eye'] = components_bbox['right_eye']
-            components_bbox['right_eye'] = tmp
+            tmp = components_bbox["left_eye"]
+            components_bbox["left_eye"] = components_bbox["right_eye"]
+            components_bbox["right_eye"] = tmp
             # modify the width coordinate
-            components_bbox['left_eye'][0] = self.out_size - components_bbox['left_eye'][0]
-            components_bbox['right_eye'][0] = self.out_size - components_bbox['right_eye'][0]
-            components_bbox['mouth'][0] = self.out_size - components_bbox['mouth'][0]
+            components_bbox["left_eye"][0] = self.out_size - components_bbox["left_eye"][0]
+            components_bbox["right_eye"][0] = self.out_size - components_bbox["right_eye"][0]
+            components_bbox["mouth"][0] = self.out_size - components_bbox["mouth"][0]
 
         # get coordinates
         locations = []
-        for part in ['left_eye', 'right_eye', 'mouth']:
+        for part in ["left_eye", "right_eye", "mouth"]:
             mean = components_bbox[part][0:2]
             half_len = components_bbox[part][2]
-            if 'eye' in part:
+            if "eye" in part:
                 half_len *= self.eye_enlarge_ratio
             loc = np.hstack((mean - half_len + 1, mean + half_len))
             loc = torch.from_numpy(loc).float()
@@ -144,7 +149,7 @@ class FFHQDegradationDataset(data.Dataset):
 
     def __getitem__(self, index):
         if self.file_client is None:
-            self.file_client = FileClient(self.io_backend_opt.pop('type'), **self.io_backend_opt)
+            self.file_client = FileClient(self.io_backend_opt.pop("type"), **self.io_backend_opt)
 
         # load gt image
         # Shape: (h, w, c); channel order: BGR; image range: [0, 1], float32.
@@ -153,7 +158,7 @@ class FFHQDegradationDataset(data.Dataset):
         img_gt = imfrombytes(img_bytes, float32=True)
 
         # random horizontal flip
-        img_gt, status = augment(img_gt, hflip=self.opt['use_hflip'], rotation=False, return_status=True)
+        img_gt, status = augment(img_gt, hflip=self.opt["use_hflip"], rotation=False, return_status=True)
         h, w, _ = img_gt.shape
 
         # get facial component coordinates
@@ -168,8 +173,10 @@ class FFHQDegradationDataset(data.Dataset):
             self.kernel_prob,
             self.blur_kernel_size,
             self.blur_sigma,
-            self.blur_sigma, [-math.pi, math.pi],
-            noise_range=None)
+            self.blur_sigma,
+            [-math.pi, math.pi],
+            noise_range=None,
+        )
         img_lq = cv2.filter2D(img_gt, -1, kernel)
         # downsample
         scale = np.random.uniform(self.downsample_range[0], self.downsample_range[1])
@@ -191,7 +198,7 @@ class FFHQDegradationDataset(data.Dataset):
         if self.gray_prob and np.random.uniform() < self.gray_prob:
             img_lq = cv2.cvtColor(img_lq, cv2.COLOR_BGR2GRAY)
             img_lq = np.tile(img_lq[:, :, None], [1, 1, 3])
-            if self.opt.get('gt_gray'):  # whether convert GT to gray images
+            if self.opt.get("gt_gray"):  # whether convert GT to gray images
                 img_gt = cv2.cvtColor(img_gt, cv2.COLOR_BGR2GRAY)
                 img_gt = np.tile(img_gt[:, :, None], [1, 1, 3])  # repeat the color channels
 
@@ -200,14 +207,14 @@ class FFHQDegradationDataset(data.Dataset):
 
         # random color jitter (pytorch version) (only for lq)
         if self.color_jitter_pt_prob is not None and (np.random.uniform() < self.color_jitter_pt_prob):
-            brightness = self.opt.get('brightness', (0.5, 1.5))
-            contrast = self.opt.get('contrast', (0.5, 1.5))
-            saturation = self.opt.get('saturation', (0, 1.5))
-            hue = self.opt.get('hue', (-0.1, 0.1))
+            brightness = self.opt.get("brightness", (0.5, 1.5))
+            contrast = self.opt.get("contrast", (0.5, 1.5))
+            saturation = self.opt.get("saturation", (0, 1.5))
+            hue = self.opt.get("hue", (-0.1, 0.1))
             img_lq = self.color_jitter_pt(img_lq, brightness, contrast, saturation, hue)
 
         # round and clip
-        img_lq = torch.clamp((img_lq * 255.0).round(), 0, 255) / 255.
+        img_lq = torch.clamp((img_lq * 255.0).round(), 0, 255) / 255.0
 
         # normalize
         normalize(img_gt, self.mean, self.std, inplace=True)
@@ -215,16 +222,16 @@ class FFHQDegradationDataset(data.Dataset):
 
         if self.crop_components:
             return_dict = {
-                'lq': img_lq,
-                'gt': img_gt,
-                'gt_path': gt_path,
-                'loc_left_eye': loc_left_eye,
-                'loc_right_eye': loc_right_eye,
-                'loc_mouth': loc_mouth
+                "lq": img_lq,
+                "gt": img_gt,
+                "gt_path": gt_path,
+                "loc_left_eye": loc_left_eye,
+                "loc_right_eye": loc_right_eye,
+                "loc_mouth": loc_mouth,
             }
             return return_dict
         else:
-            return {'lq': img_lq, 'gt': img_gt, 'gt_path': gt_path}
+            return {"lq": img_lq, "gt": img_gt, "gt_path": gt_path}
 
     def __len__(self):
         return len(self.paths)

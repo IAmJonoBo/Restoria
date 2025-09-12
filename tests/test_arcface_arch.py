@@ -8,13 +8,13 @@ def test_resnetarcface():
 
     # model init and forward (gpu)
     if torch.cuda.is_available():
-        net = ResNetArcFace(block='IRBlock', layers=(2, 2, 2, 2), use_se=True).cuda().eval()
+        net = ResNetArcFace(block="IRBlock", layers=(2, 2, 2, 2), use_se=True).cuda().eval()
         img = torch.rand((1, 1, 128, 128), dtype=torch.float32).cuda()
         output = net(img)
         assert output.shape == (1, 512)
 
         # -------------------- without SE block ----------------------- #
-        net = ResNetArcFace(block='IRBlock', layers=(2, 2, 2, 2), use_se=False).cuda().eval()
+        net = ResNetArcFace(block="IRBlock", layers=(2, 2, 2, 2), use_se=False).cuda().eval()
         output = net(img)
         assert output.shape == (1, 512)
 

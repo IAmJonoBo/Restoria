@@ -9,28 +9,30 @@ from gfpgan.utils import GFPGANer
 def test_gfpganer():
     # initialize with the clean model
     restorer = GFPGANer(
-        model_path='experiments/pretrained_models/GFPGANCleanv1-NoCE-C2.pth',
+        model_path="experiments/pretrained_models/GFPGANCleanv1-NoCE-C2.pth",
         upscale=2,
-        arch='clean',
+        arch="clean",
         channel_multiplier=2,
-        bg_upsampler=None)
+        bg_upsampler=None,
+    )
     # test attribute
     assert isinstance(restorer.gfpgan, GFPGANv1Clean)
     assert isinstance(restorer.face_helper, FaceRestoreHelper)
 
     # initialize with the original model
     restorer = GFPGANer(
-        model_path='experiments/pretrained_models/GFPGANv1.pth',
+        model_path="experiments/pretrained_models/GFPGANv1.pth",
         upscale=2,
-        arch='original',
+        arch="original",
         channel_multiplier=1,
-        bg_upsampler=None)
+        bg_upsampler=None,
+    )
     # test attribute
     assert isinstance(restorer.gfpgan, GFPGANv1)
     assert isinstance(restorer.face_helper, FaceRestoreHelper)
 
     # ------------------ test enhance ---------------- #
-    img = cv2.imread('tests/data/gt/00000000.png', cv2.IMREAD_COLOR)
+    img = cv2.imread("tests/data/gt/00000000.png", cv2.IMREAD_COLOR)
     result = restorer.enhance(img, has_aligned=False, paste_back=True)
     assert result[0][0].shape == (512, 512, 3)
     assert result[1][0].shape == (512, 512, 3)

@@ -22,6 +22,7 @@ class BasicBlock(nn.Module):
         stride (int): Stride in convolution. Default: 1.
         downsample (nn.Module): The downsample module. Default: None.
     """
+
     expansion = 1  # output channel expansion ratio
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
@@ -63,6 +64,7 @@ class IRBlock(nn.Module):
         downsample (nn.Module): The downsample module. Default: None.
         use_se (bool): Whether use the SEBlock (squeeze and excitation block). Default: True.
     """
+
     expansion = 1  # output channel expansion ratio
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, use_se=True):
@@ -109,6 +111,7 @@ class Bottleneck(nn.Module):
         stride (int): Stride in convolution. Default: 1.
         downsample (nn.Module): The downsample module. Default: None.
     """
+
     expansion = 4  # output channel expansion ratio
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
@@ -158,8 +161,8 @@ class SEBlock(nn.Module):
         super(SEBlock, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)  # pool to 1x1 without spatial information
         self.fc = nn.Sequential(
-            nn.Linear(channel, channel // reduction), nn.PReLU(), nn.Linear(channel // reduction, channel),
-            nn.Sigmoid())
+            nn.Linear(channel, channel // reduction), nn.PReLU(), nn.Linear(channel // reduction, channel), nn.Sigmoid()
+        )
 
     def forward(self, x):
         b, c, _, _ = x.size()
@@ -181,7 +184,7 @@ class ResNetArcFace(nn.Module):
     """
 
     def __init__(self, block, layers, use_se=True):
-        if block == 'IRBlock':
+        if block == "IRBlock":
             block = IRBlock
         self.inplanes = 64
         self.use_se = use_se
