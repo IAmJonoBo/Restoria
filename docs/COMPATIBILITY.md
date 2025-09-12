@@ -6,8 +6,14 @@ This fork supports two primary tracks to balance stability and modern stacks.
 - Torch 2.x (modern, Python 3.11+): use `extras = [dev, torch2]`. Install BasicSR from master if needed.
 
 Known-good combinations
+
 - Python 3.10 + Torch 1.13.1 + torchvision 0.14.1 + basicsr 1.4.2
 - Python 3.11 + Torch 2.4.1 + torchvision 0.19.1 + basicsr (master)
+
+Matrix (guide)
+- CPU (3.11): Torch 2.4.1, Torchvision 0.19.1, Basicsr master, facexlib >=0.3.0
+- CUDA 12.1 (3.11): install torch/torchvision/torchaudio from PyTorch CUDA 12.1 index; Basicsr master
+- OpenCV: use prebuilt wheels (>=4.8) for 3.11; older tracks pin to <4.8
 
 Notes
 - Basicsr 1.4.2 uses `torchvision.transforms.functional_tensor` which was removed in torchvision 0.15+. For Torch 2.x stacks, install BasicSR from GitHub master.

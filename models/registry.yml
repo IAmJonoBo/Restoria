@@ -21,3 +21,7 @@ RestoreFormer:
   url: https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth
   aliases: ["restoreformer"]
 
+# Optional backend (requires external repo installation; see docs)
+CodeFormer:
+  url: https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth
+  aliases: ["codeformer"]

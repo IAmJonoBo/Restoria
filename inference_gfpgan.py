@@ -373,10 +373,11 @@ def main():
         model_name = "RestoreFormer"
         url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth"
     elif args.backend == "codeformer":
-        # Stub: surface guidance to user; default to GFPGAN if not available
-        print("[warn] CodeFormer backend selected, but integration requires additional setup. Falling back to GFPGAN.")
-        # proceed to version mapping
-        args.backend = "gfpgan"
+        # Use CodeFormer backend path; model path resolved later
+        arch = "codeformer"
+        channel_multiplier = 2
+        model_name = "CodeFormer"
+        url = "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth"
 
     if args.version == "1":
         arch = "original"
@@ -422,16 +423,26 @@ def main():
     # Delay heavy import until after dry-run
     from gfpgan import GFPGANer
 
-    restorer = GFPGANer(
-        model_path=model_path,
-        upscale=args.upscale,
-        arch=arch,
-        channel_multiplier=channel_multiplier,
-        bg_upsampler=bg_upsampler,
-        device=torch.device(device),
-        det_model=args.detector,
-        use_parse=not args.no_parse,
-    )
+    if arch == "codeformer":
+        from gfpgan.backends.codeformer_backend import CodeFormerRestorer
+
+        restorer = CodeFormerRestorer(
+            model_path=model_path,
+            device=torch.device(device),
+            upscale=args.upscale,
+            bg_upsampler=bg_upsampler,
+        )
+    else:
+        restorer = GFPGANer(
+            model_path=model_path,
+            upscale=args.upscale,
+            arch=arch,
+            channel_multiplier=channel_multiplier,
+            bg_upsampler=bg_upsampler,
+            device=torch.device(device),
+            det_model=args.detector,
+            use_parse=not args.no_parse,
+        )
 
     # Optional seeding
     if args.seed is not None:
