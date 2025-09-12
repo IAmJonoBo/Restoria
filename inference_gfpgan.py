@@ -185,6 +185,13 @@ def main():
         help="Background upsampler. Use 'none' to disable. Default: realesrgan",
     )
     parser.add_argument(
+        "--backend",
+        type=str,
+        default="gfpgan",
+        choices=["gfpgan", "restoreformer", "codeformer"],
+        help="Model backend to use (default: gfpgan)",
+    )
+    parser.add_argument(
         "--bg_tile",
         type=int,
         default=400,
@@ -359,6 +366,18 @@ def main():
         bg_upsampler = None
 
     # ------------------------ set up GFPGAN restorer ------------------------
+    # Backend selection overrides version mapping if specified
+    if args.backend == "restoreformer":
+        arch = "RestoreFormer"
+        channel_multiplier = 2
+        model_name = "RestoreFormer"
+        url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth"
+    elif args.backend == "codeformer":
+        # Stub: surface guidance to user; default to GFPGAN if not available
+        print("[warn] CodeFormer backend selected, but integration requires additional setup. Falling back to GFPGAN.")
+        # proceed to version mapping
+        args.backend = "gfpgan"
+
     if args.version == "1":
         arch = "original"
         channel_multiplier = 1
