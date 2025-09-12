@@ -71,9 +71,7 @@ Note: on CPU, Real-ESRGAN background upsampling is disabled for speed.
 
 ### Compatibility notes (Torch/Torchvision/Basicsr)
 
-- Python 3.10: Torch 1.x track via optional deps `-E torch1`
-- Python 3.11: Torch 2.x track via optional deps `-E torch2` (default in CI)
-- Basicsr: master branch in CI/Colab for torchvision functional API compatibility
+See `docs/COMPATIBILITY.md` for a quick matrix and notes.
 
 ### :book: GFP-GAN: Towards Real-World Blind Face Restoration with Generative Facial Prior
 
