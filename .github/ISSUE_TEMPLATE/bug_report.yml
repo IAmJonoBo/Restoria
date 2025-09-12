@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a problem
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug and steps to reproduce
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      description: Torch/Torchvision/Basicsr/GFPGAN versions
+      placeholder: e.g., torch 2.4.1, torchvision 0.19.1
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs/Traceback
+      description: Paste relevant logs or errors
+  - type: textarea
+    id: extra
+    attributes:
+      label: Extra context
+      description: Add any other context
+

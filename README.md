@@ -13,6 +13,8 @@
 [![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/gfpgan)](https://pypi.org/project/gfpgan/)
 [![Upstream Project](https://img.shields.io/badge/upstream-TencentARC%2FGFPGAN-blue)](https://github.com/TencentARC/GFPGAN)
+[![Docs](https://img.shields.io/badge/docs-mkdocs%20material-brightgreen)](https://IAmJonoBo.github.io/GFPGAN/)
+[![Devcontainer](https://img.shields.io/badge/devcontainer-ready-blue)](.devcontainer/devcontainer.json)
 </div>
 
 1. :boom: **Updated** online demo: [![Replicate](https://img.shields.io/static/v1?label=Demo&message=Replicate&color=blue)](https://replicate.com/tencentarc/gfpgan). Here is the [backup](https://replicate.com/xinntao/gfpgan).
@@ -51,6 +53,15 @@ Other recommended projects:<br>
 
 ---
 
+### Quickstart & Docs
+
+- Docs Site: https://IAmJonoBo.github.io/GFPGAN/
+- Quickstart: `docs/quickstart.md`
+- CLI: `docs/usage/cli.md`
+- Colab Guide: `docs/usage/colab.md`
+- Compatibility Matrix: `docs/COMPATIBILITY.md`
+- Contributing: `docs/contributing.md`
+
 ### Quick CLI Usage (fork)
 
 - Install (editable): `pip install -e .[dev]`
@@ -66,14 +77,12 @@ Note: on CPU, Real-ESRGAN background upsampling is disabled for speed.
 ### Colab (fork)
 
 - Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
-- Features: interactive UI for uploads, URLs, options; preview; ZIP download.
+- Features: interactive UI for uploads, URLs, options; preview (grid + slider); ZIP download.
 - Compatibility: the notebook installs BasicSR master to match modern torchvision.
 
 ### Compatibility notes (Torch/Torchvision/Basicsr)
 
-- Python 3.10: Torch 1.x track via optional deps `-E torch1`
-- Python 3.11: Torch 2.x track via optional deps `-E torch2` (default in CI)
-- Basicsr: master branch in CI/Colab for torchvision functional API compatibility
+See `docs/COMPATIBILITY.md` for a quick matrix and notes.
 
 ### :book: GFP-GAN: Towards Real-World Blind Face Restoration with Generative Facial Prior
 

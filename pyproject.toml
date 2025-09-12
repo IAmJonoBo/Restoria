@@ -56,6 +56,7 @@ dev = [
   "black",
   "ruff",
   "codespell",
+  "nbstripout",
 ]
 torch1 = [
   "torch>=1.12,<2.0; python_version < '3.11'",
@@ -68,6 +69,8 @@ torch2 = [
 
 [project.scripts]
 gfpgan-infer = "inference_gfpgan:main"
+gfpgan-download-weights = "gfpgan.cli_download:main"
+gfpgan-gradio = "gfpgan.gradio_app:main"
 
 [tool.setuptools]
 include-package-data = true
@@ -85,6 +88,12 @@ python-preference = "only-system" # respect system python; CI will specify versi
 [tool.black]
 line-length = 120
 target-version = ["py38"]
+extend-exclude = '''
+(
+  ^notebooks/.*
+  | \.ipynb$
+)
+'''
 
 [tool.ruff]
 line-length = 120

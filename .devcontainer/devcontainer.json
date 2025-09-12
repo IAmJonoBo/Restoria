@@ -1,0 +1,23 @@
+{
+  "name": "GFPGAN Dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "bash -lc 'pip install -U pip && pip install uv && uv pip install -e .[dev,torch2] mkdocs mkdocs-material pre-commit && pre-commit install'",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "ms-python.black-formatter",
+        "redhat.vscode-yaml"
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+site_name: GFPGAN (Fork)
+site_url: https://IAmJonoBo.github.io/GFPGAN/
+repo_url: https://github.com/IAmJonoBo/GFPGAN
+theme:
+  name: material
+  language: en
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Usage:
+    - CLI: usage/cli.md
+    - Colab: usage/colab.md
+    - Gradio: usage/gradio.md
+    - Recipes: usage/recipes.md
+  - Compatibility: COMPATIBILITY.md
+  - Troubleshooting: troubleshooting.md
+  - FAQ: faq.md
+  - Contributing: contributing.md
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
