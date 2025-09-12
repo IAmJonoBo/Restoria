@@ -3,7 +3,7 @@
 ```
 usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
                     [--bg_upsampler {realesrgan,none}] [--bg_tile BG_TILE]
-                    [--bg_precision {auto,fp16,fp32}]
+                    [--bg_precision {auto,fp16,fp32}] [--backend {gfpgan,restoreformer,codeformer}]
                     [--suffix SUFFIX] [--only_center_face] [--aligned]
                     [--ext EXT] [-w WEIGHT] [--sweep-weight SWEEP_WEIGHT]
                     [--jpg-quality JPG_QUALITY] [--png-compress PNG_COMPRESS]
