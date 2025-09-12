@@ -13,7 +13,7 @@ usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
                     [--model-path MODEL_PATH] [--seed SEED] [--no-cmp]
                     [--manifest MANIFEST] [--print-env]
                     [--deterministic-cuda] [--eye-dist-threshold EYE_DIST_THRESHOLD]
-                    [--max-images MAX_IMAGES] [--skip-existing]
+                    [--max-images MAX_IMAGES] [--skip-existing] [--workers WORKERS]
                     [--verbose]
 ```
 
@@ -34,6 +34,7 @@ usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
   - `--manifest out.json` writes a manifest of inputs and outputs for automation.
   - `--skip-existing` avoids re-writing outputs; `--max-images` caps processing.
   - `--print-env` prints torch/torchvision/basicsr/facexlib versions and CUDA availability.
+  - `--workers N` enables experimental CPU-only parallelization across images (spawns multiple processes).
   - Quality controls apply by file extension (jpg/png/webp) when saving outputs.
 
 Model weights

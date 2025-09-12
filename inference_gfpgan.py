@@ -32,6 +32,130 @@ def _save_image(path, img, ext, jpg_quality=95, png_compress=3, webp_quality=90)
             raise
 
 
+# ------------------------ CPU pool helpers (initializer + worker) ------------------------
+_POOL_CFG = None
+_POOL_RESTORER = None
+
+
+def _pool_init(cfg):  # pragma: no cover (initializer in subprocess)
+    global _POOL_CFG, _POOL_RESTORER
+    _POOL_CFG = cfg
+    # Lazy imports inside worker process
+    import torch as _torch
+
+    from gfpgan import GFPGANer as _GFPGANer
+
+    _POOL_RESTORER = _GFPGANer(
+        model_path=cfg["model_path"],
+        upscale=cfg["upscale"],
+        arch=cfg["arch"],
+        channel_multiplier=cfg["channel_multiplier"],
+        bg_upsampler=None,
+        device=_torch.device("cpu"),
+        det_model=cfg["detector"],
+        use_parse=cfg["use_parse"],
+    )
+
+
+def _pool_worker(img_path):  # pragma: no cover (subprocess code)
+    # Import locally to avoid heavy imports in master
+    import os as _os
+
+    import cv2 as _cv2
+    import numpy as _np
+
+    cfg = _POOL_CFG
+    restorer = _POOL_RESTORER
+
+    img_name = _os.path.basename(img_path)
+    base, in_ext = _os.path.splitext(img_name)
+    inp = _cv2.imread(img_path, _cv2.IMREAD_COLOR)
+
+    res_faces_all = []
+    crops_all = []
+    out_paths = []
+
+    for w in cfg["weights"]:
+        if cfg["suffix"] is not None:
+            exp_suffix = cfg["suffix"]
+        else:
+            exp_suffix = f"w{w:.2f}" if len(cfg["weights"]) > 1 else None
+
+        # skip existing restored image
+        extension = in_ext[1:] if cfg["ext"] == "auto" else cfg["ext"]
+        out_name = f"{base}_{exp_suffix}.{extension}" if exp_suffix is not None else f"{base}.{extension}"
+        out_path = _os.path.join(cfg["output"], "restored_imgs", out_name)
+        if cfg["skip_existing"] and _os.path.exists(out_path):
+            out_paths.append(out_path)
+            continue
+
+        cropped, restored, restored_img = restorer.enhance(
+            inp,
+            has_aligned=cfg["aligned"],
+            only_center_face=cfg["only_center_face"],
+            paste_back=True,
+            weight=w,
+            eye_dist_threshold=cfg["eye_dist_threshold"],
+        )
+
+        # save faces (PNG)
+        for idx, (cr, rf) in enumerate(zip(cropped, restored)):
+            crop_p = _os.path.join(cfg["output"], "cropped_faces", f"{base}_{idx:02d}.png")
+            _save_image(
+                crop_p,
+                cr,
+                ext="png",
+                jpg_quality=cfg["jpg_quality"],
+                png_compress=cfg["png_compress"],
+                webp_quality=cfg["webp_quality"],
+            )
+            if exp_suffix is not None:
+                res_name = f"{base}_{idx:02d}_{exp_suffix}.png"
+            else:
+                res_name = f"{base}_{idx:02d}.png"
+            face_p = _os.path.join(cfg["output"], "restored_faces", res_name)
+            _save_image(
+                face_p,
+                rf,
+                ext="png",
+                jpg_quality=cfg["jpg_quality"],
+                png_compress=cfg["png_compress"],
+                webp_quality=cfg["webp_quality"],
+            )
+            if not cfg["no_cmp"]:
+                cmp_img = _np.concatenate((cr, rf), axis=1)
+                _save_image(
+                    _os.path.join(cfg["output"], "cmp", f"{base}_{idx:02d}.png"),
+                    cmp_img,
+                    ext="png",
+                    jpg_quality=cfg["jpg_quality"],
+                    png_compress=cfg["png_compress"],
+                    webp_quality=cfg["webp_quality"],
+                )
+            res_faces_all.append(face_p)
+            crops_all.append(crop_p)
+
+        # save restored image
+        if restored_img is not None:
+            _save_image(
+                out_path,
+                restored_img,
+                ext=extension,
+                jpg_quality=cfg["jpg_quality"],
+                png_compress=cfg["png_compress"],
+                webp_quality=cfg["webp_quality"],
+            )
+        out_paths.append(out_path)
+
+    return {
+        "input": img_path,
+        "restored_imgs": out_paths,
+        "restored_faces": res_faces_all,
+        "cropped_faces": crops_all,
+        "weights": cfg["weights"],
+    }
+
+
 def main():
     """Inference demo for GFPGAN (for users).
 
@@ -120,6 +244,12 @@ def main():
     parser.add_argument("--print-env", action="store_true", help="Print environment and versions then continue")
     parser.add_argument("--deterministic-cuda", action="store_true", help="Enable deterministic CuDNN (slower)")
     parser.add_argument("--eye-dist-threshold", type=int, default=5, help="Minimum eye distance (px) to detect a face")
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Experimental: number of parallel CPU workers (CPU only)",
+    )
     parser.add_argument("--verbose", action="store_true", help="Verbose logging")
     args = parser.parse_args()
 
@@ -296,7 +426,168 @@ def main():
         img_list = img_list[: max(0, args.max_images)]
 
     results = []
-    for img_path in tqdm(img_list):
+
+    # Experimental CPU-only concurrency across images
+    if args.workers and args.workers > 1 and device == "cpu":
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+
+        # Determine weights list
+        if args.sweep_weight:
+            try:
+                weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
+            except Exception as _e:  # pragma: no cover - argument checked earlier
+                raise ValueError("Invalid --sweep-weight; expected comma-separated floats") from _e
+        else:
+            weights = [args.weight]
+
+        # Build a minimal config dict to initialize per-process restorer
+        cfg = {
+            "model_path": model_path,
+            "upscale": args.upscale,
+            "arch": arch,
+            "channel_multiplier": channel_multiplier,
+            "detector": args.detector,
+            "use_parse": not args.no_parse,
+            "aligned": args.aligned,
+            "only_center_face": args.only_center_face,
+            "eye_dist_threshold": args.eye_dist_threshold,
+            "output": args.output,
+            "suffix": args.suffix,
+            "ext": args.ext,
+            "jpg_quality": args.jpg_quality,
+            "png_compress": args.png_compress,
+            "webp_quality": args.webp_quality,
+            "no_cmp": args.no_cmp,
+            "skip_existing": args.skip_existing,
+            "weights": weights,
+            "verbose": args.verbose,
+        }
+
+        with ProcessPoolExecutor(max_workers=args.workers, initializer=_pool_init, initargs=(cfg,)) as ex:
+            futs = {ex.submit(_pool_worker, p): p for p in img_list}
+            for fut in tqdm(as_completed(futs), total=len(futs)):
+                results.append(fut.result())
+
+    else:
+        for img_path in tqdm(img_list):
+            # read image
+            img_name = os.path.basename(img_path)
+            if args.verbose:
+                print(f"Processing {img_name} ...")
+            basename, ext = os.path.splitext(img_name)
+            import cv2
+            import numpy as np
+
+            input_img = cv2.imread(img_path, cv2.IMREAD_COLOR)
+
+            # restore faces and background if necessary
+            # Determine weights to run
+            if args.sweep_weight:
+                try:
+                    weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
+                except Exception:
+                    raise ValueError("Invalid --sweep-weight; expected comma-separated floats")
+            else:
+                weights = [args.weight]
+
+            face_paths = []
+            crop_paths = []
+            save_restore_paths = []
+
+            for w in weights:
+                # If skipping existing outputs, check the expected restored image path
+                exp_suffix = args.suffix
+                if exp_suffix is None and len(weights) > 1:
+                    exp_suffix = f"w{w:.2f}"
+
+                # Run enhancement
+                cropped_faces, restored_faces, restored_img = restorer.enhance(
+                    input_img,
+                    has_aligned=args.aligned,
+                    only_center_face=args.only_center_face,
+                    paste_back=True,
+                    weight=w,
+                )
+
+                # save faces
+                for idx, (cropped_face, restored_face) in enumerate(zip(cropped_faces, restored_faces)):
+                    # save cropped face
+                    save_crop_path = os.path.join(args.output, "cropped_faces", f"{basename}_{idx:02d}.png")
+                    _save_image(
+                        save_crop_path,
+                        cropped_face,
+                        ext="png",
+                        jpg_quality=args.jpg_quality,
+                        png_compress=args.png_compress,
+                        webp_quality=args.webp_quality,
+                    )
+                    crop_paths.append(save_crop_path)
+                    # save restored face
+                    tag = exp_suffix
+                    if tag is not None:
+                        save_face_name = f"{basename}_{idx:02d}_{tag}.png"
+                    else:
+                        save_face_name = f"{basename}_{idx:02d}.png"
+                    save_restore_path = os.path.join(args.output, "restored_faces", save_face_name)
+                    _save_image(
+                        save_restore_path,
+                        restored_face,
+                        ext="png",
+                        jpg_quality=args.jpg_quality,
+                        png_compress=args.png_compress,
+                        webp_quality=args.webp_quality,
+                    )
+                    face_paths.append(save_restore_path)
+                    # save comparison image
+                    if not args.no_cmp:
+                        cmp_img = np.concatenate((cropped_face, restored_face), axis=1)
+                        _save_image(
+                            os.path.join(args.output, "cmp", f"{basename}_{idx:02d}.png"),
+                            cmp_img,
+                            ext="png",
+                            jpg_quality=args.jpg_quality,
+                            png_compress=args.png_compress,
+                            webp_quality=args.webp_quality,
+                        )
+
+                # save restored img
+                if restored_img is not None:
+                    if args.ext == "auto":
+                        extension = ext[1:]
+                    else:
+                        extension = args.ext
+
+                    tag = exp_suffix
+                    if tag is not None:
+                        out_name = f"{basename}_{tag}.{extension}"
+                    else:
+                        out_name = f"{basename}.{extension}"
+                    out_path = os.path.join(args.output, "restored_imgs", out_name)
+                    if args.skip_existing and os.path.exists(out_path):
+                        if args.verbose:
+                            print(f"Skip existing: {out_path}")
+                    else:
+                        _save_image(
+                            out_path,
+                            restored_img,
+                            ext=extension,
+                            jpg_quality=args.jpg_quality,
+                            png_compress=args.png_compress,
+                            webp_quality=args.webp_quality,
+                        )
+                    save_restore_paths.append(out_path)
+                else:
+                    save_restore_paths.append(None)
+
+            results.append(
+                {
+                    "input": img_path,
+                    "restored_imgs": save_restore_paths,
+                    "restored_faces": face_paths,
+                    "cropped_faces": crop_paths,
+                    "weights": weights,
+                }
+            )
         # read image
         img_name = os.path.basename(img_path)
         if args.verbose:
