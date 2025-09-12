@@ -8,4 +8,3 @@ def run_ok(args):
 
 def test_dry_run_device_no_download():
     run_ok(["--device", "cpu", "--no-download", "-v", "1.4"])
-
