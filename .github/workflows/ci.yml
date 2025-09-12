@@ -192,4 +192,6 @@ jobs:
         run: |
           # Run only the Colab notebook as a test with a known kernel; skip heavy cells via NB_CI_SMOKE
           # Ignore tests/ during collection to avoid importing unit tests
-          pytest --nbmake --nbmake-kernel=python3 --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
+          # Use a null config to avoid repo-level pytest settings (e.g., testpaths) interfering
+          pytest -c /dev/null --nbmake --nbmake-kernel=python3 \
+            --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
