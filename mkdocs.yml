@@ -9,6 +9,7 @@ nav:
   - Quickstart: quickstart.md
   - Usage:
     - CLI: usage/cli.md
+    - API: usage/api.md
     - Colab: usage/colab.md
     - Gradio: usage/gradio.md
     - Recipes: usage/recipes.md
