@@ -188,7 +188,7 @@ def main():
         "--backend",
         type=str,
         default="gfpgan",
-        choices=["gfpgan", "restoreformer", "codeformer"],
+        choices=["gfpgan", "restoreformer", "restoreformerpp", "codeformer"],
         help="Model backend to use (default: gfpgan)",
     )
     parser.add_argument(
