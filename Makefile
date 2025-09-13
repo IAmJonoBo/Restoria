@@ -1,6 +1,6 @@
 PY?=python3
 
-.PHONY: help install lint format test docs-serve docs-build nb-smoke precommit
+.PHONY: help install lint format test docs-serve docs-build nb-smoke docker-build-cuda12 docker-run-cuda12 precommit
 
 help:
 	@echo "Targets:"
@@ -11,6 +11,8 @@ help:
 	@echo "  docs-serve   - mkdocs serve"
 	@echo "  docs-build   - mkdocs build"
 	@echo "  nb-smoke     - run notebook smoke test (nbmake)"
+	@echo "  docker-build-cuda12 - build CUDA12 CLI image"
+	@echo "  docker-run-cuda12   - run CUDA12 CLI container (--gpus all)"
 	@echo "  precommit    - install pre-commit hooks"
 
 install:
@@ -42,6 +44,12 @@ nb-smoke:
 	$(PY) -m pip install -q ipykernel pytest nbmake ipywidgets requests
 	$(PY) -m ipykernel install --user --name python3
 	NB_CI_SMOKE=1 pytest -c /dev/null --nbmake --nbmake-kernel=python3 --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
+
+docker-build-cuda12:
+	docker build -t gfpgan-cli:cuda12 -f docker/Dockerfile.cuda12 .
+
+docker-run-cuda12:
+	docker run --rm --gpus all -e GFPGAN_WEIGHTS_DIR=/cache/weights -v gfpgan_weights:/cache/weights gfpgan-cli:cuda12 --dry-run -v 1.4 --verbose
 
 precommit:
 	pre-commit install
