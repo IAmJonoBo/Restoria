@@ -36,7 +36,7 @@ usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
   - Use `--bg_precision fp32` to force full precision, or `fp16` to half on CUDA.
   - `--seed` sets seeds for random, numpy, and torch.
   - Use `--detector` to switch facexlib detectors; `--no-parse` disables face parsing.
-  - Backends: choose `--backend gfpgan|restoreformer|codeformer`. RestoreFormer uses built-in arch; CodeFormer requires installing its repo.
+  - Backends: choose `--backend gfpgan|restoreformer|restoreformerpp|codeformer`. RestoreFormer uses built-in arch; `restoreformerpp` aliases to RestoreFormer for now; CodeFormer requires installing its repo.
   - `--manifest out.json` writes a manifest of inputs and outputs for automation.
   - `--skip-existing` avoids re-writing outputs; `--max-images` caps processing.
   - `--print-env` prints torch/torchvision/basicsr/facexlib versions and CUDA availability.
