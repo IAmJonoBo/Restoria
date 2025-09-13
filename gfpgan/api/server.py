@@ -58,9 +58,8 @@ async def restore(
             }
         )
 
-    # Placeholder non-dry-run implementation: process a single in-memory image.
-    # Keep it minimal and avoid external I/O. This can be enhanced later to
-    # cover batch and manifest-like outputs.
+    # Process a single in-memory image (minimal path). Can be extended to
+    # batch + manifest-like outputs.
     try:
         import cv2  # type: ignore
         import numpy as np  # type: ignore
@@ -102,8 +101,40 @@ async def restore(
             )
             _, _, restored = restorer.enhance(img, has_aligned=False, paste_back=True, weight=0.5)
             ok = restored is not None
+        elif backend == "restoreformer":
+            import torch
+
+            from gfpgan.engines import get_engine
+            from gfpgan.weights import resolve_model_weight
+
+            Engine = get_engine("restoreformer")
+            model_name = "RestoreFormer"
+            model_path, _ = resolve_model_weight(model_name, no_download=False)
+            restorer = Engine(
+                model_path=model_path,
+                device=torch.device("cuda" if device == "cuda" else "cpu"),
+                upscale=upscale,
+                bg_upsampler=None,
+            )
+            _, _, restored = restorer.enhance(img, has_aligned=False, paste_back=True, weight=0.5)
+            ok = restored is not None
+        elif backend == "codeformer":
+            import torch
+
+            from gfpgan.engines import get_engine
+
+            Engine = get_engine("codeformer")
+            model_path = "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth"
+            restorer = Engine(
+                model_path=model_path,
+                device=torch.device("cuda" if device == "cuda" else "cpu"),
+                upscale=upscale,
+                bg_upsampler=None,
+            )
+            _, _, restored = restorer.enhance(img, has_aligned=False, paste_back=True, weight=0.5)
+            ok = restored is not None
         else:
-            ok = False
+            return JSONResponse({"error": f"Unknown backend: {backend}"}, status_code=400)
 
         return JSONResponse({"ok": ok})
     except Exception as e:  # pragma: no cover (requires runtime deps)

@@ -450,10 +450,14 @@ def main():
             model_sha256 = None
 
     # Delay heavy import until after dry-run
-    # Engines path: construct via registry
+    # Engines path: construct via registry (use backend when provided)
     from gfpgan.engines import get_engine  # registers defaults on import
 
-    engine_name = "codeformer" if arch == "codeformer" else "gfpgan"
+    engine_name = (
+        args.backend
+        if args.backend in {"gfpgan", "codeformer", "restoreformer"}
+        else ("codeformer" if arch == "codeformer" else "gfpgan")
+    )
     Engine = get_engine(engine_name)
     if engine_name == "gfpgan":
         restorer = Engine(
@@ -466,10 +470,16 @@ def main():
             det_model=args.detector,
             use_parse=not args.no_parse,
         )
-    else:
+    elif engine_name == "codeformer":
         restorer = Engine(
             model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
         )
+    elif engine_name == "restoreformer":
+        restorer = Engine(
+            model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
+        )
+    else:
+        raise ValueError(f"Unknown engine backend: {engine_name}")
 
     # Optional torch.compile on GFPGAN model
     try:
@@ -879,109 +889,28 @@ def main():
     if args.metrics != "none":
         import json
 
+        from gfpgan.metrics import (
+            identity_cosine_from_paths,
+            lpips_from_paths,
+            try_load_arcface,
+            try_lpips_model,
+        )
+
         metrics = []
         # Try to initialize optional metrics models
-        id_model = None
-        lpips_model = None
-        if args.metrics in {"id", "both"}:
-            try:
-                import cv2
-                import numpy as np
-                import torch
-                from basicsr.utils.download_util import load_file_from_url
-
-                from gfpgan.archs.arcface_arch import ResNetArcFace
-
-                arc_path = os.environ.get(
-                    "ARCFACE_WEIGHTS",
-                    os.path.join(os.path.dirname(__file__), "gfpgan/weights/arcface_resnet18.pth"),
-                )
-                if not os.path.isfile(arc_path):
-                    if args.no_download:
-                        raise FileNotFoundError("ArcFace weights missing and --no-download set")
-                    arc_path = load_file_from_url(
-                        url="https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/arcface_resnet18.pth",
-                        model_dir=os.path.join(os.path.dirname(__file__), "gfpgan/weights"),
-                        file_name="arcface_resnet18.pth",
-                        progress=True,
-                    )
-                id_model = ResNetArcFace(block="IRBlock", layers=(2, 2, 2, 2), use_se=False)
-                id_model.load_state_dict(torch.load(arc_path, map_location="cpu"))
-                id_model.eval()
-            except Exception as _e:  # pragma: no cover
-                if args.verbose:
-                    print(f"Identity metric disabled: {_e}")
-                id_model = None
-        if args.metrics in {"lpips", "both"}:
-            try:
-                import lpips  # type: ignore
-
-                lpips_model = lpips.LPIPS(net="alex")
-            except Exception as _e:  # pragma: no cover
-                if args.verbose:
-                    print(f"LPIPS metric disabled: {_e}")
-                lpips_model = None
-
-        def _cosine(a, b):
-            import numpy as _np
-
-            a = a / (float(_np.linalg.norm(a)) + 1e-8)
-            b = b / (float(_np.linalg.norm(b)) + 1e-8)
-            return float(_np.dot(a, b))
+        id_model = try_load_arcface(no_download=args.no_download) if args.metrics in {"id", "both"} else None
+        lpips_model = try_lpips_model() if args.metrics in {"lpips", "both"} else None
 
         for rec in results:
             m = {"input": rec["input"], "per_weight": []}
             # Identity on first face only for now
             id_score = None
             if id_model and rec["cropped_faces"] and rec["restored_faces"]:
-                try:
-                    import cv2
-                    import numpy as np
-                    import torch
-
-                    # Compare first face crop to first restored face
-                    orig = cv2.imread(rec["cropped_faces"][0])
-                    rest = cv2.imread(rec["restored_faces"][0])
-
-                    def _prep(x):
-                        x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
-                        x = cv2.resize(x, (112, 112))
-                        x = (x.astype("float32") / 255.0 - 0.5) / 0.5
-                        x = torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0)
-                        return x
-
-                    with torch.no_grad():
-                        f1 = id_model(_prep(orig)).flatten().numpy()
-                        f2 = id_model(_prep(rest)).flatten().numpy()
-                    id_score = _cosine(f1, f2)
-                except Exception:
-                    id_score = None
+                id_score = identity_cosine_from_paths(rec["cropped_faces"][0], rec["restored_faces"][0], id_model)
             # LPIPS on restored image vs input
             lp = None
             if lpips_model and rec["restored_imgs"] and rec["restored_imgs"][0]:
-                try:
-                    import cv2
-                    import numpy as np
-                    import torch
-
-                    a = cv2.imread(rec["input"])  # input image path
-                    b = cv2.imread(rec["restored_imgs"][0])
-                    # resize to min common
-                    h = min(a.shape[0], b.shape[0])
-                    w = min(a.shape[1], b.shape[1])
-                    a = cv2.resize(a, (w, h))
-                    b = cv2.resize(b, (w, h))
-
-                    # to normalized tensors in [-1,1]
-                    def _to_t(x):
-                        x = x[:, :, ::-1]  # BGR->RGB
-                        x = (x.astype("float32") / 255.0) * 2 - 1
-                        return torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0)
-
-                    with torch.no_grad():
-                        lp = float(lpips_model(_to_t(a), _to_t(b)).item())
-                except Exception:
-                    lp = None
+                lp = lpips_from_paths(rec["input"], rec["restored_imgs"][0], lpips_model)
             m["identity_cosine"] = id_score
             m["lpips_alex"] = lp
             metrics.append(m)
