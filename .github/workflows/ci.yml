@@ -179,7 +179,9 @@ jobs:
           uvicorn gfpgan.api.server:app --port 8000 &
           sleep 2
           curl -f http://127.0.0.1:8000/healthz
-          curl -f -X POST http://127.0.0.1:8000/restore -F "files=@README.md" -F dry_run=true
+          curl -f -X POST "http://127.0.0.1:8000/restore?backend=gfpgan&dry_run=true" -F "files=@README.md"
+          curl -f -X POST "http://127.0.0.1:8000/restore?backend=restoreformer&dry_run=true" -F "files=@README.md"
+          curl -f -X POST "http://127.0.0.1:8000/restore?backend=codeformer&dry_run=true" -F "files=@README.md"
 
   nbmake:
     name: notebook (nbmake)

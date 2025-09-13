@@ -15,5 +15,6 @@ __all__ = [
 register_engine("gfpgan", GFPGANEngine)
 register_engine("codeformer", CodeFormerEngine)
 register_engine("restoreformer", RestoreFormerEngine)
+register_engine("restoreformerpp", RestoreFormerEngine)
 
 # Placeholder for future engines (e.g., RestoreFormer++)

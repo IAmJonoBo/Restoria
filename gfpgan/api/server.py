@@ -43,17 +43,22 @@ async def restore(
 ):
     # Smoke-friendly default: dry_run True. In that mode, only echo back metadata.
     if dry_run or _env_flag("NB_CI_SMOKE"):
+        # Return a manifest-shaped response without doing any work
         names = [f.filename for f in files]
+        results = [
+            {"input": n, "restored_imgs": [], "restored_faces": [], "cropped_faces": [], "weights": [0.5]}
+            for n in names
+        ]
         return JSONResponse(
             {
                 "accepted": len(names),
-                "files": names,
                 "params": {
                     "version": version,
                     "upscale": upscale,
                     "backend": backend,
                     "device": device,
                 },
+                "results": results,
                 "dry_run": True,
             }
         )

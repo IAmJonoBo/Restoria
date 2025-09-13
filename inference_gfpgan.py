@@ -455,7 +455,7 @@ def main():
 
     engine_name = (
         args.backend
-        if args.backend in {"gfpgan", "codeformer", "restoreformer"}
+        if args.backend in {"gfpgan", "codeformer", "restoreformer", "restoreformerpp"}
         else ("codeformer" if arch == "codeformer" else "gfpgan")
     )
     Engine = get_engine(engine_name)
@@ -474,7 +474,7 @@ def main():
         restorer = Engine(
             model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
         )
-    elif engine_name == "restoreformer":
+    elif engine_name in {"restoreformer", "restoreformerpp"}:
         restorer = Engine(
             model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
         )
