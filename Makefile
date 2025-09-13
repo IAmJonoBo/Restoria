@@ -13,6 +13,7 @@ help:
 	@echo "  nb-smoke     - run notebook smoke test (nbmake)"
 	@echo "  docker-build-cuda12 - build CUDA12 CLI image"
 	@echo "  docker-run-cuda12   - run CUDA12 CLI container (--gpus all)"
+	@echo "  api-serve    - run FastAPI server (localhost:8000)"
 	@echo "  precommit    - install pre-commit hooks"
 
 install:
@@ -50,6 +51,10 @@ docker-build-cuda12:
 
 docker-run-cuda12:
 	docker run --rm --gpus all -e GFPGAN_WEIGHTS_DIR=/cache/weights -v gfpgan_weights:/cache/weights gfpgan-cli:cuda12 --dry-run -v 1.4 --verbose
+
+api-serve:
+	$(PY) -m pip install -q .[api]
+	gfpgan-api
 
 precommit:
 	pre-commit install

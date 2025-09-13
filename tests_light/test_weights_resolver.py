@@ -1,5 +1,4 @@
 import hashlib
-import os
 
 
 def sha256(path: str) -> str:
@@ -40,4 +39,3 @@ def test_offline_raises_when_missing(tmp_path, monkeypatch):
         pass
     else:
         raise AssertionError("Expected FileNotFoundError in offline mode when file missing")
-

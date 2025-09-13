@@ -161,6 +161,26 @@ jobs:
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
         run: pytest -q -c /dev/null tests_light
 
+  api-smoke:
+    name: api (smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install API extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[api]
+      - name: Launch API and probe
+        run: |
+          uvicorn gfpgan.api.server:app --port 8000 &
+          sleep 2
+          curl -f http://127.0.0.1:8000/healthz
+          curl -f -X POST http://127.0.0.1:8000/restore -F "files=@README.md" -F dry_run=true
+
   nbmake:
     name: notebook (nbmake)
     runs-on: ubuntu-latest

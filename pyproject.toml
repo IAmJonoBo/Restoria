@@ -59,6 +59,11 @@ dev = [
   "codespell",
   "nbstripout",
 ]
+api = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "python-multipart>=0.0.9",
+]
 metrics = [
   "lpips>=0.1.4",
 ]
@@ -75,6 +80,7 @@ torch2 = [
 gfpgan-infer = "inference_gfpgan:main"
 gfpgan-download-weights = "gfpgan.cli_download:main"
 gfpgan-gradio = "gfpgan.gradio_app:main"
+gfpgan-api = "gfpgan.api.server:main"
 
 [tool.setuptools]
 include-package-data = true
