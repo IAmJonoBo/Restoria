@@ -2,10 +2,7 @@ import hashlib
 import os
 from typing import Optional, Tuple
 
-
-DEFAULT_WEIGHTS_DIR = os.environ.get(
-    "GFPGAN_WEIGHTS_DIR", os.path.join(os.path.dirname(__file__), "weights")
-)
+DEFAULT_WEIGHTS_DIR = os.environ.get("GFPGAN_WEIGHTS_DIR", os.path.join(os.path.dirname(__file__), "weights"))
 
 
 # Minimal built-in registry for core models. Hugging Face repos may not always
@@ -109,10 +106,7 @@ def resolve_model_weight(
     try:
         from basicsr.utils.download_util import load_file_from_url  # type: ignore
 
-        path = load_file_from_url(
-            url=spec["url"], model_dir=weights_dir, progress=True, file_name=spec["filename"]
-        )
+        path = load_file_from_url(url=spec["url"], model_dir=weights_dir, progress=True, file_name=spec["filename"])
         return path, _sha256(path)
     except Exception as e:
         raise FileNotFoundError(f"Failed to download weight from {spec['url']}: {e}")
-

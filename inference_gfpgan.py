@@ -435,9 +435,7 @@ def main():
         try:
             from gfpgan.weights import resolve_model_weight
 
-            model_path, model_sha256 = resolve_model_weight(
-                model_name, no_download=args.no_download, prefer="auto"
-            )
+            model_path, model_sha256 = resolve_model_weight(model_name, no_download=args.no_download, prefer="auto")
         except Exception:
             # Fallback to legacy path/url logic
             model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
@@ -616,13 +614,16 @@ def main():
                     if not os.path.isfile(_mp):
                         _alt = os.path.join("gfpgan/weights", _model + ".pth")
                         _mp = _mp if os.path.isfile(_mp) else (_alt if os.path.isfile(_alt) else _url)
-                    _rest = GFPGANer(
+                    from gfpgan.engines import get_engine as _get_engine
+
+                    _Engine = _get_engine("gfpgan")
+                    _rest = _Engine(
                         model_path=_mp,
+                        device=torch.device(device),
                         upscale=args.upscale,
                         arch=_arch,
                         channel_multiplier=_cm,
                         bg_upsampler=bg_upsampler,
-                        device=torch.device(device),
                         det_model=args.detector,
                         use_parse=not args.no_parse,
                     )
@@ -884,11 +885,12 @@ def main():
         lpips_model = None
         if args.metrics in {"id", "both"}:
             try:
-                import torch
                 import cv2
                 import numpy as np
-                from gfpgan.archs.arcface_arch import ResNetArcFace
+                import torch
                 from basicsr.utils.download_util import load_file_from_url
+
+                from gfpgan.archs.arcface_arch import ResNetArcFace
 
                 arc_path = os.environ.get(
                     "ARCFACE_WEIGHTS",
@@ -940,12 +942,14 @@ def main():
                     # Compare first face crop to first restored face
                     orig = cv2.imread(rec["cropped_faces"][0])
                     rest = cv2.imread(rec["restored_faces"][0])
+
                     def _prep(x):
                         x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
                         x = cv2.resize(x, (112, 112))
                         x = (x.astype("float32") / 255.0 - 0.5) / 0.5
                         x = torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0)
                         return x
+
                     with torch.no_grad():
                         f1 = id_model(_prep(orig)).flatten().numpy()
                         f2 = id_model(_prep(rest)).flatten().numpy()
@@ -967,11 +971,13 @@ def main():
                     w = min(a.shape[1], b.shape[1])
                     a = cv2.resize(a, (w, h))
                     b = cv2.resize(b, (w, h))
+
                     # to normalized tensors in [-1,1]
                     def _to_t(x):
                         x = x[:, :, ::-1]  # BGR->RGB
                         x = (x.astype("float32") / 255.0) * 2 - 1
                         return torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0)
+
                     with torch.no_grad():
                         lp = float(lpips_model(_to_t(a), _to_t(b)).item())
                 except Exception:
@@ -992,6 +998,7 @@ def main():
     if args.manifest:
         import json
         import subprocess
+
         meta = {
             "args": {k: v for k, v in vars(args).items() if k not in {"dry_run"}},
             "device": device,
@@ -1003,6 +1010,7 @@ def main():
         }
         try:
             import torch as _t
+
             meta["torch_version"] = getattr(_t, "__version__", None)
         except Exception:
             pass

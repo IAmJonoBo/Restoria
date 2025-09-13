@@ -12,4 +12,3 @@ class CodeFormerEngine:
 
     def enhance(self, *args: Any, **kwargs: Any):  # passthrough
         return self.restorer.enhance(*args, **kwargs)
-
