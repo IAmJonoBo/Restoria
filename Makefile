@@ -1,6 +1,6 @@
 PY?=python3
 
-.PHONY: help install lint format test docs-serve docs-build precommit
+.PHONY: help install lint format test docs-serve docs-build nb-smoke precommit
 
 help:
 	@echo "Targets:"
@@ -10,6 +10,7 @@ help:
 	@echo "  test         - run light tests"
 	@echo "  docs-serve   - mkdocs serve"
 	@echo "  docs-build   - mkdocs build"
+	@echo "  nb-smoke     - run notebook smoke test (nbmake)"
 	@echo "  precommit    - install pre-commit hooks"
 
 install:
@@ -37,7 +38,11 @@ docs-build:
 	$(PY) -m pip install -q mkdocs mkdocs-material
 	mkdocs build --strict
 
+nb-smoke:
+	$(PY) -m pip install -q ipykernel pytest nbmake ipywidgets requests
+	$(PY) -m ipykernel install --user --name python3
+	NB_CI_SMOKE=1 pytest -c /dev/null --nbmake --nbmake-kernel=python3 --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
+
 precommit:
 	pre-commit install
 	pre-commit run --all-files || true
-

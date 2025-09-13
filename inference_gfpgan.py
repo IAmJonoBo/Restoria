@@ -248,6 +248,26 @@ def main():
     )
     parser.add_argument("--no-parse", action="store_true", help="Disable face parsing for blending.")
     parser.add_argument("--manifest", type=str, default=None, help="Write a JSON manifest of outputs to this path")
+    parser.add_argument(
+        "--compile",
+        type=str,
+        default="none",
+        choices=["none", "default", "max"],
+        help="Torch 2.x compile mode for the face model (if available)",
+    )
+    parser.add_argument(
+        "--metrics",
+        type=str,
+        default="none",
+        choices=["none", "id", "lpips", "both"],
+        help="Compute optional quality metrics: ArcFace identity (id) and/or LPIPS (lpips)",
+    )
+    parser.add_argument(
+        "--metrics-out",
+        type=str,
+        default=None,
+        help="Write metrics JSON to this path (default: <output>/metrics.json)",
+    )
     parser.add_argument("--print-env", action="store_true", help="Print environment and versions then continue")
     parser.add_argument("--deterministic-cuda", action="store_true", help="Enable deterministic CuDNN (slower)")
     parser.add_argument("--eye-dist-threshold", type=int, default=5, help="Minimum eye distance (px) to detect a face")
@@ -407,42 +427,63 @@ def main():
     else:
         raise ValueError(f"Wrong model version {args.version}.")
 
-    # determine model paths
+    # determine model path (prefer HF cache or local, fallback to URL)
     if args.model_path:
         model_path = args.model_path
+        model_sha256 = None
     else:
-        model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
-        if not os.path.isfile(model_path):
-            model_path = os.path.join("gfpgan/weights", model_name + ".pth")
-        if not os.path.isfile(model_path):
-            if args.no_download:
-                raise FileNotFoundError(f"Model weights {model_name}.pth not found locally and --no-download is set.")
-            # download pre-trained models from url
-            model_path = url
+        try:
+            from gfpgan.weights import resolve_model_weight
+
+            model_path, model_sha256 = resolve_model_weight(
+                model_name, no_download=args.no_download, prefer="auto"
+            )
+        except Exception:
+            # Fallback to legacy path/url logic
+            model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
+            if not os.path.isfile(model_path):
+                model_path = os.path.join("gfpgan/weights", model_name + ".pth")
+            if not os.path.isfile(model_path):
+                if args.no_download:
+                    raise FileNotFoundError(
+                        f"Model weights {model_name}.pth not found locally and --no-download is set."
+                    )
+                model_path = url
+            model_sha256 = None
 
     # Delay heavy import until after dry-run
-    from gfpgan import GFPGANer
+    # Engines path: construct via registry
+    from gfpgan.engines import get_engine  # registers defaults on import
 
-    if arch == "codeformer":
-        from gfpgan.backends.codeformer_backend import CodeFormerRestorer
-
-        restorer = CodeFormerRestorer(
+    engine_name = "codeformer" if arch == "codeformer" else "gfpgan"
+    Engine = get_engine(engine_name)
+    if engine_name == "gfpgan":
+        restorer = Engine(
             model_path=model_path,
             device=torch.device(device),
-            upscale=args.upscale,
-            bg_upsampler=bg_upsampler,
-        )
-    else:
-        restorer = GFPGANer(
-            model_path=model_path,
             upscale=args.upscale,
             arch=arch,
             channel_multiplier=channel_multiplier,
             bg_upsampler=bg_upsampler,
-            device=torch.device(device),
             det_model=args.detector,
             use_parse=not args.no_parse,
         )
+    else:
+        restorer = Engine(
+            model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
+        )
+
+    # Optional torch.compile on GFPGAN model
+    try:
+        compile_fn = getattr(__import__("torch"), "compile", None)  # type: ignore
+        if compile_fn and args.compile != "none" and getattr(restorer, "gfpgan", None) is not None:
+            mode = "default" if args.compile == "default" else ("max-autotune" if args.compile == "max" else "default")
+            restorer.gfpgan = compile_fn(restorer.gfpgan, mode=mode)  # type: ignore
+            if args.verbose:
+                print(f"Compiled model with torch.compile(mode={mode})")
+    except Exception as _e:
+        if args.verbose:
+            print(f"torch.compile not applied: {_e}")
 
     # Optional seeding
     if args.seed is not None:
@@ -832,11 +873,149 @@ def main():
             }
         )
 
-    if args.manifest:
+    # Optional metrics
+    metrics_path = args.metrics_out or os.path.join(args.output, "metrics.json")
+    if args.metrics != "none":
         import json
 
+        metrics = []
+        # Try to initialize optional metrics models
+        id_model = None
+        lpips_model = None
+        if args.metrics in {"id", "both"}:
+            try:
+                import torch
+                import cv2
+                import numpy as np
+                from gfpgan.archs.arcface_arch import ResNetArcFace
+                from basicsr.utils.download_util import load_file_from_url
+
+                arc_path = os.environ.get(
+                    "ARCFACE_WEIGHTS",
+                    os.path.join(os.path.dirname(__file__), "gfpgan/weights/arcface_resnet18.pth"),
+                )
+                if not os.path.isfile(arc_path):
+                    if args.no_download:
+                        raise FileNotFoundError("ArcFace weights missing and --no-download set")
+                    arc_path = load_file_from_url(
+                        url="https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/arcface_resnet18.pth",
+                        model_dir=os.path.join(os.path.dirname(__file__), "gfpgan/weights"),
+                        file_name="arcface_resnet18.pth",
+                        progress=True,
+                    )
+                id_model = ResNetArcFace(block="IRBlock", layers=(2, 2, 2, 2), use_se=False)
+                id_model.load_state_dict(torch.load(arc_path, map_location="cpu"))
+                id_model.eval()
+            except Exception as _e:  # pragma: no cover
+                if args.verbose:
+                    print(f"Identity metric disabled: {_e}")
+                id_model = None
+        if args.metrics in {"lpips", "both"}:
+            try:
+                import lpips  # type: ignore
+
+                lpips_model = lpips.LPIPS(net="alex")
+            except Exception as _e:  # pragma: no cover
+                if args.verbose:
+                    print(f"LPIPS metric disabled: {_e}")
+                lpips_model = None
+
+        def _cosine(a, b):
+            import numpy as _np
+
+            a = a / (float(_np.linalg.norm(a)) + 1e-8)
+            b = b / (float(_np.linalg.norm(b)) + 1e-8)
+            return float(_np.dot(a, b))
+
+        for rec in results:
+            m = {"input": rec["input"], "per_weight": []}
+            # Identity on first face only for now
+            id_score = None
+            if id_model and rec["cropped_faces"] and rec["restored_faces"]:
+                try:
+                    import cv2
+                    import numpy as np
+                    import torch
+
+                    # Compare first face crop to first restored face
+                    orig = cv2.imread(rec["cropped_faces"][0])
+                    rest = cv2.imread(rec["restored_faces"][0])
+                    def _prep(x):
+                        x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
+                        x = cv2.resize(x, (112, 112))
+                        x = (x.astype("float32") / 255.0 - 0.5) / 0.5
+                        x = torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0)
+                        return x
+                    with torch.no_grad():
+                        f1 = id_model(_prep(orig)).flatten().numpy()
+                        f2 = id_model(_prep(rest)).flatten().numpy()
+                    id_score = _cosine(f1, f2)
+                except Exception:
+                    id_score = None
+            # LPIPS on restored image vs input
+            lp = None
+            if lpips_model and rec["restored_imgs"] and rec["restored_imgs"][0]:
+                try:
+                    import cv2
+                    import numpy as np
+                    import torch
+
+                    a = cv2.imread(rec["input"])  # input image path
+                    b = cv2.imread(rec["restored_imgs"][0])
+                    # resize to min common
+                    h = min(a.shape[0], b.shape[0])
+                    w = min(a.shape[1], b.shape[1])
+                    a = cv2.resize(a, (w, h))
+                    b = cv2.resize(b, (w, h))
+                    # to normalized tensors in [-1,1]
+                    def _to_t(x):
+                        x = x[:, :, ::-1]  # BGR->RGB
+                        x = (x.astype("float32") / 255.0) * 2 - 1
+                        return torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0)
+                    with torch.no_grad():
+                        lp = float(lpips_model(_to_t(a), _to_t(b)).item())
+                except Exception:
+                    lp = None
+            m["identity_cosine"] = id_score
+            m["lpips_alex"] = lp
+            metrics.append(m)
+        try:
+            with open(metrics_path, "w") as f:
+                json.dump({"metrics": metrics}, f, indent=2)
+            if args.verbose:
+                print(f"Wrote metrics: {metrics_path}")
+        except Exception as _e:
+            if args.verbose:
+                print(f"Failed to write metrics: {_e}")
+
+    # Manifest with metadata
+    if args.manifest:
+        import json
+        import subprocess
+        meta = {
+            "args": {k: v for k, v in vars(args).items() if k not in {"dry_run"}},
+            "device": device,
+            "model_name": model_name,
+            "model_path": model_path,
+            "model_sha256": model_sha256,
+            "torch_version": None,
+            "git_commit": None,
+        }
+        try:
+            import torch as _t
+            meta["torch_version"] = getattr(_t, "__version__", None)
+        except Exception:
+            pass
+        try:
+            meta["git_commit"] = (
+                subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL)
+                .decode()
+                .strip()
+            )
+        except Exception:
+            pass
         with open(args.manifest, "w") as f:
-            json.dump({"results": results}, f, indent=2)
+            json.dump({"meta": meta, "results": results}, f, indent=2)
         if args.verbose:
             print(f"Wrote manifest: {args.manifest}")
 
