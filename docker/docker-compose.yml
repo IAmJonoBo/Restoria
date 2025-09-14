@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cpu-mps
+    image: gfpp-api:latest
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8001:8001"
+    command: ["python", "-m", "services.api.main"]
+  # worker:
+  #   image: gfpp-api:latest
+  #   command: ["python", "-m", "services.api.worker"]
+  # web:
+  #   image: node:20
+  #   working_dir: /app/apps/web
+  #   volumes:
+  #     - ..:/app
+  #   ports:
+  #     - "3000:3000"
+  #   command: ["bash", "-lc", "pnpm --filter apps/web dev"]
+

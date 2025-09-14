@@ -62,6 +62,17 @@ Other recommended projects:<br>
 - Compatibility Matrix: `docs/COMPATIBILITY.md`
 - Contributing: `docs/contributing.md`
 
+### GFPP (New Modular Runtime)
+
+An experimental, modular toolkit now lives under `src/gfpp` with a new CLI `gfpup`.
+
+- Install with optional extras:
+  - `pip install -e ".[dev,metrics,arcface,codeformer,restoreformerpp,ort,web]"`
+- Run baseline restoration (GFPGAN):
+  - `gfpup run --input inputs/whole_imgs --backend gfpgan --metrics fast --output out/`
+- API server (experimental):
+  - `uvicorn services.api.main:app --reload`
+
 ### Quick CLI Usage (fork)
 
 - Install (editable): `pip install -e .[dev]`

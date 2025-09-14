@@ -1,0 +1,18 @@
+:root {
+  --bg: #0b0f14;
+  --fg: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #60a5fa;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #ffffff;
+    --fg: #111827;
+    --muted: #6b7280;
+    --accent: #2563eb;
+  }
+}
+body { background: var(--bg); color: var(--fg); }
+a { color: var(--accent); }
+* { outline-color: var(--accent); }
+

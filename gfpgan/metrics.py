@@ -77,6 +77,12 @@ def lpips_from_paths(a_path: str, b_path: str, model) -> Optional[float]:
             return None
         h = min(a.shape[0], b.shape[0])
         w = min(a.shape[1], b.shape[1])
+        # Ensure LPIPS input spatial dims are not too small for AlexNet trunk.
+        # AlexNet downsampling requires at least ~32-64px. Use 64px floor.
+        floor = 64
+        if h < floor or w < floor:
+            h = max(h, floor)
+            w = max(w, floor)
         a = cv2.resize(a, (w, h))
         b = cv2.resize(b, (w, h))
 

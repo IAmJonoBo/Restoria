@@ -67,6 +67,28 @@ api = [
 metrics = [
   "lpips>=0.1.4",
 ]
+# New runtime extras (optional, import-light defaults):
+codeformer = [
+  # Backend-specific dependencies for CodeFormer can be added here
+]
+restoreformerpp = [
+  # Placeholder for RestoreFormer++ specific deps
+]
+diffbir = [
+  # EXPERIMENTAL heavy deps
+]
+hypir = [
+  # EXPERIMENTAL heavy deps
+]
+ort = [
+  "onnxruntime>=1.18",
+]
+arcface = [
+  # ArcFace uses built-in weights; keep optional
+]
+web = [
+  # Placeholder for web UI tooling deps
+]
 torch1 = [
   "torch>=1.12,<2.0; python_version < '3.11'",
   "torchvision<0.15; python_version < '3.11'",
@@ -81,12 +103,17 @@ gfpgan-infer = "inference_gfpgan:main"
 gfpgan-download-weights = "gfpgan.cli_download:main"
 gfpgan-gradio = "gfpgan.gradio_app:main"
 gfpgan-api = "gfpgan.api.server:main"
+gfpup = "gfpp.cli:main"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
+where = [".", "src"]
 exclude = ["options", "datasets", "experiments", "results", "tb_logger", "wandb"]
+
+[tool.setuptools.package-dir]
+gfpp = "src/gfpp"
 
 [tool.setuptools.dynamic]
 version = { file = "VERSION" }

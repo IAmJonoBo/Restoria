@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY . /app
+
+# Base install (no heavy extras) to keep image slim; extras are optional
+RUN pip install --no-cache-dir -e . && \
+    pip install --no-cache-dir 'fastapi>=0.115' 'uvicorn[standard]>=0.30'
+
+EXPOSE 8001
+CMD ["python", "-m", "services.api.main"]
+
