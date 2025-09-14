@@ -20,6 +20,9 @@ export default function Page() {
   const [preset, setPreset] = React.useState("natural");
   const [metrics, setMetrics] = React.useState("off");
   const [background, setBackground] = React.useState("none");
+  const [quality, setQuality] = React.useState("balanced");
+  const [autoBackend, setAutoBackend] = React.useState(false);
+  const [identityLock, setIdentityLock] = React.useState(false);
   const [events, setEvents] = React.useState<any[]>([]);
   const [images, setImages] = React.useState<{ input: string; output: string; metrics?: Record<string, any> }[]>([]);
   const [done, setDone] = React.useState(false);
@@ -30,7 +33,7 @@ export default function Page() {
     const res = await fetch("/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input: inputPath, backend: "gfpgan", background, preset, metrics, output: "results", dry_run: true })
+      body: JSON.stringify({ input: inputPath, backend: "gfpgan", background, preset, quality, metrics, output: "results", dry_run: true, auto_backend: autoBackend, identity_lock: identityLock })
     });
     if (!res.ok) return alert("Failed to submit job");
     const js: JobStatus = await res.json();
@@ -88,6 +91,20 @@ export default function Page() {
             <option value="none">None</option>
             <option value="realesrgan">RealESRGAN</option>
           </select>
+        </label>
+        <label>
+          Quality:
+          <select value={quality} onChange={(e) => setQuality(e.target.value)} style={{ marginLeft: 8 }}>
+            <option value="quick">Quick</option>
+            <option value="balanced">Balanced</option>
+            <option value="best">Best</option>
+          </select>
+        </label>
+        <label>
+          <input type="checkbox" checked={autoBackend} onChange={(e) => setAutoBackend(e.target.checked)} /> Auto Backend
+        </label>
+        <label>
+          <input type="checkbox" checked={identityLock} onChange={(e) => setIdentityLock(e.target.checked)} /> Identity Lock
         </label>
         <button onClick={submit}>Submit Dry-Run Job</button>
       </div>
