@@ -66,6 +66,7 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--device", default="auto", choices=["auto", "cpu", "cuda"])
     p.add_argument("--version", default="1.4")
     p.add_argument("--no-download", action="store_true")
+    p.add_argument("--model-path-onnx", default=None, help="Path to ONNX model (for gfpgan-ort backend)")
     args = p.parse_args(argv)
 
     os.makedirs(args.output, exist_ok=True)
@@ -109,6 +110,8 @@ def cmd_run(argv: list[str]) -> int:
         "weight": preset_weight,
         "no_download": args.no_download,
     }
+    if chosen_backend == "gfpgan-ort" and args.model_path_onnx:
+        cfg["model_path_onnx"] = args.model_path_onnx
 
     inputs = list_inputs(args.input)
     results = []

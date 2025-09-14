@@ -80,6 +80,7 @@ class JobManager:
             else:
                 # Heavy path: perform real restoration
                 from src.gfpp.restorers.gfpgan import GFPGANRestorer  # type: ignore
+                from src.gfpp.restorers.gfpgan_ort import ORTGFPGANRestorer  # type: ignore
                 from src.gfpp.restorers.codeformer import CodeFormerRestorer  # type: ignore
                 from src.gfpp.restorers.restoreformerpp import RestoreFormerPP  # type: ignore
                 from src.gfpp.background import build_realesrgan  # type: ignore
@@ -89,6 +90,8 @@ class JobManager:
                 # Restorer selection
                 if spec.backend == "gfpgan":
                     rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
+                elif spec.backend == "gfpgan-ort":
+                    rest = ORTGFPGANRestorer(device="auto", bg_upsampler=bg)
                 elif spec.backend == "codeformer":
                     rest = CodeFormerRestorer(device="auto", bg_upsampler=bg)
                 elif spec.backend == "restoreformerpp":
@@ -117,6 +120,9 @@ class JobManager:
                         await job.events.put({"type": "warn", "msg": f"Failed to read: {pth}"})
                         continue
                     cfg["input_path"] = pth
+                    # Pass through model_path_onnx when present
+                    if isinstance(rest, ORTGFPGANRestorer) and spec.model_path_onnx:
+                        cfg["model_path_onnx"] = spec.model_path_onnx
                     res = rest.restore(img, cfg)
                     base = os.path.splitext(os.path.basename(pth))[0]
                     out_img = os.path.join(job.results_path or spec.output, f"{base}.png")

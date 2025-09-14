@@ -16,6 +16,7 @@ class JobSpec(BaseModel):
     metrics: str = Field("off")
     output: str = Field("results")
     dry_run: bool = Field(False, description="If true, simulate run without loading heavy models")
+    model_path_onnx: Optional[str] = Field(None, description="Path to ONNX model (for ORT backends)")
 
 
 class MetricCard(BaseModel):
