@@ -75,8 +75,17 @@ def cmd_run(argv: list[str]) -> int:
     # Background upsampler
     bg = None
     if args.background == "realesrgan":
-        # Map quality preset to tile/precision
-        bg = build_realesrgan(device=args.device)
+        # Map quality preset to tile/precision (simple defaults)
+        if args.quality == "quick":
+            tile = 0
+            prec = "fp16"
+        elif args.quality == "best":
+            tile = 0
+            prec = "fp32"
+        else:  # balanced
+            tile = 400
+            prec = "auto"
+        bg = build_realesrgan(device=args.device, tile=tile, precision=prec)
 
     # Choose restorer (optionally auto per-file)
     if args.auto_backend:

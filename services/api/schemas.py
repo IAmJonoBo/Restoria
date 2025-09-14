@@ -9,6 +9,7 @@ class JobSpec(BaseModel):
     input: str = Field(..., description="file|dir|glob; server-local path for now")
     backend: str = Field("gfpgan")
     background: str = Field("realesrgan")
+    quality: str = Field("balanced", description="quick|balanced|best")
     preset: str = Field("natural")
     compile: str = Field("none")
     seed: Optional[int] = None

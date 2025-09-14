@@ -29,4 +29,3 @@ def build_realesrgan(device: str = "cuda", tile: int = 400, precision: str = "au
         )
     except Exception:
         return None
-

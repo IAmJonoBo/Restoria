@@ -86,7 +86,16 @@ class JobManager:
                 from src.gfpp.background import build_realesrgan  # type: ignore
                 from src.gfpp.metrics import ArcFaceIdentity, LPIPSMetric  # type: ignore
 
-                bg = build_realesrgan(device="cuda") if spec.background == "realesrgan" else None
+                if spec.background == "realesrgan":
+                    if spec.quality == "quick":
+                        tile, prec = 0, "fp16"
+                    elif spec.quality == "best":
+                        tile, prec = 0, "fp32"
+                    else:
+                        tile, prec = 400, "auto"
+                    bg = build_realesrgan(device="cuda", tile=tile, precision=prec)
+                else:
+                    bg = None
                 # Restorer selection
                 if spec.backend == "gfpgan":
                     rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
