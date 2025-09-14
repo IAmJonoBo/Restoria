@@ -16,6 +16,9 @@ type JobStatus = {
 export default function Page() {
   const [inputPath, setInputPath] = React.useState("inputs/whole_imgs");
   const [job, setJob] = React.useState<JobStatus | null>(null);
+  const [preset, setPreset] = React.useState("natural");
+  const [metrics, setMetrics] = React.useState("off");
+  const [background, setBackground] = React.useState("none");
   const [events, setEvents] = React.useState<any[]>([]);
   const [images, setImages] = React.useState<{ input: string; output: string }[]>([]);
   const wsRef = React.useRef<WebSocket | null>(null);
@@ -24,7 +27,7 @@ export default function Page() {
     const res = await fetch("/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input: inputPath, backend: "gfpgan", background: "none", metrics: "off", output: "results", dry_run: true })
+      body: JSON.stringify({ input: inputPath, backend: "gfpgan", background, preset, metrics, output: "results", dry_run: true })
     });
     if (!res.ok) return alert("Failed to submit job");
     const js: JobStatus = await res.json();
@@ -53,6 +56,29 @@ export default function Page() {
         <label>
           Input path (server):
           <input value={inputPath} onChange={(e) => setInputPath(e.target.value)} style={{ marginLeft: 8 }} />
+        </label>
+        <label>
+          Preset:
+          <select value={preset} onChange={(e) => setPreset(e.target.value)} style={{ marginLeft: 8 }}>
+            <option value="natural">Natural</option>
+            <option value="detail">Detail</option>
+            <option value="document">Document</option>
+          </select>
+        </label>
+        <label>
+          Metrics:
+          <select value={metrics} onChange={(e) => setMetrics(e.target.value)} style={{ marginLeft: 8 }}>
+            <option value="off">Off</option>
+            <option value="fast">Fast</option>
+            <option value="full">Full</option>
+          </select>
+        </label>
+        <label>
+          Background:
+          <select value={background} onChange={(e) => setBackground(e.target.value)} style={{ marginLeft: 8 }}>
+            <option value="none">None</option>
+            <option value="realesrgan">RealESRGAN</option>
+          </select>
         </label>
         <button onClick={submit}>Submit Dry-Run Job</button>
       </div>

@@ -39,6 +39,10 @@ class JobManager:
     def get(self, jid: str) -> Optional[_Job]:
         return self._jobs.get(jid)
 
+    def list(self) -> List[_Job]:
+        # Return jobs in creation order
+        return list(self._jobs.values())
+
     async def run(self, jid: str) -> None:
         job = self._jobs[jid]
         job.status = "running"

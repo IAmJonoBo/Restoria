@@ -78,6 +78,23 @@ async def submit_job(spec: JobSpec):
     return JobStatus(id=job.id, status=job.status, progress=job.progress, result_count=job.result_count, results_path=job.results_path)
 
 
+@app.get("/jobs")
+async def list_jobs():
+    items = []
+    for j in manager.list():
+        items.append(
+            JobStatus(
+                id=j.id,
+                status=j.status,
+                progress=j.progress,
+                result_count=j.result_count,
+                results_path=j.results_path,
+                error=j.error,
+            )
+        )
+    return items
+
+
 @app.get("/jobs/{job_id}")
 async def get_job(job_id: str):
     job = manager.get(job_id)
