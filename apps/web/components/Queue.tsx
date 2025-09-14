@@ -69,12 +69,19 @@ export default function Queue() {
                 <small>{Math.round((j.progress || 0) * 100)}%</small>
               </td>
               <td style={{ padding: 8 }}>{j.result_count}</td>
-              <td style={{ padding: 8 }}>
+              <td style={{ padding: 8, display: "flex", gap: 8 }}>
                 {j.status === "done" && (
                   <a href={`/results/${j.id}`} target="_blank" rel="noreferrer">
                     Download ZIP
                   </a>
                 )}
+                <button
+                  onClick={async () => {
+                    await fetch(`/jobs/${j.id}/rerun`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dry_run: true }) });
+                  }}
+                >
+                  Re-run (dry)
+                </button>
                 {j.error && <span style={{ color: "#ef4444" }}>Error: {j.error}</span>}
               </td>
             </tr>

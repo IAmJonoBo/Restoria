@@ -103,6 +103,43 @@ async def get_job(job_id: str):
     return JobStatus(id=job.id, status=job.status, progress=job.progress, result_count=job.result_count, results_path=job.results_path, error=job.error)
 
 
+@app.post("/jobs/{job_id}/rerun")
+async def rerun_job(job_id: str, overrides: dict | None = None):
+    """Re-run a job with optional overrides to its original spec.
+
+    Example overrides: {"preset": "detail", "metrics": "full", "dry_run": true}
+    """
+    job = manager.get(job_id)
+    if not job:
+        return JSONResponse({"error": "not found"}, status_code=404)
+    base = job.spec.model_dump()  # pydantic v2
+    overrides = overrides or {}
+    # Only allow known keys
+    allowed = {
+        "input",
+        "backend",
+        "background",
+        "quality",
+        "preset",
+        "compile",
+        "seed",
+        "deterministic",
+        "metrics",
+        "output",
+        "dry_run",
+        "model_path_onnx",
+    }
+    new_spec = {**base, **{k: v for k, v in overrides.items() if k in allowed}}
+    # Create new job
+    from .schemas import JobSpec as _JobSpec
+
+    j = manager.create(_JobSpec(**new_spec))
+    import asyncio
+
+    asyncio.create_task(manager.run(j.id))
+    return JobStatus(id=j.id, status=j.status, progress=j.progress, result_count=j.result_count, results_path=j.results_path)
+
+
 @app.websocket("/jobs/{job_id}/stream")
 async def ws_stream(websocket: WebSocket, job_id: str):
     await websocket.accept()
