@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 
 def available_eps() -> List[str]:
@@ -50,4 +50,3 @@ def session_info(sess) -> Dict[str, str]:
         }
     except Exception:
         return {"providers": "n/a"}
-

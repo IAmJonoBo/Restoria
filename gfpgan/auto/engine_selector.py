@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 
 @dataclass
@@ -39,7 +39,7 @@ def select_engine_for_image(path: str) -> EngineDecision:
     q = quality_signals_from_path(path)
     n_faces = _estimate_face_count(path)
 
-    lapvar = (q.get("lapvar") or 0.0)
+    lapvar = q.get("lapvar") or 0.0
     brisque = q.get("brisque")
     niqe = q.get("niqe")
 
@@ -47,10 +47,10 @@ def select_engine_for_image(path: str) -> EngineDecision:
     # Defaults/thresholds derived from common ranges; kept conservative.
     severe_blur = lapvar < 20.0  # very blurry
     moderate_blur = lapvar < 60.0
-    very_poor_brisque = (brisque is not None and brisque > 60)
-    poor_brisque = (brisque is not None and brisque > 40)
-    very_poor_niqe = (niqe is not None and niqe > 8.0)
-    poor_niqe = (niqe is not None and niqe > 6.0)
+    very_poor_brisque = brisque is not None and brisque > 60
+    poor_brisque = brisque is not None and brisque > 40
+    very_poor_niqe = niqe is not None and niqe > 8.0
+    poor_niqe = niqe is not None and niqe > 6.0
     many_faces = (n_faces or 0) >= 3
 
     # Rules (ordered):
@@ -87,4 +87,3 @@ def select_engine_for_image(path: str) -> EngineDecision:
 
 
 __all__ = ["EngineDecision", "select_engine_for_image"]
-

@@ -46,8 +46,8 @@ def brisque_from_path(path: str) -> Optional[float]:
         pass
     try:
         # pybrisque (OpenCV input)
-        import pybrisque  # type: ignore
         import cv2  # type: ignore
+        import pybrisque  # type: ignore
 
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         if img is None:
@@ -108,4 +108,3 @@ __all__ = [
     "niqe_from_path",
     "quality_signals_from_path",
 ]
-

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional  # noqa: F401
 
 
 def compile_module(module, mode: str = "none"):
@@ -21,4 +21,3 @@ def compile_module(module, mode: str = "none"):
         return compile_fn(module, mode=map_mode)
     except Exception:
         return module
-

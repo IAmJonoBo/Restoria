@@ -5,8 +5,8 @@ import pytest
 
 def test_ws_stream_dry_run(tmp_path):
     try:
-        from fastapi.testclient import TestClient
         from services.api.main import app
+        from fastapi.testclient import TestClient
     except Exception:
         pytest.skip("fastapi not installed")
 
@@ -42,4 +42,3 @@ def test_ws_stream_dry_run(tmp_path):
                 saw_eof = True
                 break
         assert saw_status and saw_image and saw_eof
-

@@ -3,8 +3,8 @@ import pytest
 
 def test_jobs_rerun_dry_override(tmp_path):
     try:
-        from fastapi.testclient import TestClient
         from services.api.main import app
+        from fastapi.testclient import TestClient
     except Exception:
         pytest.skip("fastapi not installed")
 
@@ -27,4 +27,3 @@ def test_jobs_rerun_dry_override(tmp_path):
     assert rr.status_code == 200
     j2 = rr.json()
     assert j2["id"] != jid
-

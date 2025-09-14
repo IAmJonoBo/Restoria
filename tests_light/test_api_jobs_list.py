@@ -3,8 +3,8 @@ import pytest
 
 def test_jobs_list_endpoint(tmp_path):
     try:
-        from fastapi.testclient import TestClient
         from services.api.main import app
+        from fastapi.testclient import TestClient
     except Exception:
         pytest.skip("fastapi not installed")
 
@@ -25,4 +25,3 @@ def test_jobs_list_endpoint(tmp_path):
     arr = lst.json()
     assert isinstance(arr, list) and len(arr) >= 1
     assert any(item.get("id") == jr.json()["id"] for item in arr)
-

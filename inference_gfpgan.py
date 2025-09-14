@@ -1005,7 +1005,9 @@ def main():
             model_path=model_path,
             model_sha256=model_sha256,
             results=results,
-            metrics_path=(args.metrics_out or os.path.join(args.output, "metrics.json")) if args.metrics != "none" else None,
+            metrics_path=(
+                (args.metrics_out or os.path.join(args.output, "metrics.json")) if args.metrics != "none" else None
+            ),
         )
         write_manifest(args.manifest, man)
         if args.verbose:

@@ -8,8 +8,8 @@ from typing import Any, Dict
 from .background import build_realesrgan
 from .io import RunManifest, list_inputs, load_image_bgr, save_image, write_manifest
 from .metrics import ArcFaceIdentity, DISTSMetric, LPIPSMetric
-from .restorers.gfpgan import GFPGANRestorer
 from .restorers.codeformer import CodeFormerRestorer
+from .restorers.gfpgan import GFPGANRestorer
 from .restorers.restoreformerpp import RestoreFormerPP
 
 
@@ -43,7 +43,11 @@ def _set_deterministic(seed: int | None, deterministic: bool) -> None:
 def cmd_run(argv: list[str]) -> int:
     p = argparse.ArgumentParser(prog="gfpup run")
     p.add_argument("--input", required=True)
-    p.add_argument("--backend", default="gfpgan", choices=["gfpgan", "gfpgan-ort", "codeformer", "restoreformerpp", "diffbir", "hypir"])
+    p.add_argument(
+        "--backend",
+        default="gfpgan",
+        choices=["gfpgan", "gfpgan-ort", "codeformer", "restoreformerpp", "diffbir", "hypir"],
+    )
     p.add_argument("--background", default="realesrgan", choices=["realesrgan", "swinir", "none"])
     p.add_argument("--preset", default="natural", choices=["natural", "detail", "document"])
     p.add_argument("--compile", default="none", choices=["none", "default", "max"])
@@ -54,8 +58,12 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--csv-out", default=None, help="Write metrics CSV to this path")
     p.add_argument("--html-report", default=None, help="Write HTML report to this path")
     p.add_argument("--auto-backend", action="store_true", help="Select backend per-image using quality heuristics")
-    p.add_argument("--dry-run", action="store_true", help="Simulate run without loading models (copy inputs to outputs)")
-    p.add_argument("--quality", default="balanced", choices=["quick", "balanced", "best"], help="Quality vs speed preset")
+    p.add_argument(
+        "--dry-run", action="store_true", help="Simulate run without loading models (copy inputs to outputs)"
+    )
+    p.add_argument(
+        "--quality", default="balanced", choices=["quick", "balanced", "best"], help="Quality vs speed preset"
+    )
     p.add_argument("--identity-lock", action="store_true", help="Retry with stricter preset if identity drops")
     p.add_argument("--identity-threshold", type=float, default=0.25)
     p.add_argument("--optimize", action="store_true", help="Try multiple weights and pick best by metric")
@@ -179,6 +187,7 @@ def cmd_run(argv: list[str]) -> int:
             continue
         cfg["input_path"] = pth
         import time
+
         vram_mb = None
         t0 = time.time()
         # Reset peak memory, if possible
@@ -222,13 +231,14 @@ def cmd_run(argv: list[str]) -> int:
             for w in cand:
                 cfg["weight"] = w
                 r_try = rest.restore(img, cfg)
-                # Score: prefer ArcFace cosine (higher better), fallback to negative LPIPS (lower better -> higher score)
+                # Score: prefer ArcFace (higher better), else use -LPIPS (lower better)
                 score = None
                 if args.metrics in {"fast", "full"} and arc and arc.available():
                     # identity vs input; use restored image path later but we operate in-memory for now
                     # Save temp files if needed for metric calculation via file paths
                     import tempfile
                     import cv2
+
                     td = tempfile.mkdtemp()
                     a = os.path.join(td, "in.png")
                     b = os.path.join(td, "out.png")
@@ -242,6 +252,7 @@ def cmd_run(argv: list[str]) -> int:
                 if score is None and args.metrics == "full" and lpips and lpips.available():
                     import tempfile
                     import cv2
+
                     td = tempfile.mkdtemp()
                     a = os.path.join(td, "in.png")
                     b = os.path.join(td, "out.png")
@@ -291,6 +302,7 @@ def cmd_run(argv: list[str]) -> int:
         if args.identity_lock and (args.metrics in {"fast", "full"}) and arc and arc.available():
             import tempfile
             import cv2
+
             td = tempfile.mkdtemp()
             a = os.path.join(td, "in.png")
             b = os.path.join(td, "out.png")
@@ -369,6 +381,22 @@ def main(argv: list[str] | None = None) -> int:
     cmd = argv[0]
     if cmd == "run":
         return cmd_run(argv[1:])
+    if cmd == "export-onnx":
+        # Minimal stub to document export path without heavy operations
+        import argparse
+        from .export import export_gfpgan_onnx
+
+        p = argparse.ArgumentParser(prog="gfpup export-onnx")
+        p.add_argument("--version", default="1.4")
+        p.add_argument("--model-path", default=None)
+        p.add_argument("--out", default="gfpgan.onnx")
+        args = p.parse_args(argv[1:])
+        try:
+            export_gfpgan_onnx(version=args.version, model_path=args.model_path, out_path=args.out)
+        except NotImplementedError as e:
+            print(str(e))
+            return 0
+        return 0
     print(f"Unknown subcommand: {cmd}")
     return 2
 

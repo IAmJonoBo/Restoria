@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional  # noqa: F401
 
 
 def build_realesrgan(device: str = "cuda", tile: int = 400, precision: str = "auto"):

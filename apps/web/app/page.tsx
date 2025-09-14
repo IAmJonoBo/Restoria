@@ -23,6 +23,8 @@ export default function Page() {
   const [quality, setQuality] = React.useState("balanced");
   const [autoBackend, setAutoBackend] = React.useState(false);
   const [identityLock, setIdentityLock] = React.useState(false);
+  const [backend, setBackend] = React.useState("gfpgan");
+  const [modelPathOnnx, setModelPathOnnx] = React.useState("");
   const [events, setEvents] = React.useState<any[]>([]);
   const [images, setImages] = React.useState<{ input: string; output: string; metrics?: Record<string, any> }[]>([]);
   const [done, setDone] = React.useState(false);
@@ -33,7 +35,7 @@ export default function Page() {
     const res = await fetch("/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input: inputPath, backend: "gfpgan", background, preset, quality, metrics, output: "results", dry_run: true, auto_backend: autoBackend, identity_lock: identityLock })
+      body: JSON.stringify({ input: inputPath, backend, background, preset, quality, metrics, output: "results", dry_run: true, auto_backend: autoBackend, identity_lock: identityLock, model_path_onnx: backend === "gfpgan-ort" ? modelPathOnnx : undefined })
     });
     if (!res.ok) return alert("Failed to submit job");
     const js: JobStatus = await res.json();
@@ -69,6 +71,21 @@ export default function Page() {
           Input path (server):
           <input value={inputPath} onChange={(e) => setInputPath(e.target.value)} style={{ marginLeft: 8 }} />
         </label>
+        <label>
+          Backend:
+          <select value={backend} onChange={(e) => setBackend(e.target.value)} style={{ marginLeft: 8 }}>
+            <option value="gfpgan">GFPGAN (Torch)</option>
+            <option value="gfpgan-ort">GFPGAN (ONNX Runtime)</option>
+            <option value="codeformer">CodeFormer</option>
+            <option value="restoreformerpp">RestoreFormer++</option>
+          </select>
+        </label>
+        {backend === "gfpgan-ort" && (
+          <label>
+            ONNX model path:
+            <input value={modelPathOnnx} onChange={(e) => setModelPathOnnx(e.target.value)} style={{ marginLeft: 8, width: 300 }} placeholder="/path/to/gfpgan.onnx" />
+          </label>
+        )}
         <label>
           Preset:
           <select value={preset} onChange={(e) => setPreset(e.target.value)} style={{ marginLeft: 8 }}>

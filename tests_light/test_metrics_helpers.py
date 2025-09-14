@@ -41,4 +41,3 @@ def test_metrics_helpers_graceful():
         else:
             d = lpips_from_paths(a, a, lpips_model)
             assert isinstance(d, float)
-

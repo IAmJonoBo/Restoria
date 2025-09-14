@@ -1,4 +1,3 @@
-import os
 import time
 
 import pytest
@@ -6,8 +5,8 @@ import pytest
 
 def test_gfpp_api_job_smoke(tmp_path):
     try:
-        from fastapi.testclient import TestClient
         from services.api.main import app
+        from fastapi.testclient import TestClient
     except Exception:
         pytest.skip("fastapi not installed")
 
@@ -49,4 +48,3 @@ def test_gfpp_api_job_smoke(tmp_path):
     # Download ZIP of results
     zr = client.get(f"/results/{jid}")
     assert zr.status_code == 200
-

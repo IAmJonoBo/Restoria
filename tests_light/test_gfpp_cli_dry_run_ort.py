@@ -1,4 +1,3 @@
-import os
 import subprocess
 import sys
 
@@ -23,4 +22,3 @@ def test_gfpp_cli_dry_run_ort(tmp_path):
     ]
     subprocess.run(cmd, check=True)
     assert (out / "manifest.json").is_file()
-

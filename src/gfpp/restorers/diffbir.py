@@ -20,4 +20,3 @@ class DiffBIRRestorer(Restorer):
 
     def restore(self, image, cfg: Dict[str, Any]) -> RestoreResult:
         raise NotImplementedError("DiffBIRRestorer not yet implemented")
-

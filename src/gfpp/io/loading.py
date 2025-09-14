@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import glob
 import os
-from typing import Iterable, List, Optional
+from typing import List
 
 
 def list_inputs(spec: str) -> List[str]:
@@ -41,4 +41,3 @@ def save_image(path: str, img, *, jpg_quality: int = 95, png_compress: int = 3, 
         return bool(cv2.imwrite(path, img, params))
     except Exception:
         return False
-

@@ -20,4 +20,3 @@ class HYPIRRestorer(Restorer):
 
     def restore(self, image, cfg: Dict[str, Any]) -> RestoreResult:
         raise NotImplementedError("HYPIRRestorer not yet implemented")
-

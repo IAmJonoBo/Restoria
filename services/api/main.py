@@ -4,12 +4,12 @@ import os
 import uuid
 from typing import Any, Dict
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi import FastAPI, WebSocket
+from fastapi.responses import FileResponse, JSONResponse
 
+from .jobs import manager
 from .schemas import JobSpec, JobStatus, Result
 from .security import apply_security
-from .jobs import manager
 
 
 app = FastAPI(title="GFPP API", version="0.0.1")
@@ -75,7 +75,13 @@ async def submit_job(spec: JobSpec):
     import asyncio
 
     asyncio.create_task(manager.run(job.id))
-    return JobStatus(id=job.id, status=job.status, progress=job.progress, result_count=job.result_count, results_path=job.results_path)
+    return JobStatus(
+        id=job.id,
+        status=job.status,
+        progress=job.progress,
+        result_count=job.result_count,
+        results_path=job.results_path,
+    )
 
 
 @app.get("/jobs")
@@ -100,7 +106,14 @@ async def get_job(job_id: str):
     job = manager.get(job_id)
     if not job:
         return JSONResponse({"error": "not found"}, status_code=404)
-    return JobStatus(id=job.id, status=job.status, progress=job.progress, result_count=job.result_count, results_path=job.results_path, error=job.error)
+    return JobStatus(
+        id=job.id,
+        status=job.status,
+        progress=job.progress,
+        result_count=job.result_count,
+        results_path=job.results_path,
+        error=job.error,
+    )
 
 
 @app.post("/jobs/{job_id}/rerun")
@@ -137,7 +150,9 @@ async def rerun_job(job_id: str, overrides: dict | None = None):
     import asyncio
 
     asyncio.create_task(manager.run(j.id))
-    return JobStatus(id=j.id, status=j.status, progress=j.progress, result_count=j.result_count, results_path=j.results_path)
+    return JobStatus(
+        id=j.id, status=j.status, progress=j.progress, result_count=j.result_count, results_path=j.results_path
+    )
 
 
 @app.websocket("/jobs/{job_id}/stream")
@@ -177,11 +192,6 @@ async def get_file(path: str):
     if not abspath.startswith(proj):
         return JSONResponse({"error": "forbidden"}, status_code=403)
     return FileResponse(abspath)
-    try:
-        async for evt in manager.stream(job_id):
-            await websocket.send_json(evt)
-    except WebSocketDisconnect:  # pragma: no cover
-        return
 
 
 def main():  # pragma: no cover

@@ -37,4 +37,3 @@ class DISTSMetric:
                 return float(self.model(at, bt).item())
         except Exception:
             return None
-

@@ -23,9 +23,7 @@ def collect_env() -> Dict[str, Any]:
         info["cuda_available"] = False
     try:
         info["git_commit"] = (
-            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL)
-            .decode()
-            .strip()
+            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL).decode().strip()
         )
     except Exception:
         info["git_commit"] = None
@@ -92,4 +90,3 @@ def set_deterministic(seed: Optional[int] = None, deterministic_cuda: bool = Fal
 
 
 __all__ = ["collect_env", "build_manifest", "write_manifest", "set_deterministic"]
-

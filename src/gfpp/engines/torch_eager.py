@@ -15,7 +15,9 @@ def autocast_ctx(device_type: str = "cuda", enabled: Optional[bool] = None):
         import torch
 
         if enabled is None:
-            enabled = (device_type == "cuda" and torch.cuda.is_available()) or (device_type == "cpu" and hasattr(torch.amp, "autocast"))
+            enabled = (device_type == "cuda" and torch.cuda.is_available()) or (
+                device_type == "cpu" and hasattr(torch.amp, "autocast")
+            )
         with torch.autocast(device_type) if enabled else _nullcontext():  # type: ignore[arg-type]
             yield
     except Exception:
@@ -47,4 +49,3 @@ def tile_image(img, tile_size: int = 0):
     Heavy tiling strategies are TODO; keep a small, testable default.
     """
     return img
-

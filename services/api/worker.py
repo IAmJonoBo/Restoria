@@ -8,10 +8,10 @@ from __future__ import annotations
 # - Emit progress over Redis/WS channels
 # - Support resumable state files for long videos
 
+
 def main():  # pragma: no cover
     print("Worker stub. Configure RQ/Celery and point to job runner here.")
 
 
 if __name__ == "__main__":
     main()
-

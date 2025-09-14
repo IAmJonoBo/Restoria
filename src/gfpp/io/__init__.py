@@ -9,4 +9,3 @@ __all__ = [
     "write_manifest",
     "collect_env",
 ]
-

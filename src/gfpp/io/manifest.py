@@ -63,4 +63,3 @@ def write_manifest(path: str, man: RunManifest) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
-

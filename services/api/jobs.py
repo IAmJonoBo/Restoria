@@ -4,10 +4,10 @@ import asyncio
 import os
 import time
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional
 
-from .schemas import JobSpec, JobStatus
+from .schemas import JobSpec
 
 
 @dataclass
@@ -76,7 +76,15 @@ class JobManager:
                     job.result_count = count
                     job.progress = count / n
                     results_rec.append({"input": pth, "restored_img": out_img, "metrics": metrics})
-                    await job.events.put({"type": "image", "input": pth, "output": out_img, "metrics": metrics, "progress": job.progress})
+                    await job.events.put(
+                        {
+                            "type": "image",
+                            "input": pth,
+                            "output": out_img,
+                            "metrics": metrics,
+                            "progress": job.progress,
+                        }
+                    )
             else:
                 # Heavy path: perform real restoration
                 from src.gfpp.restorers.gfpgan import GFPGANRestorer  # type: ignore
@@ -154,10 +162,14 @@ class JobManager:
                     res = None
                     if spec.optimize:
                         try:
-                            cand = [min(max(float(x.strip()), 0.0), 1.0) for x in spec.weights_cand.split(",") if x.strip()]
+                            cand = [
+                                min(max(float(x.strip()), 0.0), 1.0) for x in spec.weights_cand.split(",") if x.strip()
+                            ]
                         except Exception:
                             cand = [0.3, 0.5, 0.7]
-                        import tempfile, cv2
+                        import cv2
+                        import tempfile
+
                         best_score = None
                         best_res = None
                         best_w = None
@@ -167,16 +179,24 @@ class JobManager:
                             score = None
                             if arc and arc.available():
                                 td = tempfile.mkdtemp()
-                                a = os.path.join(td, "in.png"); b = os.path.join(td, "out.png")
+                                a = os.path.join(td, "in.png")
+                                b = os.path.join(td, "out.png")
                                 cv2.imwrite(a, img)
-                                cv2.imwrite(b, r_try.restored_image if (r_try and r_try.restored_image is not None) else img)
+                                cv2.imwrite(
+                                    b,
+                                    r_try.restored_image if (r_try and r_try.restored_image is not None) else img,
+                                )
                                 s = arc.cosine_from_paths(a, b)
                                 score = s if s is not None else None
                             if score is None and lpips and lpips.available():
                                 td = tempfile.mkdtemp()
-                                a = os.path.join(td, "in.png"); b = os.path.join(td, "out.png")
+                                a = os.path.join(td, "in.png")
+                                b = os.path.join(td, "out.png")
                                 cv2.imwrite(a, img)
-                                cv2.imwrite(b, r_try.restored_image if (r_try and r_try.restored_image is not None) else img)
+                                cv2.imwrite(
+                                    b,
+                                    r_try.restored_image if (r_try and r_try.restored_image is not None) else img,
+                                )
                                 d = lpips.distance_from_paths(a, b)
                                 score = -d if isinstance(d, float) else None
                             if score is None:
@@ -201,9 +221,12 @@ class JobManager:
                         metrics["lpips_alex"] = lpips.distance_from_paths(pth, out_img)
                     # Identity lock retry if below threshold
                     if spec.identity_lock and arc and arc.available():
-                        import tempfile, cv2
+                        import cv2
+                        import tempfile
+
                         td = tempfile.mkdtemp()
-                        a = os.path.join(td, "in.png"); b = os.path.join(td, "out.png")
+                        a = os.path.join(td, "in.png")
+                        b = os.path.join(td, "out.png")
                         cv2.imwrite(a, img)
                         cv2.imwrite(b, res.restored_image if (res and res.restored_image is not None) else img)
                         s0 = arc.cosine_from_paths(a, b)
@@ -215,13 +238,17 @@ class JobManager:
                             s1 = arc.cosine_from_paths(a, b)
                             if s1 is not None and s1 > (s0 or 0):
                                 res = r2
-                                save_image(out_img, res.restored_image if res and res.restored_image is not None else img)
+                                save_image(
+                                    out_img, res.restored_image if res and res.restored_image is not None else img
+                                )
                                 metrics["identity_retry"] = True
                     count += 1
                     job.result_count = count
                     job.progress = count / n
                     results_rec.append({"input": pth, "restored_img": out_img, "metrics": metrics})
-                    await job.events.put({"type": "image", "input": pth, "output": out_img, "metrics": metrics, "progress": job.progress})
+                    await job.events.put(
+                        {"type": "image", "input": pth, "output": out_img, "metrics": metrics, "progress": job.progress}
+                    )
 
             # Write manifest.json and optional metrics/report for reproducibility
             try:

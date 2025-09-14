@@ -19,4 +19,3 @@ def test_compile_flag_parses():
 def test_metrics_flag_parses():
     for m in ["none", "id", "lpips", "both"]:
         run_ok(["--metrics", m, "-v", "1.4"])  # no effect on dry-run
-

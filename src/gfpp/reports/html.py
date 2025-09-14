@@ -15,7 +15,9 @@ def _esc(s: str) -> str:
     )
 
 
-def write_html_report(output_dir: str, results: List[Dict[str, Any]], metrics_keys: Optional[List[str]] = None, path: Optional[str] = None) -> str:
+def write_html_report(
+    output_dir: str, results: List[Dict[str, Any]], metrics_keys: Optional[List[str]] = None, path: Optional[str] = None
+) -> str:
     os.makedirs(output_dir, exist_ok=True)
     if metrics_keys is None:
         metrics_keys = sorted({k for r in results for k in (r.get("metrics") or {}).keys()})
@@ -26,13 +28,7 @@ def write_html_report(output_dir: str, results: List[Dict[str, Any]], metrics_ke
         out = r.get("restored_img")
         m = r.get("metrics", {})
         cells = "".join(f"<td>{_esc(m.get(k, ''))}</td>" for k in metrics_keys)
-        rows.append(
-            f"<tr>"
-            f"<td>{_esc(inp)}</td>"
-            f"<td>{_esc(out)}</td>"
-            f"{cells}"
-            f"</tr>"
-        )
+        rows.append(f"<tr>" f"<td>{_esc(inp)}</td>" f"<td>{_esc(out)}</td>" f"{cells}" f"</tr>")
 
     html = f"""
 <!doctype html>
@@ -71,4 +67,3 @@ def write_html_report(output_dir: str, results: List[Dict[str, Any]], metrics_ke
 
 
 __all__ = ["write_html_report"]
-

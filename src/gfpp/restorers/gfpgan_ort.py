@@ -43,7 +43,9 @@ class ORTGFPGANRestorer(Restorer):
                 self._ort_ready = True
         if self._ort is None:
             # Prepare fallback Torch restorer
-            self._fallback = GFPGANRestorer(device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none"))
+            self._fallback = GFPGANRestorer(
+                device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none")
+            )
             self._fallback.prepare(cfg)
 
     def restore(self, image, cfg: Dict[str, Any]) -> RestoreResult:
@@ -54,23 +56,31 @@ class ORTGFPGANRestorer(Restorer):
                 self.prepare(cfg)
             res = self._fallback.restore(image, cfg)
             # Attach ORT metadata for transparency
-            res.metrics.update({
-                "backend": "torch-fallback",
-                "ort_available_eps": ",".join(self._ort_info.get("available_eps", []) or []),
-                "ort_provider": self._ort_info.get("providers"),
-                "ort_init_sec": self._ort_info.get("init_sec"),
-            })
+            res.metrics.update(
+                {
+                    "backend": "torch-fallback",
+                    "ort_available_eps": ",".join(self._ort_info.get("available_eps", []) or []),
+                    "ort_provider": self._ort_info.get("providers"),
+                    "ort_init_sec": self._ort_info.get("init_sec"),
+                }
+            )
             return res
 
         # Placeholder path: ORT session exists, but generator graph I/O mapping is not implemented yet.
         # Return fallback image if available; otherwise, pass-thru image. Still record ORT provider info.
         if self._fallback is None:
-            self._fallback = GFPGANRestorer(device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none"))
+            from .gfpgan import GFPGANRestorer  # local import
+
+            self._fallback = GFPGANRestorer(
+                device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none")
+            )
             self._fallback.prepare(cfg)
         res = self._fallback.restore(image, cfg)
-        res.metrics.update({
-            "backend": "onnxruntime+torch-fallback",
-            "ort_provider": self._ort_info.get("providers"),
-            "ort_init_sec": self._ort_info.get("init_sec"),
-        })
+        res.metrics.update(
+            {
+                "backend": "onnxruntime+torch-fallback",
+                "ort_provider": self._ort_info.get("providers"),
+                "ort_init_sec": self._ort_info.get("init_sec"),
+            }
+        )
         return res

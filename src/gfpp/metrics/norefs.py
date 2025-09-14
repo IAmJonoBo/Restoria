@@ -45,4 +45,3 @@ def niqe(path: str) -> Optional[float]:
         return float(_sk_niqe(img_as_float(img)))
     except Exception:
         return None
-

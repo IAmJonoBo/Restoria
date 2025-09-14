@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from .base import RestoreResult, Restorer
 
@@ -32,8 +32,6 @@ class GFPGANRestorer(Restorer):
         self._compile_mode = compile_mode
 
     def prepare(self, cfg: Dict[str, Any]) -> None:
-        import os
-
         import torch
 
         from gfpgan.engines import get_engine  # register engines
@@ -76,8 +74,6 @@ class GFPGANRestorer(Restorer):
             pass
 
     def restore(self, image, cfg: Dict[str, Any]) -> RestoreResult:
-        import numpy as np
-
         if self._restorer is None:
             self.prepare(cfg)
         weight = float(cfg.get("weight", 0.5))

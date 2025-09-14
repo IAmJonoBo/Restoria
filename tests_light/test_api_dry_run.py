@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 
@@ -24,4 +22,3 @@ def test_api_health_and_restore_dry_run():
         data = resp.json()
         assert data.get("dry_run") is True
         assert isinstance(data.get("results"), list)
-

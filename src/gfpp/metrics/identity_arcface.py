@@ -31,4 +31,3 @@ class ArcFaceIdentity:
             return identity_cosine_from_paths(a_path, b_path, self.model)
         except Exception:
             return None
-

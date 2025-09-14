@@ -3,8 +3,8 @@ import os
 
 def test_file_serve_inputs():
     try:
-        from fastapi.testclient import TestClient
         from services.api.main import app
+        from fastapi.testclient import TestClient
     except Exception:
         return
 
@@ -16,4 +16,3 @@ def test_file_serve_inputs():
     r = client.get("/file", params={"path": p})
     assert r.status_code == 200
     assert r.headers.get("content-type", "").startswith("image/")
-

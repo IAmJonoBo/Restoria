@@ -36,4 +36,3 @@ class LPIPSMetric:
                 return float(self.model(at, bt).item())
         except Exception:
             return None
-
