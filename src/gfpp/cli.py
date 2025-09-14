@@ -51,6 +51,10 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--seed", type=int, default=None)
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--metrics", default="off", choices=["off", "fast", "full"])
+    p.add_argument("--csv-out", default=None, help="Write metrics CSV to this path")
+    p.add_argument("--html-report", default=None, help="Write HTML report to this path")
+    p.add_argument("--auto-backend", action="store_true", help="Select backend per-image using quality heuristics")
+    p.add_argument("--quality", default="balanced", choices=["quick", "balanced", "best"], help="Quality vs speed preset")
     p.add_argument("--identity-lock", action="store_true", help="Retry with stricter preset if identity drops")
     p.add_argument("--identity-threshold", type=float, default=0.25)
     p.add_argument("--optimize", action="store_true", help="Try multiple weights and pick best by metric")
@@ -69,21 +73,28 @@ def cmd_run(argv: list[str]) -> int:
     # Background upsampler
     bg = None
     if args.background == "realesrgan":
+        # Map quality preset to tile/precision
         bg = build_realesrgan(device=args.device)
 
-    # Choose restorer
-    if args.backend == "gfpgan":
+    # Choose restorer (optionally auto per-file)
+    if args.auto-backend:
+        # pick initial; will refine per-image below
+        chosen_backend = "gfpgan"
+    else:
+        chosen_backend = args.backend
+
+    if chosen_backend == "gfpgan":
         rest = GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile)
-    elif args.backend == "gfpgan-ort":
+    elif chosen_backend == "gfpgan-ort":
         from .restorers.gfpgan_ort import ORTGFPGANRestorer
 
         rest = ORTGFPGANRestorer(device=args.device, bg_upsampler=bg)
-    elif args.backend == "codeformer":
+    elif chosen_backend == "codeformer":
         rest = CodeFormerRestorer(device=args.device, bg_upsampler=bg)
-    elif args.backend == "restoreformerpp":
+    elif chosen_backend == "restoreformerpp":
         rest = RestoreFormerPP(device=args.device, bg_upsampler=bg)
     else:
-        print(f"[WARN] Backend {args.backend} not yet implemented; falling back to gfpgan")
+        print(f"[WARN] Backend {chosen_backend} not yet implemented; falling back to gfpgan")
         rest = GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile)
     # Presets (small, testable defaults)
     preset = args.preset
@@ -123,6 +134,23 @@ def cmd_run(argv: list[str]) -> int:
                 torch.cuda.reset_peak_memory_stats()  # type: ignore
         except Exception:
             pass
+
+        # Optional auto backend per-image
+        if args.auto-backend:
+            try:
+                from gfpgan.auto.engine_selector import select_engine_for_image  # type: ignore
+
+                decision = select_engine_for_image(pth)
+                bname = decision.engine
+            except Exception:
+                bname = "gfpgan"
+            if bname != chosen_backend:
+                if bname == "gfpgan":
+                    rest = GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile)
+                elif bname == "codeformer":
+                    rest = CodeFormerRestorer(device=args.device, bg_upsampler=bg)
+                elif bname in {"restoreformer", "restoreformerpp"}:
+                    rest = RestoreFormerPP(device=args.device, bg_upsampler=bg)
 
         # Optional multi-try optimizer
         chosen_weight = cfg.get("weight")
@@ -251,6 +279,26 @@ def cmd_run(argv: list[str]) -> int:
 
     man = RunManifest(args=vars(args), device=args.device, results=results, metrics_file=metrics_file)
     write_manifest(os.path.join(args.output, "manifest.json"), man)
+
+    # Optional CSV + HTML outputs
+    if args.csv_out:
+        import csv
+
+        keys = sorted({k for r in results for k in (r.get("metrics") or {}).keys()})
+        with open(args.csv_out, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["input", "restored_img", *keys])
+            for r in results:
+                w.writerow([r.get("input"), r.get("restored_img"), *[r.get("metrics", {}).get(k) for k in keys]])
+
+    if args.html_report:
+        try:
+            from .reports.html import write_html_report
+
+            keys = sorted({k for r in results for k in (r.get("metrics") or {}).keys()})
+            write_html_report(args.output, results, keys, args.html_report)
+        except Exception:
+            pass
 
     print(f"Processed {len(results)} files -> {args.output}")
     return 0
