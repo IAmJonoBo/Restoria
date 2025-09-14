@@ -46,6 +46,7 @@ class JobManager:
         try:
             # Import locally to avoid global heavy imports
             from src.gfpp.io.loading import list_inputs, load_image_bgr, save_image  # type: ignore
+            from src.gfpp.io.manifest import RunManifest, write_manifest  # type: ignore
             from src.gfpp.restorers.gfpgan import GFPGANRestorer  # type: ignore
             from src.gfpp.restorers.codeformer import CodeFormerRestorer  # type: ignore
             from src.gfpp.restorers.restoreformerpp import RestoreFormerPP  # type: ignore
@@ -55,7 +56,8 @@ class JobManager:
             spec = job.spec
             inputs = list_inputs(spec.input)
             n = max(1, len(inputs))
-            # Background upsampler
+            # Determinism and background upsampler
+            self._set_deterministic(spec.seed, spec.deterministic)
             bg = build_realesrgan(device="cuda") if spec.background == "realesrgan" else None
             # Restorer selection
             if spec.backend == "gfpgan":
@@ -66,18 +68,22 @@ class JobManager:
                 rest = RestoreFormerPP(device="auto", bg_upsampler=bg)
             else:
                 rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
+            # Presets -> weight mapping
+            preset_weight = {"natural": 0.5, "detail": 0.7, "document": 0.3}.get(spec.preset, 0.5)
+
             cfg: Dict[str, Any] = {
                 "version": "1.4",
                 "upscale": 2,
                 "use_parse": True,
                 "detector": "retinaface_resnet50",
-                "weight": 0.5,
+                "weight": preset_weight,
                 "no_download": False,
             }
             # Metrics (optional)
             arc = ArcFaceIdentity(no_download=True) if spec.metrics in {"fast", "full"} else None
             lpips = LPIPSMetric() if spec.metrics == "full" else None
 
+            results_rec: List[Dict[str, Any]] = []
             count = 0
             for pth in inputs:
                 t0 = time.time()
@@ -102,6 +108,7 @@ class JobManager:
                 count += 1
                 job.result_count = count
                 job.progress = count / n
+                results_rec.append({"input": pth, "restored_img": out_img, "metrics": metrics})
                 await job.events.put(
                     {
                         "type": "image",
@@ -111,6 +118,14 @@ class JobManager:
                         "progress": job.progress,
                     }
                 )
+
+            # Write manifest.json for reproducibility
+            try:
+                man = RunManifest(args=asdict(spec), device="auto", results=results_rec)
+                write_manifest(os.path.join(job.results_path or spec.output, "manifest.json"), man)
+                await job.events.put({"type": "manifest", "path": os.path.join(job.results_path or spec.output, "manifest.json")})
+            except Exception:
+                pass
 
             job.status = "done"
             await job.events.put({"type": "status", "status": job.status, "results_path": job.results_path})
@@ -130,6 +145,32 @@ class JobManager:
             if msg.get("type") == "eof":
                 break
 
+    @staticmethod
+    def _set_deterministic(seed: Optional[int], deterministic: bool) -> None:
+        try:
+            import random
+
+            if seed is not None:
+                random.seed(seed)
+        except Exception:
+            pass
+        try:
+            import numpy as np  # type: ignore
+
+            if seed is not None:
+                np.random.seed(seed)
+        except Exception:
+            pass
+        try:
+            import torch  # type: ignore
+
+            if seed is not None:
+                torch.manual_seed(seed)
+            if deterministic:
+                torch.backends.cudnn.deterministic = True  # type: ignore[attr-defined]
+                torch.backends.cudnn.benchmark = False  # type: ignore[attr-defined]
+        except Exception:
+            pass
+
 
 manager = JobManager()
-
