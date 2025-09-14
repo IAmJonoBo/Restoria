@@ -54,6 +54,7 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--csv-out", default=None, help="Write metrics CSV to this path")
     p.add_argument("--html-report", default=None, help="Write HTML report to this path")
     p.add_argument("--auto-backend", action="store_true", help="Select backend per-image using quality heuristics")
+    p.add_argument("--dry-run", action="store_true", help="Simulate run without loading models (copy inputs to outputs)")
     p.add_argument("--quality", default="balanced", choices=["quick", "balanced", "best"], help="Quality vs speed preset")
     p.add_argument("--identity-lock", action="store_true", help="Retry with stricter preset if identity drops")
     p.add_argument("--identity-threshold", type=float, default=0.25)
@@ -77,7 +78,7 @@ def cmd_run(argv: list[str]) -> int:
         bg = build_realesrgan(device=args.device)
 
     # Choose restorer (optionally auto per-file)
-    if args.auto-backend:
+    if args.auto_backend:
         # pick initial; will refine per-image below
         chosen_backend = "gfpgan"
     else:
@@ -112,6 +113,48 @@ def cmd_run(argv: list[str]) -> int:
     inputs = list_inputs(args.input)
     results = []
 
+    # Dry-run path: copy inputs to outputs and optionally write metrics/report
+    if args.dry_run:
+        for pth in inputs:
+            import time
+
+            t0 = time.time()
+            img = load_image_bgr(pth)
+            if img is None:
+                continue
+            base, _ = os.path.splitext(os.path.basename(pth))
+            out_img = os.path.join(args.output, f"{base}.png")
+            save_image(out_img, img)
+            rec = {"input": pth, "restored_img": out_img, "metrics": {"runtime_sec": time.time() - t0}}
+            results.append(rec)
+
+        # Write manifest + optional CSV/HTML
+        metrics_file = os.path.join(args.output, "metrics.json") if args.metrics != "off" else None
+        if metrics_file:
+            with open(metrics_file, "w") as f:
+                json.dump({"metrics": results}, f, indent=2)
+        man = RunManifest(args=vars(args), device=args.device, results=results, metrics_file=metrics_file)
+        write_manifest(os.path.join(args.output, "manifest.json"), man)
+        if args.csv_out:
+            import csv
+
+            keys = sorted({k for r in results for k in (r.get("metrics") or {}).keys()})
+            with open(args.csv_out, "w", newline="") as f:
+                w = csv.writer(f)
+                w.writerow(["input", "restored_img", *keys])
+                for r in results:
+                    w.writerow([r.get("input"), r.get("restored_img"), *[r.get("metrics", {}).get(k) for k in keys]])
+        if args.html_report:
+            try:
+                from .reports.html import write_html_report
+
+                keys = sorted({k for r in results for k in (r.get("metrics") or {}).keys()})
+                write_html_report(args.output, results, keys, args.html_report)
+            except Exception:
+                pass
+        print(f"Processed {len(results)} files (dry-run) -> {args.output}")
+        return 0
+
     # Metrics (optional)
     arc = ArcFaceIdentity(no_download=args.no_download) if args.metrics in {"fast", "full"} else None
     lpips = LPIPSMetric() if args.metrics == "full" else None
@@ -136,7 +179,7 @@ def cmd_run(argv: list[str]) -> int:
             pass
 
         # Optional auto backend per-image
-        if args.auto-backend:
+        if args.auto_backend:
             try:
                 from gfpgan.auto.engine_selector import select_engine_for_image  # type: ignore
 
