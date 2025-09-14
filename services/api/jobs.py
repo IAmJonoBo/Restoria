@@ -47,77 +47,89 @@ class JobManager:
             # Import locally to avoid global heavy imports
             from src.gfpp.io.loading import list_inputs, load_image_bgr, save_image  # type: ignore
             from src.gfpp.io.manifest import RunManifest, write_manifest  # type: ignore
-            from src.gfpp.restorers.gfpgan import GFPGANRestorer  # type: ignore
-            from src.gfpp.restorers.codeformer import CodeFormerRestorer  # type: ignore
-            from src.gfpp.restorers.restoreformerpp import RestoreFormerPP  # type: ignore
-            from src.gfpp.background import build_realesrgan  # type: ignore
-            from src.gfpp.metrics import ArcFaceIdentity, LPIPSMetric  # type: ignore
 
             spec = job.spec
             inputs = list_inputs(spec.input)
             n = max(1, len(inputs))
-            # Determinism and background upsampler
+            # Determinism
             self._set_deterministic(spec.seed, spec.deterministic)
-            bg = build_realesrgan(device="cuda") if spec.background == "realesrgan" else None
-            # Restorer selection
-            if spec.backend == "gfpgan":
-                rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
-            elif spec.backend == "codeformer":
-                rest = CodeFormerRestorer(device="auto", bg_upsampler=bg)
-            elif spec.backend == "restoreformerpp":
-                rest = RestoreFormerPP(device="auto", bg_upsampler=bg)
-            else:
-                rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
-            # Presets -> weight mapping
-            preset_weight = {"natural": 0.5, "detail": 0.7, "document": 0.3}.get(spec.preset, 0.5)
-
-            cfg: Dict[str, Any] = {
-                "version": "1.4",
-                "upscale": 2,
-                "use_parse": True,
-                "detector": "retinaface_resnet50",
-                "weight": preset_weight,
-                "no_download": False,
-            }
-            # Metrics (optional)
-            arc = ArcFaceIdentity(no_download=True) if spec.metrics in {"fast", "full"} else None
-            lpips = LPIPSMetric() if spec.metrics == "full" else None
 
             results_rec: List[Dict[str, Any]] = []
-            count = 0
-            for pth in inputs:
-                t0 = time.time()
-                img = load_image_bgr(pth)
-                if img is None:
-                    await job.events.put({"type": "warn", "msg": f"Failed to read: {pth}"})
-                    continue
-                cfg["input_path"] = pth
-                res = rest.restore(img, cfg)
-                base = os.path.splitext(os.path.basename(pth))[0]
-                out_img = os.path.join(job.results_path or spec.output, f"{base}.png")
-                if res and res.restored_image is not None:
-                    save_image(out_img, res.restored_image)
-                else:
+            # Dry-run or smoke mode: skip heavy model loading
+            if spec.dry_run or os.environ.get("NB_CI_SMOKE") == "1":
+                count = 0
+                for pth in inputs:
+                    t0 = time.time()
+                    img = load_image_bgr(pth)
+                    if img is None:
+                        await job.events.put({"type": "warn", "msg": f"Failed to read: {pth}"})
+                        continue
+                    base = os.path.splitext(os.path.basename(pth))[0]
+                    out_img = os.path.join(job.results_path or spec.output, f"{base}.png")
                     save_image(out_img, img)
-                # Metrics snapshot
-                metrics = {"runtime_sec": time.time() - t0}
-                if arc and arc.available():
-                    metrics["arcface_cosine"] = arc.cosine_from_paths(pth, out_img)
-                if lpips and lpips.available():
-                    metrics["lpips_alex"] = lpips.distance_from_paths(pth, out_img)
-                count += 1
-                job.result_count = count
-                job.progress = count / n
-                results_rec.append({"input": pth, "restored_img": out_img, "metrics": metrics})
-                await job.events.put(
-                    {
-                        "type": "image",
-                        "input": pth,
-                        "output": out_img,
-                        "metrics": metrics,
-                        "progress": job.progress,
-                    }
-                )
+                    metrics = {"runtime_sec": time.time() - t0}
+                    count += 1
+                    job.result_count = count
+                    job.progress = count / n
+                    results_rec.append({"input": pth, "restored_img": out_img, "metrics": metrics})
+                    await job.events.put({"type": "image", "input": pth, "output": out_img, "metrics": metrics, "progress": job.progress})
+            else:
+                # Heavy path: perform real restoration
+                from src.gfpp.restorers.gfpgan import GFPGANRestorer  # type: ignore
+                from src.gfpp.restorers.codeformer import CodeFormerRestorer  # type: ignore
+                from src.gfpp.restorers.restoreformerpp import RestoreFormerPP  # type: ignore
+                from src.gfpp.background import build_realesrgan  # type: ignore
+                from src.gfpp.metrics import ArcFaceIdentity, LPIPSMetric  # type: ignore
+
+                bg = build_realesrgan(device="cuda") if spec.background == "realesrgan" else None
+                # Restorer selection
+                if spec.backend == "gfpgan":
+                    rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
+                elif spec.backend == "codeformer":
+                    rest = CodeFormerRestorer(device="auto", bg_upsampler=bg)
+                elif spec.backend == "restoreformerpp":
+                    rest = RestoreFormerPP(device="auto", bg_upsampler=bg)
+                else:
+                    rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
+                # Presets -> weight mapping
+                preset_weight = {"natural": 0.5, "detail": 0.7, "document": 0.3}.get(spec.preset, 0.5)
+
+                cfg: Dict[str, Any] = {
+                    "version": "1.4",
+                    "upscale": 2,
+                    "use_parse": True,
+                    "detector": "retinaface_resnet50",
+                    "weight": preset_weight,
+                    "no_download": False,
+                }
+                arc = ArcFaceIdentity(no_download=True) if spec.metrics in {"fast", "full"} else None
+                lpips = LPIPSMetric() if spec.metrics == "full" else None
+
+                count = 0
+                for pth in inputs:
+                    t0 = time.time()
+                    img = load_image_bgr(pth)
+                    if img is None:
+                        await job.events.put({"type": "warn", "msg": f"Failed to read: {pth}"})
+                        continue
+                    cfg["input_path"] = pth
+                    res = rest.restore(img, cfg)
+                    base = os.path.splitext(os.path.basename(pth))[0]
+                    out_img = os.path.join(job.results_path or spec.output, f"{base}.png")
+                    if res and res.restored_image is not None:
+                        save_image(out_img, res.restored_image)
+                    else:
+                        save_image(out_img, img)
+                    metrics = {"runtime_sec": time.time() - t0}
+                    if arc and arc.available():
+                        metrics["arcface_cosine"] = arc.cosine_from_paths(pth, out_img)
+                    if lpips and lpips.available():
+                        metrics["lpips_alex"] = lpips.distance_from_paths(pth, out_img)
+                    count += 1
+                    job.result_count = count
+                    job.progress = count / n
+                    results_rec.append({"input": pth, "restored_img": out_img, "metrics": metrics})
+                    await job.events.put({"type": "image", "input": pth, "output": out_img, "metrics": metrics, "progress": job.progress})
 
             # Write manifest.json for reproducibility
             try:

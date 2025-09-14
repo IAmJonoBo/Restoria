@@ -15,6 +15,7 @@ class JobSpec(BaseModel):
     deterministic: bool = False
     metrics: str = Field("off")
     output: str = Field("results")
+    dry_run: bool = Field(False, description="If true, simulate run without loading heavy models")
 
 
 class MetricCard(BaseModel):
@@ -35,4 +36,3 @@ class JobStatus(BaseModel):
 class Result(BaseModel):
     job: JobStatus
     metrics: List[MetricCard] = []
-
