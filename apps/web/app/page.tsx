@@ -3,6 +3,7 @@ import React from "react";
 import CompareSlider from "../components/CompareSlider";
 import Queue from "../components/Queue";
 import UploadDropzone from "../components/UploadDropzone";
+import MetricsCard from "../components/MetricsCard";
 
 type JobStatus = {
   id: string;
@@ -20,7 +21,9 @@ export default function Page() {
   const [metrics, setMetrics] = React.useState("off");
   const [background, setBackground] = React.useState("none");
   const [events, setEvents] = React.useState<any[]>([]);
-  const [images, setImages] = React.useState<{ input: string; output: string }[]>([]);
+  const [images, setImages] = React.useState<{ input: string; output: string; metrics?: Record<string, any> }[]>([]);
+  const [done, setDone] = React.useState(false);
+  const [manifestPath, setManifestPath] = React.useState<string | null>(null);
   const wsRef = React.useRef<WebSocket | null>(null);
 
   async function submit() {
@@ -40,7 +43,13 @@ export default function Page() {
         const msg = JSON.parse(e.data);
         setEvents((prev) => [...prev, msg]);
         if (msg.type === "image") {
-          setImages((arr) => [...arr, { input: msg.input, output: msg.output }]);
+          setImages((arr) => [...arr, { input: msg.input, output: msg.output, metrics: msg.metrics }]);
+        }
+        if (msg.type === "status" && msg.status === "done") {
+          setDone(true);
+        }
+        if (msg.type === "manifest" && msg.path) {
+          setManifestPath(String(msg.path));
         }
       } catch {}
     };
@@ -86,13 +95,29 @@ export default function Page() {
       {images.length > 0 && (
         <section>
           <h2>Results</h2>
-          {images.slice(0, 1).map((r, i) => (
-            <CompareSlider
-              key={i}
-              before={`/file?path=${encodeURIComponent(r.input)}`}
-              after={`/file?path=${encodeURIComponent(r.output)}`}
-            />
-          ))}
+          <div style={{ display: "grid", gap: 16 }}>
+            {images.map((r, i) => (
+              <div key={i} style={{ display: "grid", gap: 8 }}>
+                <CompareSlider
+                  before={`/file?path=${encodeURIComponent(r.input)}`}
+                  after={`/file?path=${encodeURIComponent(r.output)}`}
+                />
+                <MetricsCard metrics={r.metrics} />
+              </div>
+            ))}
+          </div>
+          {done && (
+            <div style={{ marginTop: 8 }}>
+              <a href={`/results/${job?.id}`} target="_blank" rel="noreferrer" style={{ marginRight: 12 }}>
+                Download ZIP
+              </a>
+              {manifestPath && (
+                <a href={`/file?path=${encodeURIComponent(manifestPath)}`} target="_blank" rel="noreferrer">
+                  View manifest.json
+                </a>
+              )}
+            </div>
+          )}
         </section>
       )}
       <section>
