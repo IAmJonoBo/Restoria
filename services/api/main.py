@@ -5,7 +5,7 @@ import uuid
 from typing import Any, Dict
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 
 from .schemas import JobSpec, JobStatus, Result
 from .security import apply_security
@@ -94,6 +94,22 @@ async def ws_stream(websocket: WebSocket, job_id: str):
         await websocket.send_json({"error": "not found"})
         await websocket.close(code=1000)
         return
+
+
+@app.get("/results/{job_id}")
+async def download_results(job_id: str):
+    import shutil
+
+    job = manager.get(job_id)
+    if not job or not job.results_path:
+        return JSONResponse({"error": "not found"}, status_code=404)
+    base = os.path.abspath(job.results_path)
+    parent = os.path.dirname(base)
+    zip_base = os.path.join(parent, f"{os.path.basename(base)}")
+    zip_path = f"{zip_base}.zip"
+    if not os.path.exists(zip_path):
+        shutil.make_archive(zip_base, "zip", base)
+    return FileResponse(zip_path, filename=os.path.basename(zip_path))
     try:
         async for evt in manager.stream(job_id):
             await websocket.send_json(evt)
