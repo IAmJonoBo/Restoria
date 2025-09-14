@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import os
 from dataclasses import dataclass
 from typing import List
 
@@ -30,6 +31,9 @@ def run(samples_dir: str, output_dir: str, backend: str = "gfpgan") -> List[dict
         "--output",
         output_dir,
     ]
+    # In CI smoke, prefer a dry-run to avoid heavy downloads
+    if os.environ.get("NB_CI_SMOKE") == "1":
+        args.append("--dry-run")
     cmd_run(args)
     # Read metrics.json
     mpath = os.path.join(output_dir, "metrics.json")

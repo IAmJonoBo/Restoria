@@ -217,3 +217,27 @@ jobs:
           # Use a null config to avoid repo-level pytest settings (e.g., testpaths) interfering
           pytest -c /dev/null --nbmake --nbmake-kernel=python3 \
             --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
+
+  bench-smoke:
+    name: bench (smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install runtime
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Run bench in smoke mode
+        env:
+          NB_CI_SMOKE: '1'
+        run: |
+          python bench/run_bench.py
+      - name: Upload bench artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-out
+          path: bench/out

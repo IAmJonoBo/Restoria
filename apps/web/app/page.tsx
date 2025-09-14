@@ -63,6 +63,24 @@ export default function Page() {
     };
   }
 
+  async function rerunAllDry() {
+    if (!job?.id) return;
+    await fetch(`/jobs/${job.id}/rerun`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        backend,
+        background,
+        preset,
+        quality,
+        metrics,
+        auto_backend: autoBackend,
+        identity_lock: identityLock,
+        dry_run: true,
+      }),
+    });
+  }
+
   return (
     <div style={{ display: "grid", gap: 24 }}>
       <h1>GFPP — Face/Scene Restoration</h1>
@@ -123,7 +141,10 @@ export default function Page() {
         <label>
           <input type="checkbox" checked={identityLock} onChange={(e) => setIdentityLock(e.target.checked)} /> Identity Lock
         </label>
-        <button onClick={submit}>Submit Dry-Run Job</button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={submit}>Submit Dry-Run Job</button>
+          {job && <button onClick={rerunAllDry}>Re-run (dry) with current config</button>}
+        </div>
       </div>
       <Queue />
       {images.length > 0 && (
