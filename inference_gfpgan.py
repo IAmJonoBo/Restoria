@@ -189,7 +189,14 @@ def main():
         type=str,
         default="gfpgan",
         choices=["gfpgan", "restoreformer", "restoreformerpp", "codeformer"],
-        help="Model backend to use (default: gfpgan)",
+        help="Model backend to use (default: gfpgan). Deprecated in favor of --engine.",
+    )
+    parser.add_argument(
+        "--engine",
+        type=str,
+        default=None,
+        choices=["auto", "gfpgan", "restoreformer", "restoreformerpp", "codeformer"],
+        help="Engine to use. Use 'auto' for rule-based selection per image.",
     )
     parser.add_argument(
         "--bg_tile",
@@ -248,6 +255,12 @@ def main():
     )
     parser.add_argument("--no-parse", action="store_true", help="Disable face parsing for blending.")
     parser.add_argument("--manifest", type=str, default=None, help="Write a JSON manifest of outputs to this path")
+    parser.add_argument(
+        "--html-report",
+        type=str,
+        default=None,
+        help="Optional path to write an HTML report (uses manifest + metrics)",
+    )
     parser.add_argument(
         "--compile",
         type=str,
@@ -450,14 +463,21 @@ def main():
             model_sha256 = None
 
     # Delay heavy import until after dry-run
-    # Engines path: construct via registry (use backend when provided)
+    # Engines path: construct via registry (use backend/engine when provided)
     from gfpgan.engines import get_engine  # registers defaults on import
 
-    engine_name = (
-        args.backend
-        if args.backend in {"gfpgan", "codeformer", "restoreformer", "restoreformerpp"}
-        else ("codeformer" if arch == "codeformer" else "gfpgan")
-    )
+    engine_name = None
+    if args.engine:
+        if args.engine == "auto":
+            engine_name = "auto"
+        else:
+            engine_name = args.engine
+    else:
+        engine_name = (
+            args.backend
+            if args.backend in {"gfpgan", "codeformer", "restoreformer", "restoreformerpp"}
+            else ("codeformer" if arch == "codeformer" else "gfpgan")
+        )
     Engine = get_engine(engine_name)
     if engine_name == "gfpgan":
         restorer = Engine(
@@ -477,6 +497,19 @@ def main():
     elif engine_name in {"restoreformer", "restoreformerpp"}:
         restorer = Engine(
             model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
+        )
+    elif engine_name == "auto":
+        # Lazy init to a sensible default; may switch per-image below
+        Engine = get_engine("gfpgan")
+        restorer = Engine(
+            model_path=model_path,
+            device=torch.device(device),
+            upscale=args.upscale,
+            arch=arch,
+            channel_multiplier=channel_multiplier,
+            bg_upsampler=bg_upsampler,
+            det_model=args.detector,
+            use_parse=not args.no_parse,
         )
     else:
         raise ValueError(f"Unknown engine backend: {engine_name}")
@@ -580,6 +613,44 @@ def main():
             import numpy as np
 
             input_img = cv2.imread(img_path, cv2.IMREAD_COLOR)
+
+            # Optional engine auto-selection per image
+            selected_engine_name = engine_name
+            if engine_name == "auto":
+                try:
+                    from gfpgan.auto.engine_selector import select_engine_for_image
+
+                    decision = select_engine_for_image(img_path)
+                    selected_engine_name = decision.engine
+                    if args.verbose:
+                        print(
+                            f"Engine auto-select -> {selected_engine_name}"
+                            f" [rule={decision.rule}, lapvar={decision.rationale.get('lapvar')},"
+                            f" brisque={decision.rationale.get('brisque')}, niqe={decision.rationale.get('niqe')},"
+                            f" faces={decision.rationale.get('faces')}]"
+                        )
+                except Exception as _e:
+                    selected_engine_name = "gfpgan"
+                    if args.verbose:
+                        print(f"Engine auto-select failed, defaulting to gfpgan: {_e}")
+
+                # Recreate restorer if engine differs
+                if selected_engine_name != "gfpgan":
+                    Engine = get_engine(selected_engine_name)
+                    if selected_engine_name == "codeformer":
+                        restorer = Engine(
+                            model_path=model_path,
+                            device=torch.device(device),
+                            upscale=args.upscale,
+                            bg_upsampler=bg_upsampler,
+                        )
+                    else:  # restoreformer/restoreformerpp
+                        restorer = Engine(
+                            model_path=model_path,
+                            device=torch.device(device),
+                            upscale=args.upscale,
+                            bg_upsampler=bg_upsampler,
+                        )
 
             # restore faces and background if necessary
             best = None
@@ -925,36 +996,32 @@ def main():
 
     # Manifest with metadata
     if args.manifest:
-        import json
-        import subprocess
+        from gfpgan.runtime.manifest import build_manifest, write_manifest
 
-        meta = {
-            "args": {k: v for k, v in vars(args).items() if k not in {"dry_run"}},
-            "device": device,
-            "model_name": model_name,
-            "model_path": model_path,
-            "model_sha256": model_sha256,
-            "torch_version": None,
-            "git_commit": None,
-        }
-        try:
-            import torch as _t
-
-            meta["torch_version"] = getattr(_t, "__version__", None)
-        except Exception:
-            pass
-        try:
-            meta["git_commit"] = (
-                subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL)
-                .decode()
-                .strip()
-            )
-        except Exception:
-            pass
-        with open(args.manifest, "w") as f:
-            json.dump({"meta": meta, "results": results}, f, indent=2)
+        man = build_manifest(
+            args={k: v for k, v in vars(args).items() if k not in {"dry_run"}},
+            device=device,
+            model_name=model_name,
+            model_path=model_path,
+            model_sha256=model_sha256,
+            results=results,
+            metrics_path=(args.metrics_out or os.path.join(args.output, "metrics.json")) if args.metrics != "none" else None,
+        )
+        write_manifest(args.manifest, man)
         if args.verbose:
             print(f"Wrote manifest: {args.manifest}")
+
+        # Optional HTML report from manifest
+        if args.html_report:
+            try:
+                from gfpgan.reports.html import write_html_report
+
+                out_html = write_html_report(args.output, man, report_path=args.html_report)
+                if args.verbose:
+                    print(f"Wrote HTML report: {out_html}")
+            except Exception as _e:
+                if args.verbose:
+                    print(f"Failed to write HTML report: {_e}")
 
     print(f"Results are in the [{args.output}] folder.")
 
