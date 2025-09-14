@@ -223,11 +223,27 @@ class JobManager:
                     results_rec.append({"input": pth, "restored_img": out_img, "metrics": metrics})
                     await job.events.put({"type": "image", "input": pth, "output": out_img, "metrics": metrics, "progress": job.progress})
 
-            # Write manifest.json for reproducibility
+            # Write manifest.json and optional metrics/report for reproducibility
             try:
+                out_dir = job.results_path or spec.output
                 man = RunManifest(args=asdict(spec), device="auto", results=results_rec)
-                write_manifest(os.path.join(job.results_path or spec.output, "manifest.json"), man)
-                await job.events.put({"type": "manifest", "path": os.path.join(job.results_path or spec.output, "manifest.json")})
+                write_manifest(os.path.join(out_dir, "manifest.json"), man)
+                await job.events.put({"type": "manifest", "path": os.path.join(out_dir, "manifest.json")})
+            except Exception:
+                pass
+            # metrics.json
+            try:
+                import json as _json
+
+                with open(os.path.join(out_dir, "metrics.json"), "w") as f:
+                    _json.dump({"metrics": results_rec}, f, indent=2)
+            except Exception:
+                pass
+            # HTML report
+            try:
+                from src.gfpp.reports.html import write_html_report  # type: ignore
+
+                write_html_report(out_dir, results_rec, path=os.path.join(out_dir, "report.html"))
             except Exception:
                 pass
 

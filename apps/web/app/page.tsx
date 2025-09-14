@@ -120,6 +120,20 @@ export default function Page() {
                   after={`/file?path=${encodeURIComponent(r.output)}`}
                 />
                 <MetricsCard metrics={r.metrics} />
+                <div>
+                  <button
+                    onClick={async () => {
+                      // Re-run only this image using current controls (dry)
+                      await fetch(`/jobs/${job?.id}/rerun`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ input: r.input, backend: "gfpgan", background, preset, quality, metrics, auto_backend: autoBackend, identity_lock: identityLock, dry_run: true }),
+                      });
+                    }}
+                  >
+                    Re-run this (dry)
+                  </button>
+                </div>
               </div>
             ))}
           </div>
