@@ -110,6 +110,19 @@ async def download_results(job_id: str):
     if not os.path.exists(zip_path):
         shutil.make_archive(zip_base, "zip", base)
     return FileResponse(zip_path, filename=os.path.basename(zip_path))
+
+
+@app.get("/file")
+async def get_file(path: str):
+    # Minimal dev-time file serving for inputs/results. In production, serve via a proper static server.
+    abspath = os.path.abspath(path)
+    if not os.path.isfile(abspath):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    # Basic path guard: only allow files under project directory
+    proj = os.path.abspath(os.getcwd())
+    if not abspath.startswith(proj):
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+    return FileResponse(abspath)
     try:
         async for evt in manager.stream(job_id):
             await websocket.send_json(evt)

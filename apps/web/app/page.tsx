@@ -61,7 +61,11 @@ export default function Page() {
         <section>
           <h2>Results</h2>
           {images.slice(0, 1).map((r, i) => (
-            <CompareSlider key={i} before={r.input} after={r.output} />
+            <CompareSlider
+              key={i}
+              before={`/file?path=${encodeURIComponent(r.input)}`}
+              after={`/file?path=${encodeURIComponent(r.output)}`}
+            />
           ))}
         </section>
       )}
@@ -76,4 +80,3 @@ export default function Page() {
     </div>
   );
 }
-
