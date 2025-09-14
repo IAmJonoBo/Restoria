@@ -49,13 +49,11 @@ class ORTGFPGANRestorer(Restorer):
             self._fallback.prepare(cfg)
 
     def restore(self, image, cfg: Dict[str, Any]) -> RestoreResult:
-        # If ORT session available, this is where the actual ONNX inference would happen.
-        # Since exporting GFPGAN to ONNX is out-of-scope for this scaffold, we always fallback for now.
+        # If ORT not ready, fallback to Torch
         if self._ort is None:
             if self._fallback is None:
                 self.prepare(cfg)
             res = self._fallback.restore(image, cfg)
-            # Attach ORT metadata for transparency
             res.metrics.update(
                 {
                     "backend": "torch-fallback",
@@ -66,21 +64,82 @@ class ORTGFPGANRestorer(Restorer):
             )
             return res
 
-        # Placeholder path: ORT session exists, but generator graph I/O mapping is not implemented yet.
-        # Return fallback image if available; otherwise, pass-thru image. Still record ORT provider info.
-        if self._fallback is None:
-            from .gfpgan import GFPGANRestorer  # local import
+        # Best-effort ORT inference per cropped face; fallback on any error
+        try:
+            import cv2  # type: ignore
+            import numpy as np  # type: ignore
+            from facexlib.utils.face_restoration_helper import FaceRestoreHelper  # type: ignore
 
-            self._fallback = GFPGANRestorer(
-                device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none")
+            upscale = int(cfg.get("upscale", 2))
+            helper = FaceRestoreHelper(
+                upscale,
+                face_size=512,
+                crop_ratio=(1, 1),
+                det_model=str(cfg.get("detector", "retinaface_resnet50")),
+                save_ext="png",
+                use_parse=bool(cfg.get("use_parse", True)),
+                device="cpu",
+                model_rootpath="gfpgan/weights",
             )
-            self._fallback.prepare(cfg)
-        res = self._fallback.restore(image, cfg)
-        res.metrics.update(
-            {
-                "backend": "onnxruntime+torch-fallback",
-                "ort_provider": self._ort_info.get("providers"),
-                "ort_init_sec": self._ort_info.get("init_sec"),
-            }
-        )
-        return res
+            helper.clean_all()
+            helper.read_image(image)
+            helper.get_face_landmarks_5(
+                only_center_face=bool(cfg.get("only_center_face", False)),
+                eye_dist_threshold=int(cfg.get("eye_dist_threshold", 5)),
+            )
+            helper.align_warp_face()
+
+            sess = self._ort
+            assert sess is not None
+            in_name = sess.get_inputs()[0].name
+            out_name = sess.get_outputs()[0].name
+
+            for cropped_face in helper.cropped_faces:
+                rgb = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2RGB)
+                rgb = cv2.resize(rgb, (512, 512), interpolation=cv2.INTER_CUBIC)
+                x = (rgb.astype("float32") / 255.0) * 2.0 - 1.0
+                x = np.transpose(x, (2, 0, 1))[None, ...]
+                y = sess.run([out_name], {in_name: x})[0]
+                if y.ndim == 4:
+                    y = y[0]
+                y = np.transpose(y, (1, 2, 0))
+                y = np.clip((y + 1.0) / 2.0, 0.0, 1.0)
+                bgr = cv2.cvtColor((y * 255.0).astype("uint8"), cv2.COLOR_RGB2BGR)
+                helper.add_restored_face(bgr)
+
+            bg_img = None
+            if self._bg is not None:
+                try:
+                    bg_img = self._bg.enhance(image, outscale=upscale)[0]
+                except Exception:
+                    bg_img = None
+            helper.get_inverse_affine(None)
+            restored_img = helper.paste_faces_to_input_image(upsample_img=bg_img)
+            return RestoreResult(
+                input_path=cfg.get("input_path"),
+                restored_path=None,
+                restored_image=restored_img,
+                cropped_faces=[],
+                restored_faces=[],
+                metrics={
+                    "backend": "onnxruntime",
+                    "ort_provider": self._ort_info.get("providers"),
+                    "ort_init_sec": self._ort_info.get("init_sec"),
+                },
+            )
+        except Exception:
+            if self._fallback is None:
+                from .gfpgan import GFPGANRestorer  # local import
+                self._fallback = GFPGANRestorer(
+                    device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none")
+                )
+                self._fallback.prepare(cfg)
+            res = self._fallback.restore(image, cfg)
+            res.metrics.update(
+                {
+                    "backend": "onnxruntime+torch-fallback",
+                    "ort_provider": self._ort_info.get("providers"),
+                    "ort_init_sec": self._ort_info.get("init_sec"),
+                }
+            )
+            return res
