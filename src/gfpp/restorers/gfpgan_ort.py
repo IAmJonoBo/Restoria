@@ -19,8 +19,11 @@ class ORTGFPGANRestorer(Restorer):
         self._ort = None
         self._ort_info: Dict[str, Any] = {}
         self._fallback = None
+        self._ort_ready = False
 
     def prepare(self, cfg: Dict[str, Any]) -> None:
+        from time import perf_counter
+
         from src.gfpp.engines.onnxruntime import available_eps, create_session, session_info  # type: ignore
         from .gfpgan import GFPGANRestorer
 
@@ -30,10 +33,14 @@ class ORTGFPGANRestorer(Restorer):
         self._ort_info["available_eps"] = eps
 
         if onnx_path:
+            t0 = perf_counter()
             sess = create_session(onnx_path)
+            init_sec = perf_counter() - t0
             if sess is not None:
                 self._ort = sess
                 self._ort_info.update(session_info(sess))
+                self._ort_info["init_sec"] = round(init_sec, 4)
+                self._ort_ready = True
         if self._ort is None:
             # Prepare fallback Torch restorer
             self._fallback = GFPGANRestorer(device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none"))
@@ -51,19 +58,19 @@ class ORTGFPGANRestorer(Restorer):
                 "backend": "torch-fallback",
                 "ort_available_eps": ",".join(self._ort_info.get("available_eps", []) or []),
                 "ort_provider": self._ort_info.get("providers"),
+                "ort_init_sec": self._ort_info.get("init_sec"),
             })
             return res
 
-        # Placeholder path: return a no-op result indicating ORT ran (not implemented)
-        return RestoreResult(
-            input_path=cfg.get("input_path"),
-            restored_path=None,
-            restored_image=image,
-            cropped_faces=[],
-            restored_faces=[],
-            metrics={
-                "backend": "onnxruntime",
-                "ort_provider": self._ort_info.get("providers"),
-            },
-        )
-
+        # Placeholder path: ORT session exists, but generator graph I/O mapping is not implemented yet.
+        # Return fallback image if available; otherwise, pass-thru image. Still record ORT provider info.
+        if self._fallback is None:
+            self._fallback = GFPGANRestorer(device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none"))
+            self._fallback.prepare(cfg)
+        res = self._fallback.restore(image, cfg)
+        res.metrics.update({
+            "backend": "onnxruntime+torch-fallback",
+            "ort_provider": self._ort_info.get("providers"),
+            "ort_init_sec": self._ort_info.get("init_sec"),
+        })
+        return res
