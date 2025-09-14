@@ -25,6 +25,7 @@ export default function Page() {
   const [identityLock, setIdentityLock] = React.useState(false);
   const [backend, setBackend] = React.useState("gfpgan");
   const [modelPathOnnx, setModelPathOnnx] = React.useState("");
+  const [codeformerFidelity, setCodeformerFidelity] = React.useState(0.5);
   const [events, setEvents] = React.useState<any[]>([]);
   const [images, setImages] = React.useState<{ input: string; output: string; metrics?: Record<string, any> }[]>([]);
   const [done, setDone] = React.useState(false);
@@ -35,7 +36,7 @@ export default function Page() {
     const res = await fetch("/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input: inputPath, backend, background, preset, quality, metrics, output: "results", dry_run: true, auto_backend: autoBackend, identity_lock: identityLock, model_path_onnx: backend === "gfpgan-ort" ? modelPathOnnx : undefined })
+      body: JSON.stringify({ input: inputPath, backend, background, preset, quality, metrics, output: "results", dry_run: true, auto_backend: autoBackend, identity_lock: identityLock, model_path_onnx: backend === "gfpgan-ort" ? modelPathOnnx : undefined, codeformer_fidelity: backend === "codeformer" ? codeformerFidelity : undefined })
     });
     if (!res.ok) return alert("Failed to submit job");
     const js: JobStatus = await res.json();
@@ -102,6 +103,13 @@ export default function Page() {
           <label>
             ONNX model path:
             <input value={modelPathOnnx} onChange={(e) => setModelPathOnnx(e.target.value)} style={{ marginLeft: 8, width: 300 }} placeholder="/path/to/gfpgan.onnx" />
+          </label>
+        )}
+        {backend === "codeformer" && (
+          <label>
+            Fidelity:
+            <input type="range" min={0} max={1} step={0.05} value={codeformerFidelity} onChange={(e) => setCodeformerFidelity(parseFloat(e.target.value))} style={{ marginLeft: 8 }} />
+            <span style={{ marginLeft: 8 }}>{codeformerFidelity.toFixed(2)}</span>
           </label>
         )}
         <label>

@@ -75,6 +75,7 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--version", default="1.4")
     p.add_argument("--no-download", action="store_true")
     p.add_argument("--model-path-onnx", default=None, help="Path to ONNX model (for gfpgan-ort backend)")
+    p.add_argument("--codeformer-fidelity", type=float, default=None, help="CodeFormer fidelity (0..1)")
     args = p.parse_args(argv)
 
     os.makedirs(args.output, exist_ok=True)
@@ -127,6 +128,13 @@ def cmd_run(argv: list[str]) -> int:
         "weight": preset_weight,
         "no_download": args.no_download,
     }
+    if chosen_backend == "gfpgan-ort" and args.model_path_onnx:
+        cfg["model_path_onnx"] = args.model_path_onnx
+    if chosen_backend == "codeformer" and args.codeformer_fidelity is not None:
+        try:
+            cfg["weight"] = float(args.codeformer_fidelity)
+        except Exception:
+            pass
     if chosen_backend == "gfpgan-ort" and args.model_path_onnx:
         cfg["model_path_onnx"] = args.model_path_onnx
 

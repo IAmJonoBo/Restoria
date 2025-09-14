@@ -23,6 +23,7 @@ class JobSpec(BaseModel):
     identity_threshold: float = Field(0.25, description="Threshold for identity cosine to trigger retry")
     optimize: bool = Field(False, description="Try multiple weights and pick best by metric")
     weights_cand: str = Field("0.3,0.5,0.7", description="Comma-separated candidate weights for optimize")
+    codeformer_fidelity: Optional[float] = Field(None, description="CodeFormer fidelity (0..1)")
 
 
 class MetricCard(BaseModel):

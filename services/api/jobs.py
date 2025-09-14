@@ -134,6 +134,13 @@ class JobManager:
                     "weight": preset_weight,
                     "no_download": False,
                 }
+                if spec.backend == "gfpgan-ort" and spec.model_path_onnx:
+                    cfg["model_path_onnx"] = spec.model_path_onnx
+                if spec.backend == "codeformer" and spec.codeformer_fidelity is not None:
+                    try:
+                        cfg["weight"] = float(spec.codeformer_fidelity)
+                    except Exception:
+                        pass
                 arc = ArcFaceIdentity(no_download=True) if spec.metrics in {"fast", "full"} else None
                 lpips = LPIPSMetric() if spec.metrics == "full" else None
 
