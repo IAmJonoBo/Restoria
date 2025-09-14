@@ -33,6 +33,12 @@ MODEL_REGISTRY = {
         "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth",
         "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
     },
+    # Alias entry: RestoreFormer++ currently reuses the same weights as RestoreFormer
+    "RestoreFormerPP": {
+        "filename": "RestoreFormer.pth",
+        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth",
+        "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
+    },
 }
 
 

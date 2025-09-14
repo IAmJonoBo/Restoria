@@ -74,8 +74,8 @@ class JobManager:
                     metrics = {"runtime_sec": time.time() - t0}
                     # Merge backend metrics from restorer if available (e.g., ORT provider)
                     try:
-                        if hasattr(res, "metrics") and isinstance(res.metrics, dict):
-                            for k, v in res.metrics.items():
+                        if res is not None and getattr(res, "metrics", None):
+                            for k, v in res.metrics.items():  # type: ignore[union-attr]
                                 if v is not None:
                                     metrics[k] = v
                     except Exception:

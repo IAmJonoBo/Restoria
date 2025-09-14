@@ -13,6 +13,10 @@ nav:
     - Colab: usage/colab.md
     - Gradio: usage/gradio.md
     - Recipes: usage/recipes.md
+  - Guides:
+    - UI Guide: UI_GUIDE.md
+    - ORT Guide: ORT_GUIDE.md
+    - Engine Decisions: DECISION_TABLE.md
   - Compatibility: COMPATIBILITY.md
   - Troubleshooting: troubleshooting.md
   - FAQ: faq.md

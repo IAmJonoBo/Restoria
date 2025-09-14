@@ -1,0 +1,25 @@
+name: sbom
+
+on:
+  push:
+    branches: [ main, master, feat/** ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  cyclonedx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SBOM (CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          output-file: sbom.cdx.json
+          format: cyclonedx-json
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.cdx.json
+
