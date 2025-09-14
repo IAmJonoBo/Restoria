@@ -18,6 +18,11 @@ class JobSpec(BaseModel):
     output: str = Field("results")
     dry_run: bool = Field(False, description="If true, simulate run without loading heavy models")
     model_path_onnx: Optional[str] = Field(None, description="Path to ONNX model (for ORT backends)")
+    auto_backend: bool = Field(False, description="Select backend per-image using heuristics")
+    identity_lock: bool = Field(False, description="Retry with stricter preset if identity drops")
+    identity_threshold: float = Field(0.25, description="Threshold for identity cosine to trigger retry")
+    optimize: bool = Field(False, description="Try multiple weights and pick best by metric")
+    weights_cand: str = Field("0.3,0.5,0.7", description="Comma-separated candidate weights for optimize")
 
 
 class MetricCard(BaseModel):

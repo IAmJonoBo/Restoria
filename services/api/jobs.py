@@ -129,10 +129,65 @@ class JobManager:
                         await job.events.put({"type": "warn", "msg": f"Failed to read: {pth}"})
                         continue
                     cfg["input_path"] = pth
+                    # Auto backend per image
+                    if spec.auto_backend:
+                        try:
+                            from gfpgan.auto.engine_selector import select_engine_for_image  # type: ignore
+
+                            bname = select_engine_for_image(pth).engine
+                        except Exception:
+                            bname = spec.backend
+                        if bname != spec.backend:
+                            if bname == "gfpgan":
+                                rest = GFPGANRestorer(device="auto", bg_upsampler=bg)
+                            elif bname == "codeformer":
+                                rest = CodeFormerRestorer(device="auto", bg_upsampler=bg)
+                            elif bname in {"restoreformer", "restoreformerpp"}:
+                                rest = RestoreFormerPP(device="auto", bg_upsampler=bg)
+
                     # Pass through model_path_onnx when present
                     if isinstance(rest, ORTGFPGANRestorer) and spec.model_path_onnx:
                         cfg["model_path_onnx"] = spec.model_path_onnx
-                    res = rest.restore(img, cfg)
+
+                    # Optional optimize: try several weights and pick best by metric
+                    chosen_weight = cfg.get("weight")
+                    res = None
+                    if spec.optimize:
+                        try:
+                            cand = [min(max(float(x.strip()), 0.0), 1.0) for x in spec.weights_cand.split(",") if x.strip()]
+                        except Exception:
+                            cand = [0.3, 0.5, 0.7]
+                        import tempfile, cv2
+                        best_score = None
+                        best_res = None
+                        best_w = None
+                        for w in cand:
+                            cfg["weight"] = w
+                            r_try = rest.restore(img, cfg)
+                            score = None
+                            if arc and arc.available():
+                                td = tempfile.mkdtemp()
+                                a = os.path.join(td, "in.png"); b = os.path.join(td, "out.png")
+                                cv2.imwrite(a, img)
+                                cv2.imwrite(b, r_try.restored_image if (r_try and r_try.restored_image is not None) else img)
+                                s = arc.cosine_from_paths(a, b)
+                                score = s if s is not None else None
+                            if score is None and lpips and lpips.available():
+                                td = tempfile.mkdtemp()
+                                a = os.path.join(td, "in.png"); b = os.path.join(td, "out.png")
+                                cv2.imwrite(a, img)
+                                cv2.imwrite(b, r_try.restored_image if (r_try and r_try.restored_image is not None) else img)
+                                d = lpips.distance_from_paths(a, b)
+                                score = -d if isinstance(d, float) else None
+                            if score is None:
+                                score = -abs(w - float(preset_weight))
+                            if best_score is None or score > best_score:
+                                best_score, best_res, best_w = score, r_try, w
+                        res = best_res
+                        chosen_weight = best_w
+                        cfg["weight"] = chosen_weight
+                    else:
+                        res = rest.restore(img, cfg)
                     base = os.path.splitext(os.path.basename(pth))[0]
                     out_img = os.path.join(job.results_path or spec.output, f"{base}.png")
                     if res and res.restored_image is not None:
@@ -144,6 +199,24 @@ class JobManager:
                         metrics["arcface_cosine"] = arc.cosine_from_paths(pth, out_img)
                     if lpips and lpips.available():
                         metrics["lpips_alex"] = lpips.distance_from_paths(pth, out_img)
+                    # Identity lock retry if below threshold
+                    if spec.identity_lock and arc and arc.available():
+                        import tempfile, cv2
+                        td = tempfile.mkdtemp()
+                        a = os.path.join(td, "in.png"); b = os.path.join(td, "out.png")
+                        cv2.imwrite(a, img)
+                        cv2.imwrite(b, res.restored_image if (res and res.restored_image is not None) else img)
+                        s0 = arc.cosine_from_paths(a, b)
+                        if s0 is not None and s0 < float(spec.identity_threshold):
+                            cfg_strict = dict(cfg)
+                            cfg_strict["weight"] = max(0.2, float(cfg.get("weight", preset_weight)) - 0.2)
+                            r2 = rest.restore(img, cfg_strict)
+                            cv2.imwrite(b, r2.restored_image if (r2 and r2.restored_image is not None) else img)
+                            s1 = arc.cosine_from_paths(a, b)
+                            if s1 is not None and s1 > (s0 or 0):
+                                res = r2
+                                save_image(out_img, res.restored_image if res and res.restored_image is not None else img)
+                                metrics["identity_retry"] = True
                     count += 1
                     job.result_count = count
                     job.progress = count / n
