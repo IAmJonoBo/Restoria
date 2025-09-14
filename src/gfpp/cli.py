@@ -43,7 +43,7 @@ def _set_deterministic(seed: int | None, deterministic: bool) -> None:
 def cmd_run(argv: list[str]) -> int:
     p = argparse.ArgumentParser(prog="gfpup run")
     p.add_argument("--input", required=True)
-    p.add_argument("--backend", default="gfpgan", choices=["gfpgan", "codeformer", "restoreformerpp", "diffbir", "hypir"])
+    p.add_argument("--backend", default="gfpgan", choices=["gfpgan", "gfpgan-ort", "codeformer", "restoreformerpp", "diffbir", "hypir"])
     p.add_argument("--background", default="realesrgan", choices=["realesrgan", "swinir", "none"])
     p.add_argument("--preset", default="natural", choices=["natural", "detail", "document"])
     p.add_argument("--compile", default="none", choices=["none", "default", "max"])
@@ -74,6 +74,10 @@ def cmd_run(argv: list[str]) -> int:
     # Choose restorer
     if args.backend == "gfpgan":
         rest = GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile)
+    elif args.backend == "gfpgan-ort":
+        from .restorers.gfpgan_ort import ORTGFPGANRestorer
+
+        rest = ORTGFPGANRestorer(device=args.device, bg_upsampler=bg)
     elif args.backend == "codeformer":
         rest = CodeFormerRestorer(device=args.device, bg_upsampler=bg)
     elif args.backend == "restoreformerpp":
