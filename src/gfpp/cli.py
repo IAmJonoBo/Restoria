@@ -51,6 +51,10 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--seed", type=int, default=None)
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--metrics", default="off", choices=["off", "fast", "full"])
+    p.add_argument("--identity-lock", action="store_true", help="Retry with stricter preset if identity drops")
+    p.add_argument("--identity-threshold", type=float, default=0.25)
+    p.add_argument("--optimize", action="store_true", help="Try multiple weights and pick best by metric")
+    p.add_argument("--weights-cand", default="0.3,0.5,0.7", help="Comma-separated candidate weights for --optimize")
     p.add_argument("--video", action="store_true")
     p.add_argument("--temporal", action="store_true")
     p.add_argument("--output", required=True)
@@ -116,7 +120,63 @@ def cmd_run(argv: list[str]) -> int:
         except Exception:
             pass
 
-        res = rest.restore(img, cfg)
+        # Optional multi-try optimizer
+        chosen_weight = cfg.get("weight")
+        res = None
+        if args.optimize:
+            # Parse candidate weights, keep within [0,1]
+            try:
+                cand = [min(max(float(x.strip()), 0.0), 1.0) for x in args.weights_cand.split(",") if x.strip()]
+            except Exception:
+                cand = [0.3, 0.5, 0.7]
+            best_score = None
+            best_res = None
+            best_w = None
+            for w in cand:
+                cfg["weight"] = w
+                r_try = rest.restore(img, cfg)
+                # Score: prefer ArcFace cosine (higher better), fallback to negative LPIPS (lower better -> higher score)
+                score = None
+                if args.metrics in {"fast", "full"} and arc and arc.available():
+                    # identity vs input; use restored image path later but we operate in-memory for now
+                    # Save temp files if needed for metric calculation via file paths
+                    import tempfile
+                    import cv2
+                    td = tempfile.mkdtemp()
+                    a = os.path.join(td, "in.png")
+                    b = os.path.join(td, "out.png")
+                    cv2.imwrite(a, img)
+                    if r_try and r_try.restored_image is not None:
+                        cv2.imwrite(b, r_try.restored_image)
+                    else:
+                        b = a
+                    s = arc.cosine_from_paths(a, b)
+                    score = s if s is not None else None
+                if score is None and args.metrics == "full" and lpips and lpips.available():
+                    import tempfile
+                    import cv2
+                    td = tempfile.mkdtemp()
+                    a = os.path.join(td, "in.png")
+                    b = os.path.join(td, "out.png")
+                    cv2.imwrite(a, img)
+                    if r_try and r_try.restored_image is not None:
+                        cv2.imwrite(b, r_try.restored_image)
+                    else:
+                        b = a
+                    d = lpips.distance_from_paths(a, b)
+                    score = -d if isinstance(d, float) else None
+                # If no metrics, fallback to w proximity to preset
+                if score is None:
+                    score = -abs(w - preset_weight)
+                if best_score is None or score > best_score:
+                    best_score = score
+                    best_res = r_try
+                    best_w = w
+            res = best_res
+            chosen_weight = best_w
+            cfg["weight"] = chosen_weight
+        else:
+            res = rest.restore(img, cfg)
         dur = time.time() - t0
         try:
             import torch  # type: ignore
@@ -138,6 +198,31 @@ def cmd_run(argv: list[str]) -> int:
             "restored_img": out_img,
             "metrics": {},
         }
+        if chosen_weight is not None:
+            rec["metrics"]["weight"] = chosen_weight
+        # Identity lock: if identity below threshold and ArcFace available, retry with stricter preset
+        if args.identity_lock and (args.metrics in {"fast", "full"}) and arc and arc.available():
+            import tempfile
+            import cv2
+            td = tempfile.mkdtemp()
+            a = os.path.join(td, "in.png")
+            b = os.path.join(td, "out.png")
+            cv2.imwrite(a, img)
+            cv2.imwrite(b, res.restored_image if (res and res.restored_image is not None) else img)
+            s0 = arc.cosine_from_paths(a, b)
+            if s0 is not None and s0 < args.identity_threshold:
+                # Try stricter: lower weight
+                stricter = max(0.2, float(cfg.get("weight", preset_weight)) - 0.2)
+                cfg_strict = dict(cfg)
+                cfg_strict["weight"] = stricter
+                r2 = rest.restore(img, cfg_strict)
+                cv2.imwrite(b, r2.restored_image if (r2 and r2.restored_image is not None) else img)
+                s1 = arc.cosine_from_paths(a, b)
+                if s1 is not None and s1 > s0:
+                    res = r2
+                    save_image(out_img, res.restored_image if res.restored_image is not None else img)
+                    rec["metrics"]["identity_retry"] = True
+                    rec["metrics"]["weight"] = stricter
         # Compute metrics vs input/restored when possible
         if args.metrics != "off":
             if arc and arc.available():
