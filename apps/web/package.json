@@ -1,0 +1,19 @@
+{
+  "name": "gfpp-web",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000"
+  },
+  "dependencies": {
+    "next": "15.0.0-canary",
+    "react": "19.0.0-rc-5f4bb95c-20240919",
+    "react-dom": "19.0.0-rc-5f4bb95c-20240919"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}
+
