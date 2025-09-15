@@ -556,6 +556,8 @@ def main(argv: list[str] | None = None) -> int:
             export_gfpgan_onnx(version=args.version, model_path=args.model_path, out_path=args.out)
         except NotImplementedError as e:
             print(str(e))
+            print("\nTip: Install ORT extras for validation: pip install -e \".[ort]\"\n"
+                  "Then try running gfpup doctor to check providers.")
             return 0
         return 0
     print(f"Unknown subcommand: {cmd}")
