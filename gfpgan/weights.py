@@ -93,21 +93,18 @@ def resolve_model_weight(
             from huggingface_hub import hf_hub_download  # type: ignore
 
             # Use specified revision, environment variable, or secure default
-            revision = (
-                spec.get("revision")
-                or os.environ.get("GFPGAN_HF_REVISION")
-                or "main"
-            )
+            revision = spec.get("revision") or os.environ.get("GFPGAN_HF_REVISION") or "main"
 
             # Ensure revision is explicitly set for security
             if not spec.get("revision") and not os.environ.get("GFPGAN_HF_REVISION"):
                 # Log warning that we're using a default revision
                 import warnings
+
                 warnings.warn(
                     f"Model {model_name}: Using default 'main' branch for HuggingFace download. "
                     f"Consider pinning to a specific revision in model spec or GFPGAN_HF_REVISION env var.",
                     UserWarning,
-                    stacklevel=2
+                    stacklevel=2,
                 )
 
             path = hf_hub_download(

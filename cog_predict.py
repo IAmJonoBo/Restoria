@@ -33,17 +33,11 @@ class Predictor(BasePredictor):
                 "wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-x4v3.pth -P ./gfpgan/weights"
             )
         if not os.path.exists("gfpgan/weights/GFPGANv1.2.pth"):
-            os.system(
-                "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.2.pth -P ./gfpgan/weights"
-            )
+            os.system("wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.2.pth -P ./gfpgan/weights")
         if not os.path.exists("gfpgan/weights/GFPGANv1.3.pth"):
-            os.system(
-                "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth -P ./gfpgan/weights"
-            )
+            os.system("wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth -P ./gfpgan/weights")
         if not os.path.exists("gfpgan/weights/GFPGANv1.4.pth"):
-            os.system(
-                "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth -P ./gfpgan/weights"
-            )
+            os.system("wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth -P ./gfpgan/weights")
         if not os.path.exists("gfpgan/weights/RestoreFormer.pth"):
             os.system(
                 "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth -P ./gfpgan/weights"

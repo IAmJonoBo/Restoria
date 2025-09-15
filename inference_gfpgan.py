@@ -407,10 +407,11 @@ def main():
                 )
             except ImportError:
                 import warnings
+
                 warnings.warn(
                     "RealESRGAN dependencies not available; background upsampling disabled. "
                     "Install realesrgan package to enable background upsampling.",
-                    stacklevel=2
+                    stacklevel=2,
                 )
                 bg_upsampler = None
     else:

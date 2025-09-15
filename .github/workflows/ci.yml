@@ -84,10 +84,6 @@ jobs:
           set -euo pipefail
           urls=(
             "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth"
-            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth"
-            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth"
-            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth"
-            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth"
             "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth"
           )
           for u in "${urls[@]}"; do
@@ -111,7 +107,7 @@ jobs:
       - name: Build docs
         run: |
           python -m pip install --upgrade pip
-          pip install -q mkdocs mkdocs-material
+          pip install -q mkdocs mkdocs-material mike
           mkdocs build --strict
 
   audit:

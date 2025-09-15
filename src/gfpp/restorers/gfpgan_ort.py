@@ -130,6 +130,7 @@ class ORTGFPGANRestorer(Restorer):
         except Exception:
             if self._fallback is None:
                 from .gfpgan import GFPGANRestorer  # local import
+
                 self._fallback = GFPGANRestorer(
                     device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none")
                 )

@@ -79,7 +79,7 @@ async def submit_job(spec: JobSpec):
     # Save task reference to prevent garbage collection
     task = asyncio.create_task(manager.run(job.id))
     # Store task reference (could use WeakSet in production)
-    if not hasattr(app.state, 'background_tasks'):
+    if not hasattr(app.state, "background_tasks"):
         app.state.background_tasks = set()
     app.state.background_tasks.add(task)
     task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
@@ -160,7 +160,7 @@ async def rerun_job(job_id: str, overrides: dict | None = None):
 
     # Save task reference to prevent garbage collection
     task = asyncio.create_task(manager.run(j.id))
-    if not hasattr(app.state, 'background_tasks'):
+    if not hasattr(app.state, "background_tasks"):
         app.state.background_tasks = set()
     app.state.background_tasks.add(task)
     task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
