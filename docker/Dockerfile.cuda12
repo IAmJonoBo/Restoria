@@ -6,9 +6,17 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PIP_NO_CACHE_DIR=1 \
     GFPGAN_WEIGHTS_DIR=/opt/gfpgan/weights
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-venv python3-pip git curl ca-certificates ffmpeg && \
-    rm -rf /var/lib/apt/lists/*
+# Create non-root user and install packages
+RUN groupadd -r gfpgan && useradd -r -g gfpgan gfpgan && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    ffmpeg \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -19,9 +27,10 @@ RUN pip3 install --upgrade pip && \
 # Copy and install project (editable)
 COPY . /app
 RUN pip3 install -e .[dev,torch2] && \
-    mkdir -p ${GFPGAN_WEIGHTS_DIR}
+    mkdir -p ${GFPGAN_WEIGHTS_DIR} && \
+    chown -R gfpgan:gfpgan /app ${GFPGAN_WEIGHTS_DIR}
 
-# Pre-warm popular weights (best-effort)
+# Pre-warm popular weights (best-effort) as root, then switch to user
 RUN python3 - <<'PY'
 import os
 from gfpgan.weights import resolve_model_weight
@@ -32,6 +41,9 @@ for m in ("GFPGANv1.4", "GFPGANv1.3", "RestoreFormer"):
     except Exception as e:
         print("skip cache:", m, e)
 PY
+
+# Switch to non-root user
+USER gfpgan
 
 HEALTHCHECK --interval=30s --timeout=5s CMD python3 -c "import gfpgan; print('ok')" || exit 1
 

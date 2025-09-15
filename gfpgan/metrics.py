@@ -25,7 +25,7 @@ def try_load_arcface(no_download: bool = False):
                 progress=True,
             )
         model = ResNetArcFace(block="IRBlock", layers=(2, 2, 2, 2), use_se=False)
-        model.load_state_dict(torch.load(arc_path, map_location="cpu"))
+        model.load_state_dict(torch.load(arc_path, map_location="cpu", weights_only=True))
         model.eval()
         return model
     except Exception:

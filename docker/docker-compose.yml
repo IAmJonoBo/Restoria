@@ -9,7 +9,7 @@ services:
       - PYTHONUNBUFFERED=1
     ports:
       - "8001:8001"
-    command: ["python", "-m", "services.api.main"]
+    command: [python, -m, services.api.main]
   # worker:
   #   image: gfpp-api:latest
   #   command: ["python", "-m", "services.api.worker"]

@@ -375,7 +375,7 @@ def main():
         if device == "cpu":  # CPU
             import warnings
 
-            warnings.warn("RealESRGAN on CPU is slow; background upsampling disabled.")
+            warnings.warn("RealESRGAN on CPU is slow; background upsampling disabled.", stacklevel=2)
             bg_upsampler = None
         else:
             from basicsr.archs.rrdbnet_arch import RRDBNet
@@ -449,7 +449,7 @@ def main():
             from gfpgan.weights import resolve_model_weight
 
             model_path, model_sha256 = resolve_model_weight(model_name, no_download=args.no_download, prefer="auto")
-        except Exception:
+        except Exception as e:
             # Fallback to legacy path/url logic
             model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
             if not os.path.isfile(model_path):
@@ -458,7 +458,7 @@ def main():
                 if args.no_download:
                     raise FileNotFoundError(
                         f"Model weights {model_name}.pth not found locally and --no-download is set."
-                    )
+                    ) from e
                 model_path = url
             model_sha256 = None
 
@@ -729,8 +729,8 @@ def main():
             if args.sweep_weight:
                 try:
                     weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
-                except Exception:
-                    raise ValueError("Invalid --sweep-weight; expected comma-separated floats")
+                except Exception as e:
+                    raise ValueError("Invalid --sweep-weight; expected comma-separated floats") from e
             else:
                 weights = [args.weight]
             # If autopilot selected best, override
@@ -851,8 +851,8 @@ def main():
         if args.sweep_weight:
             try:
                 weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
-            except Exception:
-                raise ValueError("Invalid --sweep-weight; expected comma-separated floats")
+            except Exception as e:
+                raise ValueError("Invalid --sweep-weight; expected comma-separated floats") from e
         else:
             weights = [args.weight]
 

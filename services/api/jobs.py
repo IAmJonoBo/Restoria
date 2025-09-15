@@ -72,14 +72,7 @@ class JobManager:
                     out_img = os.path.join(job.results_path or spec.output, f"{base}.png")
                     save_image(out_img, img)
                     metrics = {"runtime_sec": time.time() - t0}
-                    # Merge backend metrics from restorer if available (e.g., ORT provider)
-                    try:
-                        if res is not None and getattr(res, "metrics", None):
-                            for k, v in res.metrics.items():  # type: ignore[union-attr]
-                                if v is not None:
-                                    metrics[k] = v
-                    except Exception:
-                        pass
+                    # In dry-run mode, no restorer metrics are available
                     count += 1
                     job.result_count = count
                     job.progress = count / n

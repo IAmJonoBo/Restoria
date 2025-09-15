@@ -95,7 +95,9 @@ def resolve_model_weight(
             path = hf_hub_download(
                 repo_id=hf_repo,
                 filename=spec["filename"],
-                local_files_only=offline,
+                subfolder=spec.get("subfolder"),
+                revision="main",  # Pin to main branch for security
+                cache_dir=None,  # Use default cache
             )
             # Optionally copy/symlink to weights_dir; return cached path directly
             return path, _sha256(path)
@@ -115,4 +117,4 @@ def resolve_model_weight(
         path = load_file_from_url(url=spec["url"], model_dir=weights_dir, progress=True, file_name=spec["filename"])
         return path, _sha256(path)
     except Exception as e:
-        raise FileNotFoundError(f"Failed to download weight from {spec['url']}: {e}")
+        raise FileNotFoundError(f"Failed to download weight from {spec['url']}: {e}") from e

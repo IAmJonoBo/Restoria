@@ -1,5 +1,9 @@
 name: sbom
 
+# Secure permissions - only grant what's needed
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ main, master, feat/** ]

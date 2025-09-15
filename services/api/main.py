@@ -198,4 +198,5 @@ def main():  # pragma: no cover
     import uvicorn
 
     port = int(os.environ.get("PORT", "8001"))
-    uvicorn.run("services.api.main:app", host="0.0.0.0", port=port, reload=False)
+    host = os.environ.get("HOST", "127.0.0.1")  # Default to localhost for security
+    uvicorn.run("services.api.main:app", host=host, port=port, reload=False)

@@ -27,7 +27,8 @@ class CodeFormerRestorer:
 
         # Initialize model
         self.codeformer = CodeFormer().to(self.device)
-        loadnet = torch.load(model_path, map_location=self.device)
+        # Load the checkpoint
+        loadnet = torch.load(model_path, map_location=self.device, weights_only=True)
         key = "params_ema" if "params_ema" in loadnet else "params"
         self.codeformer.load_state_dict(loadnet[key], strict=True)
         self.codeformer.eval()

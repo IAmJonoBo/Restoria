@@ -16,7 +16,7 @@ services:
       - GFPGAN_WEIGHTS_DIR=/cache/weights
     volumes:
       - weights:/cache/weights
-    command: ["--dry-run", "-v", "1.4", "--verbose"]
+    command: [--dry-run, -v, "1.4", --verbose]
 
 volumes:
   weights: {}

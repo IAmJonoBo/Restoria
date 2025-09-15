@@ -34,12 +34,12 @@ def healthz():
 
 @app.post("/restore")
 async def restore(
-    files: List[UploadFile] = File(...),
     version: str = "1.4",
     upscale: int = 2,
     backend: str = "gfpgan",
     device: str = "auto",
     dry_run: bool = True,
+    files: List[UploadFile] = File(...),
 ):
     # Smoke-friendly default: dry_run True. In that mode, only echo back metadata.
     if dry_run or _env_flag("NB_CI_SMOKE"):
@@ -150,4 +150,5 @@ def main():  # pragma: no cover - convenience entrypoint
     import uvicorn
 
     port = int(os.environ.get("PORT", "8000"))
-    uvicorn.run("gfpgan.api.server:app", host="0.0.0.0", port=port, reload=False)
+    host = os.environ.get("HOST", "127.0.0.1")  # Default to localhost for security
+    uvicorn.run("gfpgan.api.server:app", host=host, port=port, reload=False)
