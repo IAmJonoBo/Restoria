@@ -1,0 +1,2874 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Professional face restoration powered by generative AI">
+      
+      
+      
+        <link rel="canonical" href="https://IAmJonoBo.github.io/GFPGAN/1.0/product/model-card/">
+      
+      
+        <link rel="prev" href="../../api/">
+      
+      
+        <link rel="next" href="../data-card/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Model Card - GFPGAN</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#model-card-gfpgan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GFPGAN" class="md-header__button md-logo" aria-label="GFPGAN" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GFPGAN
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Model Card
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/IAmJonoBo/GFPGAN" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    IAmJonoBo/GFPGAN
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/quickstart.md" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/face-enhancement.md" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Product Info
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../governance/contributing/" class="md-tabs__link">
+          
+  
+  
+  Governance
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../faq/" class="md-tabs__link">
+          
+  
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GFPGAN" class="md-nav__button md-logo" aria-label="GFPGAN" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    GFPGAN
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/IAmJonoBo/GFPGAN" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    IAmJonoBo/GFPGAN
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/dev-setup.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development Environment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/face-enhancement.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Face Enhancement
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/batch-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Batch Processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/choose-backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Choose Backend
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics & Evaluation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HARDWARE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hardware Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/colab/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Notebooks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MIGRATION.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ACCESSIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Accessibility
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Core Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/models.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utils.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Utilities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Product Info
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Product Info
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Model Card
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Model Card
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intended-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intended Use
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Intended Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Primary Use Cases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intended-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intended Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#out-of-scope-uses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Out-of-Scope Uses
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Versions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance and Limitations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance and Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Performance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quantitative-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quantitative Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qualitative-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Qualitative Assessment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-biases-and-fairness" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known Biases and Fairness
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Biases and Fairness">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demographic-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demographic Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigation-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigation Strategies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Limitations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hardware-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Constraints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ethical-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ethical Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ethical Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#responsible-ai-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Responsible AI Principles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Responsible AI Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transparency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fairness" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fairness
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#privacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accountability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accountability
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#potential-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Potential Risks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Potential Risks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#misuse-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misuse Scenarios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-mitigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Risk Mitigation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation and Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation and Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Quality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identity Preservation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fairness-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fairness Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#human-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Human Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environmental-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environmental Impact
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environmental Impact">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#carbon-footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Carbon Footprint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sustainability-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sustainability Measures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Governance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Control
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-and-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access and Distribution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contact-and-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contact and Feedback
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contact and Feedback">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reporting-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reporting Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references-and-citations" class="md-nav__link">
+    <span class="md-ellipsis">
+      References and Citations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References and Citations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#academic-citations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Academic Citations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Work
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-card/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data Card
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Governance
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Governance
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Security
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/maintainers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Maintainers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Versioning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/changelog.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/acknowledgements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Acknowledgements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/license.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intended-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intended Use
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Intended Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Primary Use Cases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intended-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intended Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#out-of-scope-uses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Out-of-Scope Uses
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Versions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance and Limitations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance and Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Performance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quantitative-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quantitative Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qualitative-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Qualitative Assessment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-biases-and-fairness" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known Biases and Fairness
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Biases and Fairness">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demographic-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demographic Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigation-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigation Strategies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Limitations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hardware-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Constraints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ethical-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ethical Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ethical Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#responsible-ai-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Responsible AI Principles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Responsible AI Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transparency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fairness" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fairness
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#privacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accountability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accountability
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#potential-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Potential Risks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Potential Risks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#misuse-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Misuse Scenarios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-mitigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Risk Mitigation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation and Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation and Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Quality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identity Preservation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fairness-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fairness Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#human-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Human Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environmental-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environmental Impact
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environmental Impact">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#carbon-footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Carbon Footprint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sustainability-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sustainability Measures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Governance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Control
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-and-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access and Distribution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contact-and-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contact and Feedback
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contact and Feedback">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reporting-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reporting Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references-and-citations" class="md-nav__link">
+    <span class="md-ellipsis">
+      References and Citations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References and Citations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#academic-citations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Academic Citations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Work
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/IAmJonoBo/GFPGAN/edit/main/docs/product/model-card.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="model-card-gfpgan">Model Card: GFPGAN<a class="headerlink" href="#model-card-gfpgan" title="Permanent link">&para;</a></h1>
+<h2 id="model-overview">Model Overview<a class="headerlink" href="#model-overview" title="Permanent link">&para;</a></h2>
+<p><strong>Model Name</strong>: GFPGAN (Generative Facial Prior GAN)
+<strong>Version</strong>: 1.4
+<strong>Model Type</strong>: Generative Adversarial Network for face restoration
+<strong>License</strong>: Apache 2.0</p>
+<h2 id="intended-use">Intended Use<a class="headerlink" href="#intended-use" title="Permanent link">&para;</a></h2>
+<h3 id="primary-use-cases">Primary Use Cases<a class="headerlink" href="#primary-use-cases" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Photo restoration</strong>: Enhance damaged, blurred, or low-quality face photos</li>
+<li><strong>Image enhancement</strong>: Improve facial details in compressed or degraded images</li>
+<li><strong>Historical photo recovery</strong>: Restore old or deteriorated photographs</li>
+<li><strong>Content creation</strong>: Enhance facial quality in digital media</li>
+</ul>
+<h3 id="intended-users">Intended Users<a class="headerlink" href="#intended-users" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Photographers</strong>: Professional and amateur photo enhancement</li>
+<li><strong>Archivists</strong>: Digital preservation of historical photographs</li>
+<li><strong>Content creators</strong>: Video and image post-production</li>
+<li><strong>Researchers</strong>: Computer vision and image processing studies</li>
+</ul>
+<h3 id="out-of-scope-uses">Out-of-Scope Uses<a class="headerlink" href="#out-of-scope-uses" title="Permanent link">&para;</a></h3>
+<p>❌ <strong>Not intended for:</strong>
+- Real-time video processing (performance limitations)
+- Non-facial image enhancement (specialized for faces)
+- Identity modification or deepfake creation
+- Medical diagnosis or analysis
+- Surveillance or law enforcement identification</p>
+<h2 id="model-details">Model Details<a class="headerlink" href="#model-details" title="Permanent link">&para;</a></h2>
+<h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Base Model</strong>: StyleGAN2 generator with facial priors</li>
+<li><strong>Training Framework</strong>: PyTorch with custom loss functions</li>
+<li><strong>Input Resolution</strong>: 512x512 pixels (faces automatically detected and cropped)</li>
+<li><strong>Output Resolution</strong>: 512x512 to 2048x2048 (depending on upscale factor)</li>
+</ul>
+<h3 id="model-versions">Model Versions<a class="headerlink" href="#model-versions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Release Date</th>
+<th>Key Features</th>
+<th>Model Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1.4</td>
+<td>2024-Q4</td>
+<td>Best identity preservation</td>
+<td>~348MB</td>
+</tr>
+<tr>
+<td>v1.3</td>
+<td>2024-Q2</td>
+<td>Improved texture quality</td>
+<td>~348MB</td>
+</tr>
+<tr>
+<td>v1.2</td>
+<td>2024-Q1</td>
+<td>Enhanced stability</td>
+<td>~348MB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="training-data">Training Data<a class="headerlink" href="#training-data" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ TODO</strong>: Detailed training data information needed</p>
+<ul>
+<li><strong>Dataset composition</strong>: [NEEDS DOCUMENTATION]</li>
+<li><strong>Data sources</strong>: [NEEDS DOCUMENTATION]</li>
+<li><strong>Number of images</strong>: [NEEDS DOCUMENTATION]</li>
+<li><strong>Demographics</strong>: [NEEDS ANALYSIS]</li>
+<li><strong>Geographic coverage</strong>: [NEEDS ANALYSIS]</li>
+</ul>
+<h2 id="performance-and-limitations">Performance and Limitations<a class="headerlink" href="#performance-and-limitations" title="Permanent link">&para;</a></h2>
+<h3 id="model-performance">Model Performance<a class="headerlink" href="#model-performance" title="Permanent link">&para;</a></h3>
+<h4 id="quantitative-metrics">Quantitative Metrics<a class="headerlink" href="#quantitative-metrics" title="Permanent link">&para;</a></h4>
+<p><strong>⚠️ TODO</strong>: Comprehensive evaluation needed</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>GFPGAN v1.4</th>
+<th>GFPGAN v1.3</th>
+<th>Baseline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LPIPS ↓</td>
+<td>[TODO]</td>
+<td>[TODO]</td>
+<td>[TODO]</td>
+</tr>
+<tr>
+<td>DISTS ↓</td>
+<td>[TODO]</td>
+<td>[TODO]</td>
+<td>[TODO]</td>
+</tr>
+<tr>
+<td>ArcFace Similarity ↑</td>
+<td>[TODO]</td>
+<td>[TODO]</td>
+<td>[TODO]</td>
+</tr>
+<tr>
+<td>Processing Time (GPU)</td>
+<td>~2-3s</td>
+<td>~1-2s</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h4 id="qualitative-assessment">Qualitative Assessment<a class="headerlink" href="#qualitative-assessment" title="Permanent link">&para;</a></h4>
+<p>✅ <strong>Strengths:</strong>
+- Excellent identity preservation
+- Natural-looking texture generation
+- Robust to various degradation types
+- Maintains facial structure and features</p>
+<p>⚠️ <strong>Limitations:</strong>
+- Performance degrades with extreme degradation
+- May struggle with very small faces (&lt;64px)
+- Requires GPU for reasonable performance
+- Limited to frontal and near-frontal faces</p>
+<h3 id="known-biases-and-fairness">Known Biases and Fairness<a class="headerlink" href="#known-biases-and-fairness" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ TODO</strong>: Comprehensive bias analysis needed</p>
+<h4 id="demographic-performance">Demographic Performance<a class="headerlink" href="#demographic-performance" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Age groups</strong>: [NEEDS ANALYSIS]</li>
+<li><strong>Gender representation</strong>: [NEEDS ANALYSIS]</li>
+<li><strong>Ethnic diversity</strong>: [NEEDS ANALYSIS]</li>
+<li><strong>Skin tone coverage</strong>: [NEEDS ANALYSIS]</li>
+</ul>
+<h4 id="mitigation-strategies">Mitigation Strategies<a class="headerlink" href="#mitigation-strategies" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Regular bias auditing planned</li>
+<li>Diverse evaluation datasets in development</li>
+<li>Community feedback collection for bias reporting</li>
+</ul>
+<h3 id="technical-limitations">Technical Limitations<a class="headerlink" href="#technical-limitations" title="Permanent link">&para;</a></h3>
+<h4 id="hardware-requirements">Hardware Requirements<a class="headerlink" href="#hardware-requirements" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Minimum GPU</strong>: 4GB VRAM for basic operation</li>
+<li><strong>Recommended GPU</strong>: 8GB+ VRAM for optimal performance</li>
+<li><strong>CPU fallback</strong>: Available but significantly slower (10-50x)</li>
+</ul>
+<h4 id="input-constraints">Input Constraints<a class="headerlink" href="#input-constraints" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Face size</strong>: Minimum 32x32 pixels for detection</li>
+<li><strong>Image formats</strong>: JPG, PNG, WebP, BMP</li>
+<li><strong>Maximum resolution</strong>: 4K (auto-resized if larger)</li>
+<li><strong>Face orientation</strong>: Works best with frontal faces</li>
+</ul>
+<h2 id="ethical-considerations">Ethical Considerations<a class="headerlink" href="#ethical-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="responsible-ai-principles">Responsible AI Principles<a class="headerlink" href="#responsible-ai-principles" title="Permanent link">&para;</a></h3>
+<h4 id="transparency">Transparency<a class="headerlink" href="#transparency" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Open-source implementation and weights</li>
+<li>Documented limitations and failure cases</li>
+<li>Clear usage guidelines and best practices</li>
+</ul>
+<h4 id="fairness">Fairness<a class="headerlink" href="#fairness" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>⚠️ TODO</strong>: Bias evaluation across demographic groups</li>
+<li>Commitment to addressing identified biases</li>
+<li>Inclusive evaluation methodologies</li>
+</ul>
+<h4 id="privacy">Privacy<a class="headerlink" href="#privacy" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Local processing (no cloud upload required)</li>
+<li>No data retention or telemetry by default</li>
+<li>User control over all processed images</li>
+</ul>
+<h4 id="accountability">Accountability<a class="headerlink" href="#accountability" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Clear documentation of intended uses</li>
+<li>Guidance on inappropriate applications</li>
+<li>Community reporting mechanisms</li>
+</ul>
+<h3 id="potential-risks">Potential Risks<a class="headerlink" href="#potential-risks" title="Permanent link">&para;</a></h3>
+<h4 id="misuse-scenarios">Misuse Scenarios<a class="headerlink" href="#misuse-scenarios" title="Permanent link">&para;</a></h4>
+<p>⚠️ <strong>High Risk:</strong>
+- <strong>Identity manipulation</strong>: Creating misleading enhanced photos
+- <strong>Deepfake preparation</strong>: Using enhanced faces for synthetic media
+- <strong>Non-consensual enhancement</strong>: Processing photos without permission</p>
+<p>⚠️ <strong>Medium Risk:</strong>
+- <strong>Historical revisionism</strong>: Inappropriately "correcting" historical photos
+- <strong>Surveillance enhancement</strong>: Improving low-quality surveillance footage
+- <strong>Bias amplification</strong>: Reinforcing beauty standards or demographic preferences</p>
+<h4 id="risk-mitigation">Risk Mitigation<a class="headerlink" href="#risk-mitigation" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Clear documentation of appropriate uses</li>
+<li>Community guidelines and reporting</li>
+<li>Technical limitations to prevent real-time abuse</li>
+<li>Education about ethical implications</li>
+</ul>
+<h2 id="evaluation-and-validation">Evaluation and Validation<a class="headerlink" href="#evaluation-and-validation" title="Permanent link">&para;</a></h2>
+<h3 id="test-datasets">Test Datasets<a class="headerlink" href="#test-datasets" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ TODO</strong>: Standardized evaluation datasets needed</p>
+<ul>
+<li><strong>CelebA-HQ</strong>: [RESULTS NEEDED]</li>
+<li><strong>FFHQ</strong>: [RESULTS NEEDED]</li>
+<li><strong>Helen</strong>: [RESULTS NEEDED]</li>
+<li><strong>Custom benchmark</strong>: [UNDER DEVELOPMENT]</li>
+</ul>
+<h3 id="evaluation-metrics">Evaluation Metrics<a class="headerlink" href="#evaluation-metrics" title="Permanent link">&para;</a></h3>
+<h4 id="technical-quality">Technical Quality<a class="headerlink" href="#technical-quality" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>LPIPS</strong>: Perceptual similarity measurement</li>
+<li><strong>DISTS</strong>: Image structural similarity</li>
+<li><strong>SSIM</strong>: Structural similarity index</li>
+<li><strong>PSNR</strong>: Peak signal-to-noise ratio</li>
+</ul>
+<h4 id="identity-preservation">Identity Preservation<a class="headerlink" href="#identity-preservation" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>ArcFace</strong>: Identity similarity scores</li>
+<li><strong>FaceNet</strong>: Feature distance measurement</li>
+<li><strong>Human evaluation</strong>: Perceptual identity studies</li>
+</ul>
+<h4 id="fairness-evaluation">Fairness Evaluation<a class="headerlink" href="#fairness-evaluation" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>⚠️ TODO</strong>: Demographic parity analysis</li>
+<li><strong>⚠️ TODO</strong>: Equal opportunity assessment</li>
+<li><strong>⚠️ TODO</strong>: Individual fairness evaluation</li>
+</ul>
+<h3 id="human-evaluation">Human Evaluation<a class="headerlink" href="#human-evaluation" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ TODO</strong>: User study needed</p>
+<ul>
+<li><strong>Quality assessment</strong>: Professional photographer evaluation</li>
+<li><strong>Identity preservation</strong>: Human rater studies</li>
+<li><strong>Bias detection</strong>: Diverse evaluator panels</li>
+<li><strong>Use case validation</strong>: Target user feedback</li>
+</ul>
+<h2 id="environmental-impact">Environmental Impact<a class="headerlink" href="#environmental-impact" title="Permanent link">&para;</a></h2>
+<h3 id="carbon-footprint">Carbon Footprint<a class="headerlink" href="#carbon-footprint" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ TODO</strong>: Environmental impact assessment needed</p>
+<ul>
+<li><strong>Training emissions</strong>: [NEEDS CALCULATION]</li>
+<li><strong>Inference efficiency</strong>: ~2-3 seconds per image on modern GPUs</li>
+<li><strong>Hardware efficiency</strong>: Optimized for consumer GPUs</li>
+</ul>
+<h3 id="sustainability-measures">Sustainability Measures<a class="headerlink" href="#sustainability-measures" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Model optimization for efficiency</li>
+<li>Support for various hardware configurations</li>
+<li>Local processing to reduce data transfer</li>
+<li>Open-source to prevent duplicate training</li>
+</ul>
+<h2 id="model-governance">Model Governance<a class="headerlink" href="#model-governance" title="Permanent link">&para;</a></h2>
+<h3 id="version-control">Version Control<a class="headerlink" href="#version-control" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Semantic versioning</strong>: Clear versioning for compatibility</li>
+<li><strong>Model registry</strong>: Centralized model distribution</li>
+<li><strong>Reproducibility</strong>: Locked dependency versions</li>
+<li><strong>Rollback capability</strong>: Previous versions maintained</li>
+</ul>
+<h3 id="monitoring-and-updates">Monitoring and Updates<a class="headerlink" href="#monitoring-and-updates" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Performance monitoring</strong>: Automated quality checks</li>
+<li><strong>Bias monitoring</strong>: Regular fairness evaluations</li>
+<li><strong>Security updates</strong>: Vulnerability patching</li>
+<li><strong>Community feedback</strong>: Issue tracking and resolution</li>
+</ul>
+<h3 id="access-and-distribution">Access and Distribution<a class="headerlink" href="#access-and-distribution" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Open access</strong>: Free download for research and development</li>
+<li><strong>Commercial use</strong>: Permitted under Apache 2.0 license</li>
+<li><strong>Distribution channels</strong>: GitHub releases and model hubs</li>
+<li><strong>Version compatibility</strong>: Backward compatibility guarantees</li>
+</ul>
+<h2 id="contact-and-feedback">Contact and Feedback<a class="headerlink" href="#contact-and-feedback" title="Permanent link">&para;</a></h2>
+<h3 id="reporting-issues">Reporting Issues<a class="headerlink" href="#reporting-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Technical issues</strong>: <a href="https://github.com/IAmJonoBo/GFPGAN/issues">GitHub Issues</a></li>
+<li><strong>Ethical concerns</strong>: ethics@gfpgan.ai</li>
+<li><strong>Security vulnerabilities</strong>: <a href="../../governance/security/">Security Policy</a></li>
+<li><strong>Bias reports</strong>: bias@gfpgan.ai</li>
+</ul>
+<h3 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Model improvements</strong>: Community contributions welcome</li>
+<li><strong>Evaluation data</strong>: Diverse evaluation datasets needed</li>
+<li><strong>Bias testing</strong>: Fairness evaluation contributions</li>
+<li><strong>Documentation</strong>: Help improve this model card</li>
+</ul>
+<h2 id="references-and-citations">References and Citations<a class="headerlink" href="#references-and-citations" title="Permanent link">&para;</a></h2>
+<h3 id="academic-citations">Academic Citations<a class="headerlink" href="#academic-citations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nc">@InProceedings</span><span class="p">{</span><span class="nl">wang2021gfpgan</span><span class="p">,</span>
+<span class="w">    </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Xintao Wang and Yu Li and Honglun Zhang and Ying Shan}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Towards Real-World Blind Face Restoration with Generative Facial Prior}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">booktitle</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2021}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="related-work">Related Work<a class="headerlink" href="#related-work" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>StyleGAN2</strong>: Foundation architecture for face generation</li>
+<li><strong>Real-ESRGAN</strong>: Background enhancement technology</li>
+<li><strong>ArcFace</strong>: Identity preservation evaluation</li>
+<li><strong>Face detection</strong>: MTCNN and RetinaFace integration</li>
+</ul>
+<hr />
+<p><strong>Last Updated</strong>: September 2024
+<strong>Next Review</strong>: December 2024
+<strong>Status</strong>: Active development - some evaluations pending</p>
+<hr />
+<p>⚠️ <strong>Note</strong>: This model card is under active development. Sections marked with "TODO" require additional research and evaluation. We welcome community contributions to improve the completeness and accuracy of this documentation.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/IAmJonoBo/GFPGAN" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "search.highlight", "search.suggest", "content.tabs.link", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
