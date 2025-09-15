@@ -19,7 +19,7 @@ def try_load_arcface(no_download: bool = False):
             if no_download:
                 return None
             arc_path = load_file_from_url(
-                url="https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/arcface_resnet18.pth",
+                url="https://huggingface.co/TencentARC/GFPGANv1/resolve/main/arcface_resnet18.pth",
                 model_dir=os.path.join(os.path.dirname(__file__), "weights"),
                 file_name="arcface_resnet18.pth",
                 progress=True,

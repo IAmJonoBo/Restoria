@@ -52,10 +52,10 @@ If you want want to use the original model in our paper, please follow the instr
 
 ## :zap: Quick Inference
 
-Download pre-trained models: [GFPGANv1.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth)
+Download pre-trained models: [GFPGANv1.pth](https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth)
 
 ```bash
-wget https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth -P experiments/pretrained_models
+wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth -P experiments/pretrained_models
 ```
 
 - Option 1: Load extensions just-in-time(JIT)

@@ -99,4 +99,5 @@ Quick links
 - Compatibility Matrix: ./COMPATIBILITY.md
 - Contributing: ./contributing.md
 
-Upstream reference: https://github.com/TencentARC/GFPGAN
+Historical reference: https://github.com/TencentARC/GFPGAN (original research)
+Model repository: https://huggingface.co/TencentARC/GFPGANv1

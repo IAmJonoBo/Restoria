@@ -192,9 +192,11 @@ GFPGAN is released under the Apache License 2.0. See [LICENSE](LICENSE) for deta
 
 This project builds upon the foundational research and implementations from:
 
-- [TencentARC/GFPGAN](https://github.com/TencentARC/GFPGAN) - Original GFPGAN research and implementation
+- [TencentARC/GFPGAN](https://github.com/TencentARC/GFPGAN) - Original GFPGAN research and implementation (historical reference)
 - [xinntao/BasicSR](https://github.com/xinntao/BasicSR) - Super-resolution framework
 - [xinntao/facexlib](https://github.com/xinntao/facexlib) - Face detection and analysis utilities
+
+**Note**: This project has been completely unforked from TencentARC/GFPGAN and now operates independently. All models are hosted on [Hugging Face Hub](https://huggingface.co/TencentARC/GFPGANv1).
 
 For a complete list of dependencies and their licenses, see [LICENSES/](LICENSES/).
 

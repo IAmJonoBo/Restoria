@@ -66,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Migration Notes:**
 - This changelog begins comprehensive tracking from v1.0.0 standalone release
-- For historical changes prior to independence, see git history and upstream changelog
+- For historical changes prior to independence, see git history
 - Breaking changes are clearly marked and migration guides provided in documentation
-- Upstream: https://github.com/TencentARC/GFPGAN
-- Fork: https://github.com/IAmJonoBo/GFPGAN
+- Original research: https://github.com/TencentARC/GFPGAN (historical reference)
+- Current project: https://github.com/IAmJonoBo/GFPGAN
+- Model repository: https://huggingface.co/TencentARC/GFPGANv1

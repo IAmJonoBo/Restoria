@@ -83,11 +83,11 @@ jobs:
         run: |
           set -euo pipefail
           urls=(
-            "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth"
             "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth"
           )
           for u in "${urls[@]}"; do

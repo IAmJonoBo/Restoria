@@ -35,7 +35,7 @@ jobs:
             📢📢📢
 
             <p align="center">
-               <img src="https://raw.githubusercontent.com/TencentARC/GFPGAN/master/assets/gfpgan_logo.png" height=150>
+               <img src="https://raw.githubusercontent.com/IAmJonoBo/GFPGAN/main/assets/gfpgan_logo.png" height=150>
             </p>
           draft: true
           prerelease: false

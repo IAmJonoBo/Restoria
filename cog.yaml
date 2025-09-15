@@ -1,5 +1,6 @@
 # This file is used for constructing replicate env
-image: "r8.im/tencentarc/gfpgan"
+# Note: Legacy deployment configuration - update registry before use
+image: "r8.im/independent/gfpgan"
 
 build:
   gpu: true

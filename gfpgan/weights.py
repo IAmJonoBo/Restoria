@@ -3,41 +3,41 @@ import os
 from typing import Optional, Tuple
 
 DEFAULT_WEIGHTS_DIR = os.environ.get("GFPGAN_WEIGHTS_DIR", os.path.join(os.path.dirname(__file__), "weights"))
+DEFAULT_HF_REPO = "TencentARC/GFPGANv1"
 
 
-# Minimal built-in registry for core models. Hugging Face repos may not always
-# host these weights; provide URLs as fallback. Users can override via envs.
+# Minimal built-in registry for core models. Using Hugging Face Hub as primary source
 MODEL_REGISTRY = {
     "GFPGANv1": {
         "filename": "GFPGANv1.pth",
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth",
+        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
     },
     "GFPGANCleanv1-NoCE-C2": {
         "filename": "GFPGANCleanv1-NoCE-C2.pth",
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth",
+        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
     },
     "GFPGANv1.3": {
         "filename": "GFPGANv1.3.pth",
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth",
+        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
     },
     "GFPGANv1.4": {
         "filename": "GFPGANv1.4.pth",
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth",
+        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
     },
     "RestoreFormer": {
         "filename": "RestoreFormer.pth",
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth",
+        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
     },
     # Alias entry: RestoreFormer++ currently reuses the same weights as RestoreFormer
     "RestoreFormerPP": {
         "filename": "RestoreFormer.pth",
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", ""),
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth",
+        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
     },
 }
 

@@ -13,7 +13,7 @@ This project builds upon the foundational research and implementations from:
 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2021
 [Paper](https://arxiv.org/abs/2101.04061) | [Original Implementation](https://github.com/TencentARC/GFPGAN)
 
-We acknowledge and thank the original authors for their groundbreaking research in generative facial priors and their open-source contribution that enabled this project.
+We acknowledge and thank the original authors for their groundbreaking research in generative facial priors and their open-source contribution that enabled this project. This project has been completely unforked and operates independently while preserving attribution to the original research.
 
 ## Core Dependencies
 
