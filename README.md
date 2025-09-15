@@ -29,7 +29,7 @@ Try a single image restoration in 30 seconds:
 pip install gfpgan
 
 # Restore a photo
-gfpgan-infer --input path/to/photo.jpg --version 1.4 --upscale 2
+gfpgan-infer --input path/to/photo.jpg --version 1.3 --upscale 2
 
 # Results saved to results/ with before/after comparison
 ```
@@ -39,7 +39,7 @@ gfpgan-infer --input path/to/photo.jpg --version 1.4 --upscale 2
 ### Quick CLI Usage
 
 - Install (editable): `pip install -e .[dev]`
-- Inference: `gfpgan-infer --input inputs/whole_imgs --version 1.4 --upscale 2 --device auto`
+- Inference: `gfpgan-infer --input inputs/whole_imgs --version 1.3 --upscale 2 --device auto`
 - Helpful flags:
   - `--dry-run`: validate args and exit fast
   - `--no-download`: require local weights only
@@ -67,7 +67,7 @@ See `docs/COMPATIBILITY.md` for a quick matrix and notes.
 Restore individual photos with simple CLI or drag-and-drop web interface:
 
 ```bash
-gfpgan-infer --input damaged_photo.jpg --version 1.4
+gfpgan-infer --input damaged_photo.jpg --version 1.3
 ```
 
 ### Batch processing
@@ -150,7 +150,7 @@ For detailed platform-specific instructions, see our [hardware guide](https://IA
 
 ```bash
 # Restore a single image
-gfpgan-infer --input photo.jpg --version 1.4
+gfpgan-infer --input photo.jpg --version 1.3
 
 # Process a folder
 gfpgan-infer --input photos/ --output results/ --version 1.3
@@ -188,12 +188,16 @@ uvicorn services.api.main:app --reload
 
 | Model | Speed | Quality | Identity Preservation | Best For |
 |-------|-------|---------|---------------------|----------|
-| **GFPGAN v1.4** | Medium | High | Excellent | General photos |
-| **GFPGAN v1.3** | Medium | High | Good | Natural results |
-| **CodeFormer** | Fast | Medium | Good | Batch processing |
-| **RestoreFormer++** | Slow | Highest | Excellent | Professional work |
+| **GFPGAN v1.3** | Medium | High | Good | Natural results (recommended) |
+| **GFPGAN v1.2** | Medium | High | Good | Sharp output with beauty makeup |
+| **GFPGAN v1** | Medium | Medium | Fair | Basic restoration with colorization |
+| **RestoreFormerPlusPlus** | Slow | Highest | Excellent | Professional work, TPAMI 2023 version |
+| **RestoreFormer** | Slow | High | Excellent | High-quality restoration |
+| **CodeFormer** | Fast | Medium | Good | AI-generated faces, batch processing |
+| **CodeFormerColorization** | Fast | Medium | Good | Specialized for colorization tasks |
+| **CodeFormerInpainting** | Fast | Medium | Good | Face inpainting and completion |
 
-Choose your model with `--version` or `--backend` flags. See our [backend comparison guide](https://IAmJonoBo.github.io/GFPGAN/guides/choose-backend/) for detailed recommendations.
+Choose your model with `--version` flag: `1.3` (default), `1.2`, `1`, `RestoreFormerPlusPlus`, `RestoreFormer`, `CodeFormer`, `CodeFormerColorization`, or `CodeFormerInpainting`.
 
 ## Contributing
 
@@ -220,7 +224,7 @@ This project builds upon the foundational research and implementations from:
 - [xinntao/BasicSR](https://github.com/xinntao/BasicSR) - Super-resolution framework
 - [xinntao/facexlib](https://github.com/xinntao/facexlib) - Face detection and analysis utilities
 
-**Note**: This project has been completely unforked from TencentARC/GFPGAN and now operates independently. All models are hosted on [Hugging Face Hub](https://huggingface.co/TencentARC/GFPGANv1).
+**Note**: This project has been completely unforked from TencentARC/GFPGAN and now operates independently. Models are automatically downloaded from their official sources: [TencentARC/GFPGAN releases](https://github.com/TencentARC/GFPGAN/releases), [sczhou/CodeFormer releases](https://github.com/sczhou/CodeFormer/releases), and [Hugging Face Hub](https://huggingface.co/TencentARC/GFPGANv1) for legacy models.
 
 For a complete list of dependencies and their licenses, see [LICENSES/](LICENSES/).
 

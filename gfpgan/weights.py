@@ -2,44 +2,14 @@ import hashlib
 import os
 from typing import Optional, Tuple
 
+from .registry import load_model_registry, get_model_info
+
 DEFAULT_WEIGHTS_DIR = os.environ.get("GFPGAN_WEIGHTS_DIR", os.path.join(os.path.dirname(__file__), "weights"))
-DEFAULT_HF_REPO = "TencentARC/GFPGANv1"
 
 
-# Minimal built-in registry for core models. Using Hugging Face Hub as primary source
-MODEL_REGISTRY = {
-    "GFPGANv1": {
-        "filename": "GFPGANv1.pth",
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
-    },
-    "GFPGANCleanv1-NoCE-C2": {
-        "filename": "GFPGANCleanv1-NoCE-C2.pth",
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
-    },
-    "GFPGANv1.3": {
-        "filename": "GFPGANv1.3.pth",
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
-    },
-    "GFPGANv1.4": {
-        "filename": "GFPGANv1.4.pth",
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
-    },
-    "RestoreFormer": {
-        "filename": "RestoreFormer.pth",
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
-    },
-    # Alias entry: RestoreFormer++ currently reuses the same weights as RestoreFormer
-    "RestoreFormerPP": {
-        "filename": "RestoreFormer.pth",
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth",
-        "hf_repo": os.environ.get("GFPGAN_HF_REPO", DEFAULT_HF_REPO),
-    },
-}
+def get_model_registry():
+    """Get the current model registry."""
+    return load_model_registry()
 
 
 def _ensure_dir(path: str) -> None:
@@ -72,9 +42,10 @@ def resolve_model_weight(
       - GFPGAN_HF_REPO: Hugging Face repo to use (if set)
       - HF_HUB_OFFLINE: if '1', forces local cache-only
     """
-    spec = MODEL_REGISTRY.get(model_name)
+    spec = get_model_info(model_name)
     if spec is None:
-        raise ValueError(f"Unknown model '{model_name}'")
+        available_models = ", ".join(load_model_registry().keys())
+        raise ValueError(f"Unknown model '{model_name}'. Available models: {available_models}")
 
     weights_dir = root or DEFAULT_WEIGHTS_DIR
     _ensure_dir(weights_dir)

@@ -4,51 +4,20 @@ import os
 import sys
 from urllib.request import urlretrieve
 
-import yaml
-
-BUILTIN_REGISTRY = {
-    "GFPGANv1": {
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth",
-        "fname": "GFPGANv1.pth",
-    },
-    "GFPGANCleanv1-NoCE-C2": {
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth",
-        "fname": "GFPGANCleanv1-NoCE-C2.pth",
-    },
-    "GFPGANv1.3": {
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth",
-        "fname": "GFPGANv1.3.pth",
-    },
-    "GFPGANv1.4": {
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth",
-        "fname": "GFPGANv1.4.pth",
-    },
-    "RestoreFormer": {
-        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth",
-        "fname": "RestoreFormer.pth",
-    },
-}
+from .registry import load_model_registry
 
 
 def load_registry():
-    # Try to load models/registry.yml; fall back to builtin
-    cfg_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "registry.yml")
-    if os.path.exists(cfg_path):
-        try:
-            with open(cfg_path, "r", encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
-            # Build alias map
-            reg = {}
-            for name, meta in data.items():
-                meta = meta or {}
-                reg[name] = {"url": meta.get("url"), "fname": f"{name}.pth"}
-                for alias in meta.get("aliases") or []:
-                    reg[alias] = reg[name]
-            return reg
-        except Exception:
-            pass
-    # fallback
-    return BUILTIN_REGISTRY
+    """Load model registry using the centralized registry system."""
+    registry = load_model_registry()
+    # Convert to format expected by CLI download tool
+    converted = {}
+    for name, meta in registry.items():
+        converted[name] = {
+            "url": meta.get("url", ""),
+            "fname": meta.get("filename", f"{name}.pth")
+        }
+    return converted
 
 
 def sha256sum(path: str) -> str:

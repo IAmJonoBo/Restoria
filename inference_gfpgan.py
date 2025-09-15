@@ -174,7 +174,14 @@ def main():
     parser.add_argument("-o", "--output", type=str, default="results", help="Output folder. Default: results")
     # we use version to select models, which is more user-friendly
     parser.add_argument(
-        "-v", "--version", type=str, default="1.3", help="GFPGAN model version. Option: 1 | 1.2 | 1.3. Default: 1.3"
+        "-v",
+        "--version",
+        type=str,
+        default="1.3",
+        help=(
+            "GFPGAN model version. Options: 1 | 1.2 | 1.3 | RestoreFormer | "
+            "RestoreFormerPlusPlus | CodeFormer. Default: 1.3"
+        )
     )
     parser.add_argument(
         "-s", "--upscale", type=int, default=2, help="The final upsampling scale of the image. Default: 2"
@@ -418,46 +425,101 @@ def main():
         bg_upsampler = None
 
     # ------------------------ set up GFPGAN restorer ------------------------
+    # Import registry loader
+    import yaml
+
+    def load_model_registry():
+        """Load model registry from models/registry.yml"""
+        try:
+            registry_path = os.path.join(os.path.dirname(__file__), "models", "registry.yml")
+            with open(registry_path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+            # Build alias map
+            reg = {}
+            for name, meta in data.items():
+                meta = meta or {}
+                reg[name] = {"url": meta.get("url"), "description": meta.get("description", "")}
+                for alias in meta.get("aliases") or []:
+                    reg[alias] = reg[name]
+            return reg
+        except Exception:
+            # Fallback to hardcoded values if registry fails to load
+            fallback_urls = {
+                "gfpgan_v1": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth",
+                "gfpgan_clean": "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth",
+                "gfpgan_v13": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth",
+            }
+            return {
+                "1": {"url": fallback_urls["gfpgan_v1"]},
+                "1.2": {"url": fallback_urls["gfpgan_clean"]},
+                "1.3": {"url": fallback_urls["gfpgan_v13"]},
+            }
+
+    registry = load_model_registry()
+
     # Backend selection overrides version mapping if specified
     if args.backend == "restoreformer":
         arch = "RestoreFormer"
         channel_multiplier = 2
         model_name = "RestoreFormer"
-        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth"
+        model_info = registry.get("RestoreFormer", {})
+        default_url = "https://github.com/wzhouxiff/RestoreFormerPlusPlus/releases/download/v1.0.0/RestoreFormer.ckpt"
+        url = model_info.get("url", default_url)
     elif args.backend == "codeformer":
         # Use CodeFormer backend path; model path resolved later
         arch = "codeformer"
         channel_multiplier = 2
         model_name = "CodeFormer"
-        url = "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth"
+        model_info = registry.get("CodeFormer", {})
+        default_url = "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth"
+        url = model_info.get("url", default_url)
 
+    # Handle version selection with new models
     if args.version == "1":
         arch = "original"
         channel_multiplier = 1
         model_name = "GFPGANv1"
-        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth"
+        model_info = registry.get("1", {})
+        default_url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth"
+        url = model_info.get("url", default_url)
     elif args.version == "1.2":
         arch = "clean"
         channel_multiplier = 2
         model_name = "GFPGANCleanv1-NoCE-C2"
-        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth"
+        model_info = registry.get("1.2", {})
+        default_url = "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth"
+        url = model_info.get("url", default_url)
     elif args.version == "1.3":
         arch = "clean"
         channel_multiplier = 2
         model_name = "GFPGANv1.3"
-        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth"
-    elif args.version == "1.4":
-        arch = "clean"
-        channel_multiplier = 2
-        model_name = "GFPGANv1.4"
-        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth"
-    elif args.version == "RestoreFormer":
+        model_info = registry.get("1.3", {})
+        default_url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth"
+        url = model_info.get("url", default_url)
+    elif args.version in ["RestoreFormer", "restoreformer", "rf"]:
         arch = "RestoreFormer"
         channel_multiplier = 2
         model_name = "RestoreFormer"
-        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth"
+        model_info = registry.get("RestoreFormer", {})
+        default_url = "https://github.com/wzhouxiff/RestoreFormerPlusPlus/releases/download/v1.0.0/RestoreFormer.ckpt"
+        url = model_info.get("url", default_url)
+    elif args.version in ["RestoreFormerPlusPlus", "restoreformer++", "rfpp", "rf++"]:
+        arch = "RestoreFormer"
+        channel_multiplier = 2
+        model_name = "RestoreFormerPlusPlus"
+        model_info = registry.get("RestoreFormerPlusPlus", {})
+        default_url = "https://github.com/wzhouxiff/RestoreFormerPlusPlus/releases/download/v1.0.0/RestoreFormer%2B%2B.ckpt"
+        url = model_info.get("url", default_url)
+    elif args.version in ["CodeFormer", "codeformer", "cf"]:
+        arch = "codeformer"
+        channel_multiplier = 2
+        model_name = "CodeFormer"
+        model_info = registry.get("CodeFormer", {})
+        default_url = "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth"
+        url = model_info.get("url", default_url)
     else:
-        raise ValueError(f"Wrong model version {args.version}.")
+        available_models = ", ".join(sorted(set(registry.keys())))
+        raise ValueError(f"Wrong model version {args.version}. Available models: {available_models}")
 
     # determine model path (prefer HF cache or local, fallback to URL)
     if args.model_path:

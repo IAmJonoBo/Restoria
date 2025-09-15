@@ -69,7 +69,7 @@ import requests
 # Submit restoration job
 response = requests.post("http://localhost:8000/restore",
     files={"file": open("input.jpg", "rb")},
-    data={"version": "1.4", "upscale": 2}
+    data={"version": "1.3", "upscale": 2}
 )
 
 result = response.json()
@@ -189,7 +189,7 @@ from gfpgan.utils import restore_image
 restored = restore_image(
     "input.jpg",
     output_path="output.jpg",
-    version="1.4",
+    version="1.3",
     upscale=2
 )
 ```
@@ -201,7 +201,7 @@ from pathlib import Path
 from gfpgan import GFPGANer
 
 # Initialize restorer
-restorer = GFPGANer(model_path="GFPGANv1.4.pth", upscale=2)
+restorer = GFPGANer(model_path="GFPGANv1.3.pth", upscale=2)
 
 # Process directory
 input_dir = Path("input_images")
