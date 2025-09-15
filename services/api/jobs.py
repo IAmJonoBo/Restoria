@@ -9,6 +9,10 @@ from typing import Any, Dict, List, Optional
 
 from .schemas import JobSpec
 
+# Constants for temporary files
+INPUT_IMAGE_NAME = "in.png"
+OUTPUT_IMAGE_NAME = "out.png"
+
 
 @dataclass
 class _Job:
@@ -187,8 +191,8 @@ class JobManager:
                             score = None
                             if arc and arc.available():
                                 td = tempfile.mkdtemp()
-                                a = os.path.join(td, "in.png")
-                                b = os.path.join(td, "out.png")
+                                a = os.path.join(td, INPUT_IMAGE_NAME)
+                                b = os.path.join(td, OUTPUT_IMAGE_NAME)
                                 cv2.imwrite(a, img)
                                 cv2.imwrite(
                                     b,
@@ -198,8 +202,8 @@ class JobManager:
                                 score = s if s is not None else None
                             if score is None and lpips and lpips.available():
                                 td = tempfile.mkdtemp()
-                                a = os.path.join(td, "in.png")
-                                b = os.path.join(td, "out.png")
+                                a = os.path.join(td, INPUT_IMAGE_NAME)
+                                b = os.path.join(td, OUTPUT_IMAGE_NAME)
                                 cv2.imwrite(a, img)
                                 cv2.imwrite(
                                     b,
@@ -233,8 +237,8 @@ class JobManager:
                         import tempfile
 
                         td = tempfile.mkdtemp()
-                        a = os.path.join(td, "in.png")
-                        b = os.path.join(td, "out.png")
+                        a = os.path.join(td, INPUT_IMAGE_NAME)
+                        b = os.path.join(td, OUTPUT_IMAGE_NAME)
                         cv2.imwrite(a, img)
                         cv2.imwrite(b, res.restored_image if (res and res.restored_image is not None) else img)
                         s0 = arc.cosine_from_paths(a, b)
@@ -269,9 +273,14 @@ class JobManager:
             # metrics.json
             try:
                 import json as _json
+                import asyncio
 
-                with open(os.path.join(out_dir, "metrics.json"), "w") as f:
-                    _json.dump({"metrics": results_rec}, f, indent=2)
+                # Use thread pool for file I/O to avoid blocking
+                def write_metrics():
+                    with open(os.path.join(out_dir, "metrics.json"), "w") as f:
+                        _json.dump({"metrics": results_rec}, f, indent=2)
+
+                await asyncio.to_thread(write_metrics)
             except Exception:
                 pass
             # HTML report

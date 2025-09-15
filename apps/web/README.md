@@ -8,7 +8,7 @@ This is a scaffold for the premium web UI. It targets:
 
 Commands (dev):
 
-```
+```bash
 cd apps/web
 pnpm i
 pnpm dev
@@ -16,7 +16,7 @@ pnpm dev
 
 The app expects the API to be available at the same origin (proxy in dev). For a quick smoke, run:
 
-```
+```bash
 uvicorn services.api.main:app --reload --port 3000
 # then in another shell
 cd apps/web && pnpm dev

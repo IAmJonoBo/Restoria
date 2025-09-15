@@ -72,8 +72,8 @@ def main():  # pragma: no cover
             html = tpl.render(rows=rows, keys=keys)
             with open(os.path.join(out_dir, "report.html"), "w") as f:
                 f.write(html)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Warning: Failed to generate HTML report: {e}")
     print(f"Wrote {csv_path}")
 
 

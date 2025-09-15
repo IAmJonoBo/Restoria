@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import time
 from typing import Any, Dict
 
 from .background import build_realesrgan
@@ -41,6 +42,10 @@ def _set_deterministic(seed: int | None, deterministic: bool) -> None:
 
 
 def cmd_run(argv: list[str]) -> int:
+    # Constants for temporary file names
+    _TEMP_INPUT_FILENAME = "in.png"
+    _TEMP_OUTPUT_FILENAME = "out.png"
+
     p = argparse.ArgumentParser(prog="gfpup run")
     p.add_argument("--input", required=True)
     p.add_argument(
@@ -144,8 +149,6 @@ def cmd_run(argv: list[str]) -> int:
     # Dry-run path: copy inputs to outputs and optionally write metrics/report
     if args.dry_run:
         for pth in inputs:
-            import time
-
             t0 = time.time()
             img = load_image_bgr(pth)
             if img is None:
@@ -194,7 +197,6 @@ def cmd_run(argv: list[str]) -> int:
             print(f"[WARN] Failed to load: {pth}")
             continue
         cfg["input_path"] = pth
-        import time
 
         vram_mb = None
         t0 = time.time()
@@ -248,8 +250,8 @@ def cmd_run(argv: list[str]) -> int:
                     import cv2
 
                     td = tempfile.mkdtemp()
-                    a = os.path.join(td, "in.png")
-                    b = os.path.join(td, "out.png")
+                    a = os.path.join(td, _TEMP_INPUT_FILENAME)
+                    b = os.path.join(td, _TEMP_OUTPUT_FILENAME)
                     cv2.imwrite(a, img)
                     if r_try and r_try.restored_image is not None:
                         cv2.imwrite(b, r_try.restored_image)
@@ -262,8 +264,8 @@ def cmd_run(argv: list[str]) -> int:
                     import cv2
 
                     td = tempfile.mkdtemp()
-                    a = os.path.join(td, "in.png")
-                    b = os.path.join(td, "out.png")
+                    a = os.path.join(td, _TEMP_INPUT_FILENAME)
+                    b = os.path.join(td, _TEMP_OUTPUT_FILENAME)
                     cv2.imwrite(a, img)
                     if r_try and r_try.restored_image is not None:
                         cv2.imwrite(b, r_try.restored_image)
@@ -292,7 +294,7 @@ def cmd_run(argv: list[str]) -> int:
         except Exception:
             vram_mb = None
 
-        base, ext = os.path.splitext(os.path.basename(pth))
+        base, _ = os.path.splitext(os.path.basename(pth))
         out_img = os.path.join(args.output, f"{base}.png")
         if res and res.restored_image is not None:
             save_image(out_img, res.restored_image)
@@ -312,8 +314,8 @@ def cmd_run(argv: list[str]) -> int:
             import cv2
 
             td = tempfile.mkdtemp()
-            a = os.path.join(td, "in.png")
-            b = os.path.join(td, "out.png")
+            a = os.path.join(td, _TEMP_INPUT_FILENAME)
+            b = os.path.join(td, _TEMP_OUTPUT_FILENAME)
             cv2.imwrite(a, img)
             cv2.imwrite(b, res.restored_image if (res and res.restored_image is not None) else img)
             s0 = arc.cosine_from_paths(a, b)

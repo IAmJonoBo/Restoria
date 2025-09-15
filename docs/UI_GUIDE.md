@@ -10,7 +10,7 @@ The web app (Next.js 15 + React 19) provides a one-screen flow:
 
 Dev setup:
 
-```
+```bash
 uvicorn services.api.main:app --reload --port 3000
 cd apps/web && pnpm i && pnpm dev
 ```

@@ -20,7 +20,7 @@ RUN groupadd -r gfpgan && useradd -r -g gfpgan gfpgan && \
 
 WORKDIR /app
 
-# Install PyTorch CUDA wheels
+# Install PyTorch CUDA wheels and project dependencies
 RUN pip3 install --upgrade pip && \
     pip3 install --index-url https://download.pytorch.org/whl/cu121 torch torchvision torchaudio
 
@@ -28,10 +28,8 @@ RUN pip3 install --upgrade pip && \
 COPY . /app
 RUN pip3 install -e .[dev,torch2] && \
     mkdir -p ${GFPGAN_WEIGHTS_DIR} && \
-    chown -R gfpgan:gfpgan /app ${GFPGAN_WEIGHTS_DIR}
-
-# Pre-warm popular weights (best-effort) as root, then switch to user
-RUN python3 - <<'PY'
+    chown -R gfpgan:gfpgan /app ${GFPGAN_WEIGHTS_DIR} && \
+    python3 - <<'PY'
 import os
 from gfpgan.weights import resolve_model_weight
 for m in ("GFPGANv1.4", "GFPGANv1.3", "RestoreFormer"):

@@ -17,7 +17,7 @@
   - `--print-env` to display versions and CUDA availability
   - Quality: `--jpg-quality 95`, `--png-compress 3`, `--webp-quality 90`
 - Colab notebook (UI):
-  - https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb
+  - [GFPGAN Colab Demo](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
 
 Weights & cache
 - Default weights dir: `gfpgan/weights` (override with `GFPGAN_WEIGHTS_DIR`)

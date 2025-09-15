@@ -9,6 +9,9 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI(title="GFPGAN API", version="0.1")
 
+# Create a constant for file upload parameter to avoid function call in defaults
+FILES_PARAM = File(...)
+
 
 def _env_flag(name: str) -> bool:
     return os.environ.get(name, "").strip() in {"1", "true", "True", "yes"}
@@ -39,7 +42,7 @@ async def restore(
     backend: str = "gfpgan",
     device: str = "auto",
     dry_run: bool = True,
-    files: List[UploadFile] = File(...),
+    files: List[UploadFile] = FILES_PARAM,
 ):
     # Smoke-friendly default: dry_run True. In that mode, only echo back metadata.
     if dry_run or _env_flag("NB_CI_SMOKE"):
@@ -93,8 +96,8 @@ async def restore(
             from gfpgan.weights import resolve_model_weight
 
             model_path, _ = resolve_model_weight(model_name, no_download=False)
-            Engine = get_engine("gfpgan")
-            restorer = Engine(
+            engine = get_engine("gfpgan")
+            restorer = engine(
                 model_path=model_path,
                 device=torch.device("cuda" if device == "cuda" else "cpu"),
                 upscale=upscale,
@@ -112,10 +115,10 @@ async def restore(
             from gfpgan.engines import get_engine
             from gfpgan.weights import resolve_model_weight
 
-            Engine = get_engine("restoreformer")
+            engine = get_engine("restoreformer")
             model_name = "RestoreFormer"
             model_path, _ = resolve_model_weight(model_name, no_download=False)
-            restorer = Engine(
+            restorer = engine(
                 model_path=model_path,
                 device=torch.device("cuda" if device == "cuda" else "cpu"),
                 upscale=upscale,
@@ -128,9 +131,9 @@ async def restore(
 
             from gfpgan.engines import get_engine
 
-            Engine = get_engine("codeformer")
+            engine = get_engine("codeformer")
             model_path = "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth"
-            restorer = Engine(
+            restorer = engine(
                 model_path=model_path,
                 device=torch.device("cuda" if device == "cuda" else "cpu"),
                 upscale=upscale,

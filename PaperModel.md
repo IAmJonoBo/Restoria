@@ -1,6 +1,7 @@
 # Installation
 
-We now provide a *clean* version of GFPGAN, which does not require customized CUDA extensions. See [here](README.md#installation) for this easier installation.<br>
+We now provide a *clean* version of GFPGAN, which does not require customized CUDA extensions. See [installation instructions](README.md#installation) for this easier installation.
+
 If you want want to use the original model in our paper, please follow the instructions below.
 
 1. Clone repo

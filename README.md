@@ -1,13 +1,8 @@
-<p align="center">
-  <img src="assets/gfpgan_logo.png" height=130>
-</p>
+# GFPGAN
 
-## <div align="center"><b><a href="README.md">English</a> | <a href="README_CN.md">简体中文</a></b></div>
+![GFPGAN Logo](assets/gfpgan_logo.png)
 
-<div align="center">
-<!-- <a href="https://twitter.com/_Xintao_" style="text-decoration:none;">
-    <img src="https://user-images.githubusercontent.com/17445847/187162058-c764ced6-952f-404b-ac85-ba95cce18e7b.png" width="4%" alt="" />
-</a> -->
+**[English](README.md) | [简体中文](README_CN.md)**
 
 [![Fork CI](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml/badge.svg)](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml)
 [![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -15,11 +10,10 @@
 [![Upstream Project](https://img.shields.io/badge/upstream-TencentARC%2FGFPGAN-blue)](https://github.com/TencentARC/GFPGAN)
 [![Docs](https://img.shields.io/badge/docs-mkdocs%20material-brightgreen)](https://IAmJonoBo.github.io/GFPGAN/)
 [![Devcontainer](https://img.shields.io/badge/devcontainer-ready-blue)](.devcontainer/devcontainer.json)
-</div>
 
 1. :boom: **Updated** online demo: [![Replicate](https://img.shields.io/static/v1?label=Demo&message=Replicate&color=blue)](https://replicate.com/tencentarc/gfpgan). Here is the [backup](https://replicate.com/xinntao/gfpgan).
 1. :boom: **Updated** online demo: [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Xintao/GFPGAN)
-1. Our Colab Demo (fork): <a href="https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"></a> (Upstream Colab: [link](https://colab.research.google.com/drive/1sVsoBd9AjckIXThgtZhGrHRfFI6UUYOo); Original paper model: [link](https://colab.research.google.com/drive/1Oa1WwKB4M4l1GmR7CtswDVgOCOeSLChA?usp=sharing))
+1. Our Colab Demo (fork): [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb) (Upstream Colab: [upstream demo](https://colab.research.google.com/drive/1sVsoBd9AjckIXThgtZhGrHRfFI6UUYOo); Original paper model: [paper model demo](https://colab.research.google.com/drive/1Oa1WwKB4M4l1GmR7CtswDVgOCOeSLChA?usp=sharing))
 
 <!-- 3. Online demo: [Replicate.ai](https://replicate.com/xinntao/gfpgan) (may need to sign in, return the whole image)
 4. Online demo: [Baseten.co](https://app.baseten.co/applications/Q04Lz0d/operator_views/8qZG6Bg) (backed by GPU, returns the whole image)
@@ -27,7 +21,7 @@
 
 > :rocket: **Thanks for your interest in our work. You may also want to check our new updates on the *tiny models* for *anime images and videos* in [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN/blob/master/docs/anime_video_model.md)** :blush:
 
-GFPGAN aims at developing a **Practical Algorithm for Real-world Face Restoration**.<br>
+GFPGAN aims at developing a **Practical Algorithm for Real-world Face Restoration**.
 It leverages rich and diverse priors encapsulated in a pretrained face GAN (*e.g.*, StyleGAN2) for blind face restoration.
 
 :question: Frequently Asked Questions can be found in [FAQ.md](FAQ.md).
@@ -45,17 +39,19 @@ It leverages rich and diverse priors encapsulated in a pretrained face GAN (*e.g
 ---
 
 If GFPGAN is helpful in your photos/projects, please help to :star: this repo or recommend it to your friends. Thanks:blush:
-Other recommended projects:<br>
-:arrow_forward: [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN): A practical algorithm for general image restoration<br>
-:arrow_forward: [BasicSR](https://github.com/xinntao/BasicSR): An open-source image and video restoration toolbox<br>
-:arrow_forward: [facexlib](https://github.com/xinntao/facexlib): A collection that provides useful face-relation functions<br>
-:arrow_forward: [HandyView](https://github.com/xinntao/HandyView): A PyQt5-based image viewer that is handy for view and comparison<br>
+
+Other recommended projects:
+
+:arrow_forward: [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN): A practical algorithm for general image restoration
+:arrow_forward: [BasicSR](https://github.com/xinntao/BasicSR): An open-source image and video restoration toolbox
+:arrow_forward: [facexlib](https://github.com/xinntao/facexlib): A collection that provides useful face-relation functions
+:arrow_forward: [HandyView](https://github.com/xinntao/HandyView): A PyQt5-based image viewer that is handy for view and comparison
 
 ---
 
-### Quickstart & Docs
+## Quickstart & Docs
 
-- Docs Site: https://IAmJonoBo.github.io/GFPGAN/
+- Docs Site: [GFPGAN Documentation](https://IAmJonoBo.github.io/GFPGAN/)
 - Quickstart: `docs/quickstart.md`
 - CLI: `docs/usage/cli.md`
 - Colab Guide: `docs/usage/colab.md`
@@ -97,13 +93,13 @@ See `docs/COMPATIBILITY.md` for a quick matrix and notes.
 
 ### :book: GFP-GAN: Towards Real-World Blind Face Restoration with Generative Facial Prior
 
-> [[Paper](https://arxiv.org/abs/2101.04061)] &emsp; [[Project Page](https://xinntao.github.io/projects/gfpgan)] &emsp; [Demo] <br>
-> [Xintao Wang](https://xinntao.github.io/), [Yu Li](https://yu-li.github.io/), [Honglun Zhang](https://scholar.google.com/citations?hl=en&user=KjQLROoAAAAJ), [Ying Shan](https://scholar.google.com/citations?user=4oXBp9UAAAAJ&hl=en) <br>
+> [[Paper](https://arxiv.org/abs/2101.04061)] [[Project Page](https://xinntao.github.io/projects/gfpgan)] [Demo]
+>
+> [Xintao Wang](https://xinntao.github.io/), [Yu Li](https://yu-li.github.io/), [Honglun Zhang](https://scholar.google.com/citations?hl=en&user=KjQLROoAAAAJ), [Ying Shan](https://scholar.google.com/citations?user=4oXBp9UAAAAJ&hl=en)
+>
 > Applied Research Center (ARC), Tencent PCG
 
-<p align="center">
-  <img src="https://xinntao.github.io/projects/GFPGAN_src/gfpgan_teaser.jpg">
-</p>
+![GFPGAN Teaser](https://xinntao.github.io/projects/GFPGAN_src/gfpgan_teaser.jpg)
 
 ---
 
@@ -116,13 +112,13 @@ See `docs/COMPATIBILITY.md` for a quick matrix and notes.
 
 ### Installation
 
-We now provide a *clean* version of GFPGAN, which does not require customized CUDA extensions. <br>
+We now provide a *clean* version of GFPGAN, which does not require customized CUDA extensions.
 If you want to use the original model in our paper, please see [PaperModel.md](PaperModel.md) for installation.
 
 1. Clone repo
 
     ```bash
-  git clone https://github.com/IAmJonoBo/GFPGAN.git
+    git clone https://github.com/IAmJonoBo/GFPGAN.git
     cd GFPGAN
     ```
 
@@ -147,7 +143,7 @@ If you want to use the original model in our paper, please see [PaperModel.md](P
 
 ## :zap: Quick Inference
 
-We take the v1.3 version for an example. More models can be found [here](#european_castle-model-zoo).
+We take the v1.3 version for an example. More models can be found in the [Model Zoo section](#european_castle-model-zoo).
 
 Download pre-trained models: [GFPGANv1.3.pth](https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth)
 
@@ -205,22 +201,22 @@ Note that V1.3 is not always better than V1.2. You may need to select different 
 
 | Version | Strengths  | Weaknesses |
 | :---: | :---:        |     :---:      |
-|V1.3 |  ✓ natural outputs<br> ✓better results on very low-quality inputs <br> ✓ work on relatively high-quality inputs <br>✓ can have repeated (twice) restorations | ✗ not very sharp <br> ✗ have a slight change on identity |
-|V1.2 |  ✓ sharper output <br> ✓ with beauty makeup | ✗ some outputs are unnatural |
+|V1.3 | ✓ natural outputs; ✓ better results on very low-quality inputs; ✓ work on relatively high-quality inputs; ✓ can have repeated (twice) restorations | ✗ not very sharp; ✗ have a slight change on identity |
+|V1.2 | ✓ sharper output; ✓ with beauty makeup | ✗ some outputs are unnatural |
 
 You can find **more models (such as the discriminators)** here: [[Google Drive](https://drive.google.com/drive/folders/17rLiFzcUMoQuhLnptDsKolegHWwJOnHu?usp=sharing)], OR [[Tencent Cloud 腾讯微云](https://share.weiyun.com/ShYoCCoc)]
 
 ## :computer: Training
 
-We provide the training codes for GFPGAN (used in our paper). <br>
+We provide the training codes for GFPGAN (used in our paper).
 You could improve it according to your own needs.
 
-**Tips**
+### Tips
 
 1. More high quality faces can improve the restoration quality.
 2. You may need to perform some pre-processing, such as beauty makeup.
 
-**Procedures**
+### Procedures
 
 (You can try a simple version ( `options/train_gfpgan_v1_simple.yml`) that does not require face component landmarks.)
 
@@ -243,12 +239,14 @@ GFPGAN is released under Apache License Version 2.0.
 
 ## BibTeX
 
-    @InProceedings{wang2021gfpgan,
-        author = {Xintao Wang and Yu Li and Honglun Zhang and Ying Shan},
-        title = {Towards Real-World Blind Face Restoration with Generative Facial Prior},
-        booktitle={The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
-        year = {2021}
-    }
+```bibtex
+@InProceedings{wang2021gfpgan,
+    author = {Xintao Wang and Yu Li and Honglun Zhang and Ying Shan},
+    title = {Towards Real-World Blind Face Restoration with Generative Facial Prior},
+    booktitle={The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+    year = {2021}
+}
+```
 
 ## :e-mail: Contact
 

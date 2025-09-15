@@ -1,6 +1,6 @@
 # CLI Usage
 
-```
+```bash
 usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
                     [--bg_upsampler {realesrgan,none}] [--bg_tile BG_TILE]
                     [--bg_precision {auto,fp16,fp32}] [--backend {gfpgan,restoreformer,codeformer}]

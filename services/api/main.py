@@ -11,6 +11,8 @@ from .jobs import manager
 from .schemas import JobSpec, JobStatus, Result
 from .security import apply_security
 
+# Error message constants
+NOT_FOUND_MSG = "not found"
 
 app = FastAPI(title="GFPP API", version="0.0.1")
 apply_security(app)
@@ -74,7 +76,14 @@ async def submit_job(spec: JobSpec):
     # Fire-and-forget: schedule in background
     import asyncio
 
-    asyncio.create_task(manager.run(job.id))
+    # Save task reference to prevent garbage collection
+    task = asyncio.create_task(manager.run(job.id))
+    # Store task reference (could use WeakSet in production)
+    if not hasattr(app.state, 'background_tasks'):
+        app.state.background_tasks = set()
+    app.state.background_tasks.add(task)
+    task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
+
     return JobStatus(
         id=job.id,
         status=job.status,
@@ -105,7 +114,7 @@ async def list_jobs():
 async def get_job(job_id: str):
     job = manager.get(job_id)
     if not job:
-        return JSONResponse({"error": "not found"}, status_code=404)
+        return JSONResponse({"error": NOT_FOUND_MSG}, status_code=404)
     return JobStatus(
         id=job.id,
         status=job.status,
@@ -124,7 +133,7 @@ async def rerun_job(job_id: str, overrides: dict | None = None):
     """
     job = manager.get(job_id)
     if not job:
-        return JSONResponse({"error": "not found"}, status_code=404)
+        return JSONResponse({"error": NOT_FOUND_MSG}, status_code=404)
     base = job.spec.model_dump()  # pydantic v2
     overrides = overrides or {}
     # Only allow known keys
@@ -149,7 +158,13 @@ async def rerun_job(job_id: str, overrides: dict | None = None):
     j = manager.create(_JobSpec(**new_spec))
     import asyncio
 
-    asyncio.create_task(manager.run(j.id))
+    # Save task reference to prevent garbage collection
+    task = asyncio.create_task(manager.run(j.id))
+    if not hasattr(app.state, 'background_tasks'):
+        app.state.background_tasks = set()
+    app.state.background_tasks.add(task)
+    task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
+
     return JobStatus(
         id=j.id, status=j.status, progress=j.progress, result_count=j.result_count, results_path=j.results_path
     )
@@ -160,9 +175,8 @@ async def ws_stream(websocket: WebSocket, job_id: str):
     await websocket.accept()
     job = manager.get(job_id)
     if not job:
-        await websocket.send_json({"error": "not found"})
+        await websocket.send_json({"error": NOT_FOUND_MSG})
         await websocket.close(code=1000)
-        return
 
 
 @app.get("/results/{job_id}")
@@ -171,7 +185,7 @@ async def download_results(job_id: str):
 
     job = manager.get(job_id)
     if not job or not job.results_path:
-        return JSONResponse({"error": "not found"}, status_code=404)
+        return JSONResponse({"error": NOT_FOUND_MSG}, status_code=404)
     base = os.path.abspath(job.results_path)
     parent = os.path.dirname(base)
     zip_base = os.path.join(parent, f"{os.path.basename(base)}")
@@ -186,7 +200,7 @@ async def get_file(path: str):
     # Minimal dev-time file serving for inputs/results. In production, serve via a proper static server.
     abspath = os.path.abspath(path)
     if not os.path.isfile(abspath):
-        return JSONResponse({"error": "not found"}, status_code=404)
+        return JSONResponse({"error": NOT_FOUND_MSG}, status_code=404)
     # Basic path guard: only allow files under project directory
     proj = os.path.abspath(os.getcwd())
     if not abspath.startswith(proj):

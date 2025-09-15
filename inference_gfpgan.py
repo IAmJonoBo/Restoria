@@ -5,6 +5,9 @@ import os
 # Defer heavy imports (cv2, numpy, torch, basicsr) until after --dry-run
 imwrite = None  # will be set after delayed import
 
+# Error message constants
+INVALID_SWEEP_WEIGHT_MSG = "Invalid --sweep-weight; expected comma-separated floats"
+
 
 def _save_image(path, img, ext, jpg_quality=95, png_compress=3, webp_quality=90):
     """Write image with format-specific quality options using OpenCV.
@@ -341,7 +344,13 @@ def main():
             if device == "cuda":
                 total = torch.cuda.get_device_properties(0).total_memory / (1024**3)
                 args.bg_precision = "fp16"
-                args.bg_tile = 0 if total >= 10 else (600 if total >= 6 else 400)
+                # Set background tile size based on GPU memory
+                if total >= 10:
+                    args.bg_tile = 0
+                elif total >= 6:
+                    args.bg_tile = 600
+                else:
+                    args.bg_tile = 400
             else:
                 import os as _os
 
@@ -378,23 +387,32 @@ def main():
             warnings.warn("RealESRGAN on CPU is slow; background upsampling disabled.", stacklevel=2)
             bg_upsampler = None
         else:
-            from basicsr.archs.rrdbnet_arch import RRDBNet
-            from realesrgan import RealESRGANer
+            try:
+                from basicsr.archs.rrdbnet_arch import RRDBNet
+                from realesrgan import RealESRGANer
 
-            model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=2)
-            if args.bg_precision == "auto":
-                half = True
-            else:
-                half = args.bg_precision == "fp16"
-            bg_upsampler = RealESRGANer(
-                scale=2,
-                model_path="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
-                model=model,
-                tile=args.bg_tile,
-                tile_pad=10,
-                pre_pad=0,
-                half=half,
-            )
+                model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=2)
+                if args.bg_precision == "auto":
+                    half = True
+                else:
+                    half = args.bg_precision == "fp16"
+                bg_upsampler = RealESRGANer(
+                    scale=2,
+                    model_path="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
+                    model=model,
+                    tile=args.bg_tile,
+                    tile_pad=10,
+                    pre_pad=0,
+                    half=half,
+                )
+            except ImportError:
+                import warnings
+                warnings.warn(
+                    "RealESRGAN dependencies not available; background upsampling disabled. "
+                    "Install realesrgan package to enable background upsampling.",
+                    stacklevel=2
+                )
+                bg_upsampler = None
     else:
         bg_upsampler = None
 
@@ -473,14 +491,16 @@ def main():
         else:
             engine_name = args.engine
     else:
-        engine_name = (
-            args.backend
-            if args.backend in {"gfpgan", "codeformer", "restoreformer", "restoreformerpp"}
-            else ("codeformer" if arch == "codeformer" else "gfpgan")
-        )
-    Engine = get_engine(engine_name)
+        # Determine engine name based on backend and architecture
+        if args.backend in {"gfpgan", "codeformer", "restoreformer", "restoreformerpp"}:
+            engine_name = args.backend
+        elif arch == "codeformer":
+            engine_name = "codeformer"
+        else:
+            engine_name = "gfpgan"
+    engine = get_engine(engine_name)
     if engine_name == "gfpgan":
-        restorer = Engine(
+        restorer = engine(
             model_path=model_path,
             device=torch.device(device),
             upscale=args.upscale,
@@ -490,18 +510,15 @@ def main():
             det_model=args.detector,
             use_parse=not args.no_parse,
         )
-    elif engine_name == "codeformer":
-        restorer = Engine(
-            model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
-        )
-    elif engine_name in {"restoreformer", "restoreformerpp"}:
-        restorer = Engine(
+    elif engine_name in {"codeformer", "restoreformer", "restoreformerpp"}:
+        # All these engines use the same initialization pattern
+        restorer = engine(
             model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
         )
     elif engine_name == "auto":
         # Lazy init to a sensible default; may switch per-image below
-        Engine = get_engine("gfpgan")
-        restorer = Engine(
+        engine = get_engine("gfpgan")
+        restorer = engine(
             model_path=model_path,
             device=torch.device(device),
             upscale=args.upscale,
@@ -518,7 +535,13 @@ def main():
     try:
         compile_fn = getattr(__import__("torch"), "compile", None)  # type: ignore
         if compile_fn and args.compile != "none" and getattr(restorer, "gfpgan", None) is not None:
-            mode = "default" if args.compile == "default" else ("max-autotune" if args.compile == "max" else "default")
+            # Determine compilation mode
+            if args.compile == "default":
+                mode = "default"
+            elif args.compile == "max":
+                mode = "max-autotune"
+            else:
+                mode = "default"
             restorer.gfpgan = compile_fn(restorer.gfpgan, mode=mode)  # type: ignore
             if args.verbose:
                 print(f"Compiled model with torch.compile(mode={mode})")
@@ -570,7 +593,7 @@ def main():
             try:
                 weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
             except Exception as _e:  # pragma: no cover - argument checked earlier
-                raise ValueError("Invalid --sweep-weight; expected comma-separated floats") from _e
+                raise ValueError(INVALID_SWEEP_WEIGHT_MSG) from _e
         else:
             weights = [args.weight]
 
@@ -636,21 +659,14 @@ def main():
 
                 # Recreate restorer if engine differs
                 if selected_engine_name != "gfpgan":
-                    Engine = get_engine(selected_engine_name)
-                    if selected_engine_name == "codeformer":
-                        restorer = Engine(
-                            model_path=model_path,
-                            device=torch.device(device),
-                            upscale=args.upscale,
-                            bg_upsampler=bg_upsampler,
-                        )
-                    else:  # restoreformer/restoreformerpp
-                        restorer = Engine(
-                            model_path=model_path,
-                            device=torch.device(device),
-                            upscale=args.upscale,
-                            bg_upsampler=bg_upsampler,
-                        )
+                    engine = get_engine(selected_engine_name)
+                    # All non-gfpgan engines use the same initialization pattern
+                    restorer = engine(
+                        model_path=model_path,
+                        device=torch.device(device),
+                        upscale=args.upscale,
+                        bg_upsampler=bg_upsampler,
+                    )
 
             # restore faces and background if necessary
             best = None
@@ -694,11 +710,15 @@ def main():
                     _mp = os.path.join("experiments/pretrained_models", _model + ".pth")
                     if not os.path.isfile(_mp):
                         _alt = os.path.join("gfpgan/weights", _model + ".pth")
-                        _mp = _mp if os.path.isfile(_mp) else (_alt if os.path.isfile(_alt) else _url)
+                        # Determine model path with fallback chain
+                        if os.path.isfile(_alt):
+                            _mp = _alt
+                        else:
+                            _mp = _url
                     from gfpgan.engines import get_engine as _get_engine
 
-                    _Engine = _get_engine("gfpgan")
-                    _rest = _Engine(
+                    _engine = _get_engine("gfpgan")
+                    _rest = _engine(
                         model_path=_mp,
                         device=torch.device(device),
                         upscale=args.upscale,
@@ -730,12 +750,12 @@ def main():
                 try:
                     weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
                 except Exception as e:
-                    raise ValueError("Invalid --sweep-weight; expected comma-separated floats") from e
+                    raise ValueError(INVALID_SWEEP_WEIGHT_MSG) from e
             else:
                 weights = [args.weight]
             # If autopilot selected best, override
             if args.auto and best is not None:
-                _, sel_v, sel_w, restored_img, restored_faces, cropped_faces = best
+                _, _, sel_w, restored_img, restored_faces, cropped_faces = best
                 weights = [sel_w]
 
             face_paths = []
@@ -852,7 +872,7 @@ def main():
             try:
                 weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
             except Exception as e:
-                raise ValueError("Invalid --sweep-weight; expected comma-separated floats") from e
+                raise ValueError(INVALID_SWEEP_WEIGHT_MSG) from e
         else:
             weights = [args.weight]
 

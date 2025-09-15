@@ -1,7 +1,8 @@
 # Colab Guide
 
 Open the notebook:
-- https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb
+
+- [GFPGAN Colab Demo](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
 
 Features
 - Install cell sets up Torch + Basicsr master (for torchvision compatibility)

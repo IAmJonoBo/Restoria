@@ -2,13 +2,13 @@
 
 Install (editable) with optional extras:
 
-```
+```bash
 pip install -e ".[dev,metrics,arcface,codeformer,restoreformerpp,ort,web]"
 ```
 
 Run the new CLI (GFPGAN baseline):
 
-```
+```bash
 gfpup run --input inputs/whole_imgs --backend gfpgan --metrics fast --output out/
 # Optional flags:
 #   --dry-run (copy inputs → outputs, no model load)
@@ -20,7 +20,7 @@ gfpup run --input inputs/whole_imgs --backend gfpgan --metrics fast --output out
 
 API dev server:
 
-```
+```bash
 uvicorn services.api.main:app --reload
 # REST endpoints:
 #   POST /jobs (JobSpec)
@@ -31,7 +31,7 @@ uvicorn services.api.main:app --reload
 
 Web (dev):
 
-```
+```bash
 cd apps/web
 pnpm i
 pnpm dev
