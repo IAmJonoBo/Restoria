@@ -10,7 +10,7 @@ tqdm==4.66.4
 huggingface_hub==0.23.0
 
 # API
-fastapi==0.115.0
+fastapi==0.116.1
 uvicorn[standard]==0.35.0
 python-multipart==0.0.18
 
