@@ -176,6 +176,24 @@ def cmd_run(argv: list[str]) -> int:
             with open(metrics_file, "w") as f:
                 json.dump({"metrics": results}, f, indent=2)
         man = RunManifest(args=vars(args), device=args.device, results=results, metrics_file=metrics_file)
+        # Attach runtime details in dry-run as well
+        runtime_info = {"compile_mode": args.compile, "auto_backend": bool(args.auto or args.auto_backend)}
+        try:
+            import onnxruntime as _ort  # type: ignore
+
+            runtime_info["ort_providers"] = list(getattr(_ort, "get_available_providers", lambda: [])())
+        except Exception:
+            runtime_info["ort_providers"] = None
+        try:
+            man.env["runtime"] = runtime_info
+        except Exception:
+            pass
+        try:
+            import time as _time
+
+            man.ended_at = _time.time()
+        except Exception:
+            pass
         write_manifest(os.path.join(args.output, "manifest.json"), man)
         if args.csv_out:
             import csv
@@ -223,8 +241,9 @@ def cmd_run(argv: list[str]) -> int:
                 # merge params with precedence to plan
                 for k, v in pl.params.items():
                     cfg[k] = v
+                plan_info = {"backend": pl.backend, "params": pl.params, "postproc": pl.postproc, "reason": pl.reason}
             except Exception:
-                pass
+                plan_info = None
 
         vram_mb = None
         t0 = time.time()
@@ -334,6 +353,8 @@ def cmd_run(argv: list[str]) -> int:
             "restored_img": out_img,
             "metrics": {},
         }
+        if use_orchestrator:
+            rec["plan"] = plan_info
         if chosen_weight is not None:
             rec["metrics"]["weight"] = chosen_weight
         # Identity lock: if identity below threshold and ArcFace available, retry with stricter preset
@@ -383,6 +404,25 @@ def cmd_run(argv: list[str]) -> int:
             json.dump({"metrics": results}, f, indent=2)
 
     man = RunManifest(args=vars(args), device=args.device, results=results, metrics_file=metrics_file)
+    # Attach runtime details: compile mode and ORT providers (best-effort)
+    runtime_info = {"compile_mode": args.compile, "auto_backend": bool(args.auto or args.auto_backend)}
+    try:
+        import onnxruntime as _ort  # type: ignore
+
+        runtime_info["ort_providers"] = list(getattr(_ort, "get_available_providers", lambda: [])())
+    except Exception:
+        runtime_info["ort_providers"] = None
+    try:
+        man.env["runtime"] = runtime_info
+    except Exception:
+        pass
+    # Mark end time
+    try:
+        import time as _time
+
+        man.ended_at = _time.time()
+    except Exception:
+        pass
     write_manifest(os.path.join(args.output, "manifest.json"), man)
 
     # Optional CSV + HTML outputs
