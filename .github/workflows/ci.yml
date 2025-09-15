@@ -58,7 +58,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Syntax check (compileall)
         run: |
           python -m compileall -q gfpgan scripts inference_gfpgan.py || exit 1
@@ -104,7 +104,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
           cache: pip
           cache-dependency-path: |
             pyproject.toml
@@ -123,7 +123,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Run pip-audit
         run: |
           python -m pip install --upgrade pip
@@ -142,7 +142,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
           cache: pip
           cache-dependency-path: |
             requirements.txt
@@ -173,7 +173,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Install API extras
         run: |
           python -m pip install --upgrade pip
@@ -195,7 +195,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Install notebook runtime (CPU)
         run: |
           python -m pip install --upgrade pip
@@ -230,7 +230,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Install runtime
         run: |
           python -m pip install --upgrade pip
