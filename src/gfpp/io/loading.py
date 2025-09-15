@@ -19,8 +19,19 @@ def list_inputs(spec: str) -> List[str]:
 def load_image_bgr(path: str):
     try:
         import cv2  # type: ignore
-
-        return cv2.imread(path, cv2.IMREAD_COLOR)
+        img = cv2.imread(path, cv2.IMREAD_COLOR)
+        if img is not None:
+            return img
+    except Exception:
+        pass
+    # Fallback: use PIL and convert RGB->BGR numpy array
+    try:
+        from PIL import Image  # type: ignore
+        import numpy as np  # type: ignore
+        im = Image.open(path).convert("RGB")
+        arr = np.array(im)
+        # Convert RGB to BGR
+        return arr[:, :, ::-1]
     except Exception:
         return None
 

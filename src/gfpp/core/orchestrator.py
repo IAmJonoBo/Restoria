@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Dict
+from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
 
 from gfpp.probe.quality import probe_quality
 
@@ -12,6 +12,9 @@ class Plan:
     params: Dict[str, Any]
     postproc: Dict[str, Any]
     reason: str
+    quality: Dict[str, Optional[float]] = field(default_factory=dict)
+    faces: Dict[str, Any] = field(default_factory=dict)
+    detail: Dict[str, Any] = field(default_factory=dict)
 
 
 DEFAULT_PLAN = Plan(backend="gfpgan", params={"weight": 0.5}, postproc={}, reason="default")
@@ -33,8 +36,26 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
         q = probe_quality(image_path)
     except Exception:
         q = None
+    faces: Dict[str, Any] = {}
+    # Optional face probe
+    try:
+        from gfpp.probe.faces import detect_faces  # type: ignore
+
+        fstats = detect_faces(image_path)
+        if isinstance(fstats, dict):
+            faces = fstats
+    except Exception:
+        pass
     if q is None:
-        return Plan(backend=backend, params=params, postproc=post, reason="quality_probe_unavailable")
+        return Plan(
+            backend=backend,
+            params=params,
+            postproc=post,
+            reason="quality_probe_unavailable",
+            quality={},
+            faces=faces,
+            detail={"note": "quality probe failed"},
+        )
 
     niqe = q.get("niqe")
     bris = q.get("brisque")
@@ -47,15 +68,33 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
         reason = "few_artifacts"
         params["weight"] = min(max(float(opts.get("weight", 0.5)), 0.0), 1.0)
     elif (niqe is not None and niqe >= 12) or (bris is not None and bris >= 55):
-        # very degraded
+        # very degraded → prefer CodeFormer with higher fidelity weight (>= 0.6)
         backend = "codeformer"
         reason = "heavy_degradation"
-        params["weight"] = min(max(float(opts.get("weight", 0.7)), 0.0), 1.0)
+        w = float(opts.get("weight", 0.7))
+        params["weight"] = min(max(max(w, 0.6), 0.0), 1.0)
     else:
         backend = "gfpgan"
         reason = "moderate_degradation"
-        params["weight"] = float(opts.get("weight", 0.6))
+        # For moderate degradation, standardize to 0.6 for determinism
+        params["weight"] = 0.6
 
     # Background upsampling suggestion
     post["background"] = opts.get("background", "realesrgan")
-    return Plan(backend=backend, params=params, postproc=post, reason=reason)
+    detail = {
+        "routing_rules": {
+            "few_artifacts": "niqe < 7.5 or brisque < 35",
+            "heavy_degradation": "niqe >= 12 or brisque >= 55",
+            "moderate_degradation": "otherwise",
+        },
+        "decision_inputs": {"niqe": niqe, "brisque": bris, "face_count": faces.get("face_count")},
+    }
+    return Plan(
+        backend=backend,
+        params=params,
+        postproc=post,
+        reason=reason,
+        quality={"niqe": niqe, "brisque": bris},
+        faces=faces,
+        detail=detail,
+    )

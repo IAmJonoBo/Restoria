@@ -168,6 +168,15 @@ def cmd_run(argv: list[str]) -> int:
             out_img = os.path.join(args.output, f"{base}.png")
             save_image(out_img, img)
             rec = {"input": pth, "restored_img": out_img, "metrics": {"runtime_sec": time.time() - t0}}
+            # Even in dry-run we can compute no-ref metrics (they don't require restored output)
+            if args.metrics != "off":
+                try:
+                    from gfpp.metrics import NoRefQuality  # type: ignore
+                    noref = NoRefQuality()
+                    for k, v in noref.score(out_img).items():
+                        rec["metrics"][k] = v
+                except Exception:
+                    pass
             results.append(rec)
 
         # Write manifest + optional CSV/HTML
@@ -354,7 +363,12 @@ def cmd_run(argv: list[str]) -> int:
             "metrics": {},
         }
         if use_orchestrator:
-            rec["plan"] = plan_info
+            # plan_info already a dict from dataclass .__dict__ in caller; keep as-is
+            # Backward compatibility: ensure basic keys exist
+            if isinstance(plan_info, dict):
+                rec["plan"] = plan_info
+            else:
+                rec["plan"] = {"backend": chosen_backend, "reason": "plan_object_unexpected"}
         if chosen_weight is not None:
             rec["metrics"]["weight"] = chosen_weight
         # Identity lock: if identity below threshold and ArcFace available, retry with stricter preset
@@ -389,6 +403,15 @@ def cmd_run(argv: list[str]) -> int:
                 rec["metrics"]["lpips_alex"] = lpips.distance_from_paths(pth, out_img)
             if dists and dists.available():
                 rec["metrics"]["dists"] = dists.distance_from_paths(pth, out_img)
+            # Add NIQE/BRISQUE (no-ref) metrics if available
+            try:
+                from gfpp.metrics import NoRefQuality
+                noref = NoRefQuality()
+                noref_scores = noref.score(out_img)
+                for k, v in noref_scores.items():
+                    rec["metrics"][k] = v
+            except Exception:
+                pass
         rec["metrics"]["runtime_sec"] = dur
         if vram_mb is not None:
             rec["metrics"]["vram_mb"] = vram_mb
