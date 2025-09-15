@@ -47,9 +47,9 @@ dependencies = [
   "opencv-python>=4.8; python_version >= '3.11'",
   # Torch/torchvision compatibility with basicsr (functional_tensor module removed in 0.17+)
   "torch>=2.0,<3.0; python_version >= '3.11'",
-  "torchvision>=0.15,<0.20; python_version >= '3.11'",
+  "torchvision>=0.23,<0.24; python_version >= '3.11'",
   "torch>=2.0,<3.0; python_version < '3.11'",
-  "torchvision>=0.15,<0.20; python_version < '3.11'",
+  "torchvision>=0.23,<0.24; python_version < '3.11'",
   "PyYAML",
   "tensorboard",
   "tqdm",
@@ -100,11 +100,11 @@ web = [
 ]
 torch1 = [
   "torch>=2.0,<3.0; python_version < '3.11'",
-  "torchvision>=0.15,<0.20; python_version < '3.11'",
+  "torchvision>=0.23,<0.24; python_version < '3.11'",
 ]
 torch2 = [
   "torch>=2.0,<3.0; python_version >= '3.11'",
-  "torchvision>=0.15,<0.20; python_version >= '3.11'",
+  "torchvision>=0.23,<0.24; python_version >= '3.11'",
 ]
 
 [project.scripts]
