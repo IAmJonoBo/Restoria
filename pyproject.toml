@@ -71,6 +71,10 @@ api = [
 ]
 metrics = [
   "lpips>=0.1.4",
+  "dists-pytorch>=0.1", # DISTS perceptual metric
+  "piq>=0.8",           # NIQE/other IQA (optional fallback)
+  "imquality[brisque]>=0.3; platform_system != 'Windows'", # BRISQUE via imquality (best effort)
+  "pybrisque>=1.0; platform_system == 'Windows'",          # BRISQUE alternative on Windows
 ]
 # New runtime extras (optional, import-light defaults):
 codeformer = [
@@ -95,12 +99,12 @@ web = [
   # Placeholder for web UI tooling deps
 ]
 torch1 = [
-  "torch>=2.8,<2.9; python_version < '3.11'",
-  "torchvision<0.24; python_version < '3.11'",
+  "torch>=2.0,<3.0; python_version < '3.11'",
+  "torchvision>=0.15,<0.20; python_version < '3.11'",
 ]
 torch2 = [
-  "torch>=2.8,<2.9; python_version >= '3.11'",
-  "torchvision>=0.23,<0.24; python_version >= '3.11'",
+  "torch>=2.0,<3.0; python_version >= '3.11'",
+  "torchvision>=0.15,<0.20; python_version >= '3.11'",
 ]
 
 [project.scripts]

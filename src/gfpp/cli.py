@@ -63,6 +63,7 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--csv-out", default=None, help="Write metrics CSV to this path")
     p.add_argument("--html-report", default=None, help="Write HTML report to this path")
     p.add_argument("--auto-backend", action="store_true", help="Select backend per-image using quality heuristics")
+    p.add_argument("--auto", action="store_true", help="Alias for --auto-backend")
     p.add_argument(
         "--dry-run", action="store_true", help="Simulate run without loading models (copy inputs to outputs)"
     )
@@ -101,6 +102,9 @@ def cmd_run(argv: list[str]) -> int:
             prec = "auto"
         bg = build_realesrgan(device=args.device, tile=tile, precision=prec)
 
+    # Support --auto alias
+    if args.auto:
+        args.auto_backend = True
     # Choose restorer (optionally auto per-file)
     if args.auto_backend:
         # pick initial; will refine per-image below
@@ -144,6 +148,13 @@ def cmd_run(argv: list[str]) -> int:
         cfg["model_path_onnx"] = args.model_path_onnx
 
     inputs = list_inputs(args.input)
+    # Optional orchestrator (new path). If import fails, we silently fall back.
+    use_orchestrator = bool(args.auto_backend)
+    if use_orchestrator:
+        try:
+            from gfpp.core.orchestrator import plan as make_plan  # type: ignore
+        except Exception:
+            use_orchestrator = False
     results = []
 
     # Dry-run path: copy inputs to outputs and optionally write metrics/report
@@ -197,6 +208,23 @@ def cmd_run(argv: list[str]) -> int:
             print(f"[WARN] Failed to load: {pth}")
             continue
         cfg["input_path"] = pth
+        # If orchestrator active, create a plan
+        if use_orchestrator:
+            try:
+                pl = make_plan(
+                    pth,
+                    {
+                        "backend": chosen_backend,
+                        "background": args.background,
+                        "weight": cfg.get("weight", 0.5),
+                    },
+                )
+                chosen_backend = pl.backend
+                # merge params with precedence to plan
+                for k, v in pl.params.items():
+                    cfg[k] = v
+            except Exception:
+                pass
 
         vram_mb = None
         t0 = time.time()
@@ -210,7 +238,7 @@ def cmd_run(argv: list[str]) -> int:
             pass
 
         # Optional auto backend per-image
-        if args.auto_backend:
+        if args.auto_backend and not use_orchestrator:
             try:
                 from gfpgan.auto.engine_selector import select_engine_for_image  # type: ignore
 
@@ -391,6 +419,37 @@ def main(argv: list[str] | None = None) -> int:
     cmd = argv[0]
     if cmd == "run":
         return cmd_run(argv[1:])
+    if cmd == "doctor":
+        # Print environment and backend availability
+        try:
+            import platform
+            import torch  # type: ignore
+            print(f"Python: {platform.python_version()}")
+            print(f"Torch: {getattr(torch, '__version__', None)}")
+            print(f"CUDA available: {torch.cuda.is_available()}")
+            if torch.cuda.is_available():
+                try:
+                    print(f"CUDA device: {torch.cuda.get_device_name(0)}")
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        try:
+            import onnxruntime as ort  # type: ignore
+            providers = getattr(ort, 'get_available_providers', lambda: [])()
+            print(f"ONNX Runtime providers: {providers}")
+        except Exception:
+            print("ONNX Runtime: not installed")
+        try:
+            from src.gfpp.core.registry import list_backends  # type: ignore
+
+            avail = list_backends(include_experimental=True)
+            print("Backends:")
+            for k, v in avail.items():
+                print(f"  - {k}: {'available' if v else 'missing'}")
+        except Exception:
+            pass
+        return 0
     if cmd == "export-onnx":
         # Minimal stub to document export path without heavy operations
         import argparse
