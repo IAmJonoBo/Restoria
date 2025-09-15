@@ -511,14 +511,34 @@ def main(argv: list[str] | None = None) -> int:
             providers = getattr(ort, 'get_available_providers', lambda: [])()
             print(f"ONNX Runtime providers: {providers}")
         except Exception:
+            providers = None
             print("ONNX Runtime: not installed")
         try:
-            from src.gfpp.core.registry import list_backends  # type: ignore
+            from gfpp.core.registry import list_backends  # type: ignore
 
             avail = list_backends(include_experimental=True)
             print("Backends:")
             for k, v in avail.items():
                 print(f"  - {k}: {'available' if v else 'missing'}")
+        except Exception:
+            pass
+        # Minimal suggestion based on environment (best-effort, non-fatal)
+        try:
+            import torch  # type: ignore
+
+            suggest = []
+            if torch.cuda.is_available():
+                suggest.append("--device cuda")
+                suggest.append("--compile default")
+            if isinstance(providers, (list, tuple)) and any(p in providers for p in (
+                "CUDAExecutionProvider",
+                "TensorrtExecutionProvider",
+                "DmlExecutionProvider",
+                "CoreMLExecutionProvider",
+            )):
+                suggest.append("--backend gfpgan-ort")
+            if suggest:
+                print("Suggested flags: " + " ".join(suggest))
         except Exception:
             pass
         return 0

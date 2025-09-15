@@ -17,11 +17,14 @@ def select_best_ep() -> Optional[str]:
     eps = available_eps()
     # Rough priority list; adjust as we learn more
     for cand in [
-        "TensorrtExecutionProvider",
+        # Prefer CUDA for broad compatibility; TensorRT when properly configured
         "CUDAExecutionProvider",
-        "CoreMLExecutionProvider",
+        "TensorrtExecutionProvider",
+        # Windows GPUs (DirectML), then Apple (CoreML), then ROCm
         "DmlExecutionProvider",
+        "CoreMLExecutionProvider",
         "ROCMExecutionProvider",
+        # Always available fallback
         "CPUExecutionProvider",
     ]:
         if cand in eps:
