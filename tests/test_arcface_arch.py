@@ -1,12 +1,16 @@
 import pytest
-import torch
 
-pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
-from gfpgan.archs.arcface_arch import BasicBlock, Bottleneck, ResNetArcFace
+pytestmark = pytest.mark.heavy
+try:
+    import torch  # type: ignore
+    from gfpgan.archs.arcface_arch import BasicBlock, Bottleneck, ResNetArcFace  # type: ignore
+except Exception:
+    pytest.skip("heavy deps not available for arcface arch tests", allow_module_level=True)
 
 
 def test_resnetarcface():
     """Test arch: ResNetArcFace."""
+    # heavy deps imported at module level
 
     # model init and forward (gpu)
     if torch.cuda.is_available():
@@ -23,6 +27,7 @@ def test_resnetarcface():
 
 def test_basicblock():
     """Test the BasicBlock in arcface_arch"""
+    # heavy deps imported at module level
     block = BasicBlock(1, 3, stride=1, downsample=None).cuda()
     img = torch.rand((1, 1, 12, 12), dtype=torch.float32).cuda()
     output = block(img)
@@ -38,6 +43,7 @@ def test_basicblock():
 
 def test_bottleneck():
     """Test the Bottleneck in arcface_arch"""
+    # heavy deps imported at module level
     block = Bottleneck(1, 1, stride=1, downsample=None).cuda()
     img = torch.rand((1, 1, 12, 12), dtype=torch.float32).cuda()
     output = block(img)

@@ -23,8 +23,7 @@ class ORTGFPGANRestorer(Restorer):
 
     def prepare(self, cfg: Dict[str, Any]) -> None:
         from time import perf_counter
-
-        from src.gfpp.engines.onnxruntime import available_eps, create_session, session_info  # type: ignore
+        from gfpp.engines.onnxruntime import available_eps, create_session, session_info  # type: ignore
         from .gfpgan import GFPGANRestorer
 
         # Users may pass an ONNX model path via cfg["model_path_onnx"]. If missing, fallback.

@@ -12,12 +12,13 @@ class Plan:
     params: Dict[str, Any]
     postproc: Dict[str, Any]
     reason: str
+    confidence: float = 0.5
     quality: Dict[str, Optional[float]] = field(default_factory=dict)
     faces: Dict[str, Any] = field(default_factory=dict)
     detail: Dict[str, Any] = field(default_factory=dict)
 
 
-DEFAULT_PLAN = Plan(backend="gfpgan", params={"weight": 0.5}, postproc={}, reason="default")
+DEFAULT_PLAN = Plan(backend="gfpgan", params={"weight": 0.5}, postproc={}, reason="default", confidence=0.5)
 
 
 def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
@@ -52,6 +53,7 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
             params=params,
             postproc=post,
             reason="quality_probe_unavailable",
+            confidence=0.2,
             quality={},
             faces=faces,
             detail={"note": "quality probe failed"},
@@ -79,12 +81,49 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
         # For moderate degradation, standardize to 0.6 for determinism
         params["weight"] = 0.6
 
+    # Face-aware adjustment: for many faces, bias toward GFPGAN for speed/stability
+    face_count = None
+    try:
+        face_count = int(faces.get("face_count")) if isinstance(faces.get("face_count"), (int, float)) else None
+    except Exception:
+        face_count = None
+    if reason == "heavy_degradation" and face_count is not None and face_count >= 3:
+        backend = "gfpgan"
+        reason = "heavy_degradation_many_faces"
+
     # Background upsampling suggestion
     post["background"] = opts.get("background", "realesrgan")
+    # Confidence estimation (0..1), based on margin from thresholds and face info
+    conf = 0.5
+    if reason in {"few_artifacts", "moderate_degradation", "heavy_degradation", "heavy_degradation_many_faces"}:
+        m_vals = []
+        if reason.startswith("few_artifacts"):
+            if isinstance(niqe, (int, float)):
+                m_vals.append((7.5 - float(niqe)) / 5.0)
+            if isinstance(bris, (int, float)):
+                m_vals.append((35.0 - float(bris)) / 15.0)
+        elif reason.startswith("heavy_degradation"):
+            if isinstance(niqe, (int, float)):
+                m_vals.append((float(niqe) - 12.0) / 5.0)
+            if isinstance(bris, (int, float)):
+                m_vals.append((float(bris) - 55.0) / 15.0)
+        elif reason == "moderate_degradation":
+            m_vals.append(0.0)
+        margin = max(m_vals) if m_vals else 0.0
+        conf = max(0.05, min(0.95, 0.5 + 0.25 * margin))
+    # Adjust confidence with face signal presence
+    if not faces:
+        conf = max(0.05, conf - 0.05)
+    elif isinstance(face_count, int) and face_count >= 1:
+        conf = min(0.99, conf + 0.05)
+    if reason == "heavy_degradation_many_faces":
+        conf = max(0.05, conf - 0.05)
+
     detail = {
         "routing_rules": {
             "few_artifacts": "niqe < 7.5 or brisque < 35",
             "heavy_degradation": "niqe >= 12 or brisque >= 55",
+            "heavy_degradation_many_faces": "heavy_degradation and face_count >= 3",
             "moderate_degradation": "otherwise",
         },
         "decision_inputs": {"niqe": niqe, "brisque": bris, "face_count": faces.get("face_count")},
@@ -94,6 +133,7 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
         params=params,
         postproc=post,
         reason=reason,
+        confidence=float(conf),
         quality={"niqe": niqe, "brisque": bris},
         faces=faces,
         detail=detail,

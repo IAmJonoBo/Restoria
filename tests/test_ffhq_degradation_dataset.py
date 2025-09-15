@@ -1,14 +1,17 @@
 import pytest
-import yaml
-
-pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
-from gfpgan.data.ffhq_degradation_dataset import FFHQDegradationDataset
+pytestmark = pytest.mark.heavy
+try:
+    import yaml  # type: ignore
+    from gfpgan.data.ffhq_degradation_dataset import FFHQDegradationDataset  # type: ignore
+except Exception:
+    pytest.skip("heavy deps not available for FFHQ dataset test", allow_module_level=True)
 
 
 def test_ffhq_degradation_dataset():
+    # heavy deps imported at module level
 
     with open("tests/data/test_ffhq_degradation_dataset.yml", mode="r") as f:
-        opt = yaml.load(f, Loader=yaml.FullLoader)
+        opt = yaml.safe_load(f)
 
     dataset = FFHQDegradationDataset(opt)
     assert dataset.io_backend_opt["type"] == "disk"  # io backend

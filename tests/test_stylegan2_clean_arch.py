@@ -1,13 +1,15 @@
-import torch
-
 import pytest
-
-pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
-from gfpgan.archs.stylegan2_clean_arch import StyleGAN2GeneratorClean
+pytestmark = pytest.mark.heavy
+try:
+    import torch  # type: ignore
+    from gfpgan.archs.stylegan2_clean_arch import StyleGAN2GeneratorClean  # type: ignore
+except Exception:
+    pytest.skip("heavy deps not available for stylegan2 clean arch test", allow_module_level=True)
 
 
 def test_stylegan2generatorclean():
     """Test arch: StyleGAN2GeneratorClean."""
+    # heavy deps imported at module level
 
     # model init and forward (gpu)
     if torch.cuda.is_available():

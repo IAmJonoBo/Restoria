@@ -250,7 +250,16 @@ def cmd_run(argv: list[str]) -> int:
                 # merge params with precedence to plan
                 for k, v in pl.params.items():
                     cfg[k] = v
-                plan_info = {"backend": pl.backend, "params": pl.params, "postproc": pl.postproc, "reason": pl.reason}
+                plan_info = {
+                    "backend": pl.backend,
+                    "params": pl.params,
+                    "postproc": pl.postproc,
+                    "reason": pl.reason,
+                    "confidence": getattr(pl, "confidence", None),
+                    "quality": getattr(pl, "quality", None),
+                    "faces": getattr(pl, "faces", None),
+                    "detail": getattr(pl, "detail", None),
+                }
             except Exception:
                 plan_info = None
 

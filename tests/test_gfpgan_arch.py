@@ -1,10 +1,12 @@
-import torch
-
 import pytest
+try:
+    import torch  # type: ignore
+    from gfpgan.archs.gfpganv1_arch import FacialComponentDiscriminator, GFPGANv1, StyleGAN2GeneratorSFT  # type: ignore
+    from gfpgan.archs.gfpganv1_clean_arch import GFPGANv1Clean, StyleGAN2GeneratorCSFT  # type: ignore
+except Exception:
+    pytest.skip("heavy deps not available for gfpgan arch tests", allow_module_level=True)
 
-pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
-from gfpgan.archs.gfpganv1_arch import FacialComponentDiscriminator, GFPGANv1, StyleGAN2GeneratorSFT
-from gfpgan.archs.gfpganv1_clean_arch import GFPGANv1Clean, StyleGAN2GeneratorCSFT
+pytestmark = pytest.mark.heavy
 
 
 def test_stylegan2generatorsft():

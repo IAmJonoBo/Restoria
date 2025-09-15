@@ -149,3 +149,8 @@ lint.ignore = ["I001"]
 exclude = [
   "notebooks/**"
 ]
+
+[tool.pytest.ini_options]
+markers = [
+  "heavy: tests that require heavy optional dependencies or model files",
+]

@@ -1,6 +1,7 @@
 import tempfile
 
 import pytest
+pytestmark = pytest.mark.heavy
 import torch
 import yaml
 
