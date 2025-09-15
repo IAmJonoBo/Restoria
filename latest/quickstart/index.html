@@ -1381,30 +1381,14 @@
 <ul>
 <li>Install (editable):</li>
 <li><code>pip install -e .[dev]</code></li>
-<li>Download weights (optional, local cache):</li>
-<li>List: <code>gfpgan-download-weights --list</code></li>
-<li>Fetch v1.4: <code>gfpgan-download-weights -v 1.4</code></li>
 <li>Inference on CPU or GPU:</li>
 <li><code>gfpgan-infer --input inputs/whole_imgs --version 1.4 --upscale 2 --device auto</code></li>
-<li>Optional: <code>--compile default</code> (Torch 2.x) for speedups</li>
 <li>Helpful flags:</li>
 <li><code>--dry-run</code> (validate args), <code>--no-download</code> (require local weights), <code>--model-path</code> (override weights)</li>
-<li><code>--bg_upsampler none</code> (disable background upsampling), <code>--bg_precision fp32|fp16|auto</code></li>
-<li><code>--detector scrfd|retinaface_*</code> (switch detector), <code>--no-parse</code> (disable parsing)</li>
-<li><code>--manifest outputs.json</code> to save a simple results manifest</li>
-<li><code>--sweep-weight 0.3,0.5,0.7</code> to run multiple weights</li>
-<li><code>--print-env</code> to display versions and CUDA availability</li>
-<li>Quality: <code>--jpg-quality 95</code>, <code>--png-compress 3</code>, <code>--webp-quality 90</code></li>
 <li>Colab notebook (UI):</li>
-<li><a href="https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb">GFPGAN Colab Demo</a></li>
+<li>https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb</li>
 </ul>
-<p>Weights &amp; cache
-- Default weights dir: <code>gfpgan/weights</code> (override with <code>GFPGAN_WEIGHTS_DIR</code>)
-- Hugging Face Hub: set <code>GFPGAN_HF_REPO</code> to enable hub resolution; set <code>HF_HUB_OFFLINE=1</code> for cache-only</p>
 <p>See: CLI Usage (./usage/cli.md) and Colab Guide (./usage/colab.md).</p>
-<p>Known good versions
-- Python 3.11 with Torch 2.x track (e.g., torch 2.4.1, torchvision 0.19.1)
-- Basicsr from master when using modern torchvision (CI/Colab default)</p>
 
 
 

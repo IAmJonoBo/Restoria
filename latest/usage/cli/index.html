@@ -1378,57 +1378,26 @@
 
 
 <h1 id="cli-usage">CLI Usage<a class="headerlink" href="#cli-usage" title="Permanent link">&para;</a></h1>
-<div class="highlight"><pre><span></span><code>usage:<span class="w"> </span>gfpgan-infer<span class="w"> </span><span class="o">[</span>-i<span class="w"> </span>INPUT<span class="o">]</span><span class="w"> </span><span class="o">[</span>-o<span class="w"> </span>OUTPUT<span class="o">]</span><span class="w"> </span><span class="o">[</span>-v<span class="w"> </span>VERSION<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="w"> </span>UPSCALE<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--bg_upsampler<span class="w"> </span><span class="o">{</span>realesrgan,none<span class="o">}]</span><span class="w"> </span><span class="o">[</span>--bg_tile<span class="w"> </span>BG_TILE<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--bg_precision<span class="w"> </span><span class="o">{</span>auto,fp16,fp32<span class="o">}]</span><span class="w"> </span><span class="o">[</span>--backend<span class="w"> </span><span class="o">{</span>gfpgan,restoreformer,codeformer<span class="o">}]</span>
-<span class="w">                    </span><span class="o">[</span>--suffix<span class="w"> </span>SUFFIX<span class="o">]</span><span class="w"> </span><span class="o">[</span>--only_center_face<span class="o">]</span><span class="w"> </span><span class="o">[</span>--aligned<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--ext<span class="w"> </span>EXT<span class="o">]</span><span class="w"> </span><span class="o">[</span>-w<span class="w"> </span>WEIGHT<span class="o">]</span><span class="w"> </span><span class="o">[</span>--sweep-weight<span class="w"> </span>SWEEP_WEIGHT<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--jpg-quality<span class="w"> </span>JPG_QUALITY<span class="o">]</span><span class="w"> </span><span class="o">[</span>--png-compress<span class="w"> </span>PNG_COMPRESS<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--webp-quality<span class="w"> </span>WEBP_QUALITY<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--detector<span class="w"> </span><span class="o">{</span>retinaface_resnet50,retinaface_mobile0.25,scrfd<span class="o">}]</span><span class="w"> </span><span class="o">[</span>--no-parse<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--device<span class="w"> </span><span class="o">{</span>auto,cpu,cuda<span class="o">}]</span><span class="w"> </span><span class="o">[</span>--dry-run<span class="o">]</span><span class="w"> </span><span class="o">[</span>--no-download<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--model-path<span class="w"> </span>MODEL_PATH<span class="o">]</span><span class="w"> </span><span class="o">[</span>--seed<span class="w"> </span>SEED<span class="o">]</span><span class="w"> </span><span class="o">[</span>--no-cmp<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--manifest<span class="w"> </span>MANIFEST<span class="o">]</span><span class="w"> </span><span class="o">[</span>--compile<span class="w"> </span><span class="o">{</span>none,default,max<span class="o">}]</span><span class="w"> </span><span class="o">[</span>--metrics<span class="w"> </span><span class="o">{</span>none,id,lpips,both<span class="o">}]</span><span class="w"> </span><span class="o">[</span>--metrics-out<span class="w"> </span>METRICS_OUT<span class="o">]</span><span class="w"> </span><span class="o">[</span>--print-env<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--deterministic-cuda<span class="o">]</span><span class="w"> </span><span class="o">[</span>--eye-dist-threshold<span class="w"> </span>EYE_DIST_THRESHOLD<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--max-images<span class="w"> </span>MAX_IMAGES<span class="o">]</span><span class="w"> </span><span class="o">[</span>--skip-existing<span class="o">]</span><span class="w"> </span><span class="o">[</span>--workers<span class="w"> </span>WORKERS<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--auto<span class="o">]</span><span class="w"> </span><span class="o">[</span>--auto-hw<span class="o">]</span><span class="w"> </span><span class="o">[</span>--select-by<span class="w"> </span><span class="o">{</span>sharpness,identity<span class="o">}]</span>
-<span class="w">                    </span><span class="o">[</span>--verbose<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>usage: gfpgan-infer [-i INPUT] [-o OUTPUT] [-v VERSION] [-s UPSCALE]
+                    [--bg_upsampler BG_UPSAMPLER] [--bg_tile BG_TILE]
+                    [--suffix SUFFIX] [--only_center_face] [--aligned]
+                    [--ext EXT] [-w WEIGHT]
+                    [--device {auto,cpu,cuda}] [--dry-run] [--no-download]
+                    [--model-path MODEL_PATH] [--seed SEED] [--no-cmp]
 </code></pre></div>
 <ul>
 <li>Common examples</li>
 <li><code>gfpgan-infer -i inputs/whole_imgs -o results -v 1.4 -s 2 --device auto</code></li>
-<li><code>gfpgan-infer -i "inputs/whole_imgs/*.png" -v 1.3 --bg_upsampler none</code></li>
-<li><code>gfpgan-infer -i my.jpg -v 1.3 --no-download --model-path ./gfpgan/weights/GFPGANv1.3.pth</code></li>
-<li><code>gfpgan-infer --dry-run -v 1.4 --verbose</code> (validate and exit)</li>
-<li>Weight sweep: <code>gfpgan-infer -i img.jpg -v 1.4 --sweep-weight 0.3,0.5,0.7 --manifest out.json</code></li>
-<li>Deterministic CUDA: <code>gfpgan-infer -i img.jpg -v 1.4 --deterministic-cuda --seed 123</code></li>
-<li>Torch compile: <code>gfpgan-infer -i img.jpg -v 1.4 --compile default</code></li>
-<li>Metrics: <code>gfpgan-infer -i img.jpg -v 1.4 --metrics both --metrics-out results/metrics.json</code></li>
-<li>Quality controls: <code>--jpg-quality 95 --png-compress 3 --webp-quality 90</code></li>
-<li>Autopilot: <code>gfpgan-infer -i img.jpg -v 1.4 --auto --select-by sharpness</code></li>
+<li><code>gfpgan-infer -i my.jpg -v 1.3 --no-download --model-path ./weights/GFPGANv1.3.pth</code></li>
 <li>
-<p>Hardware-aware defaults: <code>gfpgan-infer -i img.jpg -v 1.3 --auto-hw</code></p>
+<p><code>gfpgan-infer --dry-run -v 1.4</code> (validate and exit)</p>
 </li>
 <li>
 <p>Notes</p>
 </li>
-<li>On CPU, Real-ESRGAN background upsampling is disabled automatically.</li>
-<li>Use <code>--bg_precision fp32</code> to force full precision, or <code>fp16</code> to half on CUDA.</li>
+<li>On CPU, Real-ESRGAN background upsampling is disabled for speed.</li>
 <li><code>--seed</code> sets seeds for random, numpy, and torch.</li>
-<li>Use <code>--detector</code> to switch facexlib detectors; <code>--no-parse</code> disables face parsing.</li>
-<li>Backends: choose <code>--backend gfpgan|restoreformer|restoreformerpp|codeformer</code>. RestoreFormer uses built-in arch; <code>restoreformerpp</code> aliases to RestoreFormer for now; CodeFormer requires installing its repo.</li>
-<li><code>--manifest out.json</code> writes a manifest of inputs and outputs for automation.</li>
-<li><code>--skip-existing</code> avoids re-writing outputs; <code>--max-images</code> caps processing.</li>
-<li><code>--print-env</code> prints torch/torchvision/basicsr/facexlib versions and CUDA availability.</li>
-<li><code>--workers N</code> enables experimental CPU-only parallelization across images (spawns multiple processes).</li>
-<li>Quality controls apply by file extension (jpg/png/webp) when saving outputs.</li>
-<li><code>--auto</code> tries a couple of model/weight combos and picks the best by <code>--select-by</code>.</li>
-<li><code>--auto-hw</code> sets sensible tiles/precision/workers based on detected hardware.</li>
 </ul>
-<p>Model weights
-- Download utility: <code>gfpgan-download-weights --list</code> to view; <code>gfpgan-download-weights -v 1.4</code> to fetch.
-- Destination: downloads to <code>gfpgan/weights/</code> by default. Set <code>GFPGAN_WEIGHTS_DIR</code> to override.
-- The runtime can resolve weights from Hugging Face Hub if <code>GFPGAN_HF_REPO</code> is defined. Set <code>HF_HUB_OFFLINE=1</code> for cache-only.</p>
 
 
 

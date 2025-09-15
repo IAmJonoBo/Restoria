@@ -20,7 +20,7 @@
     
     
       
-        <title>Compatibility Matrix - GFPGAN</title>
+        <title>Compatibility Matrix (Fork) - GFPGAN</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#compatibility-matrix" class="md-skip">
+        <a href="#compatibility-matrix-fork" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Compatibility Matrix
+              Compatibility Matrix (Fork)
             
           </span>
         </div>
@@ -1377,29 +1377,23 @@
   
 
 
-<h1 id="compatibility-matrix">Compatibility Matrix<a class="headerlink" href="#compatibility-matrix" title="Permanent link">&para;</a></h1>
-<p>This fork supports two primary tracks to balance stability and modern stacks.</p>
+<h1 id="compatibility-matrix-fork">Compatibility Matrix (Fork)<a class="headerlink" href="#compatibility-matrix-fork" title="Permanent link">&para;</a></h1>
+<p>This fork targets a smooth developer and Colab experience with modern Torch/Torchvision while remaining compatible with upstream behavior where practical.</p>
 <ul>
-<li>Torch 1.x (stable, Python 3.10): use <code>extras = [dev, torch1]</code> or <code>-c constraints-3.10-compat.txt</code>.</li>
-<li>Torch 2.x (modern, Python 3.11+): use <code>extras = [dev, torch2]</code>. Install BasicSR from master if needed.</li>
+<li>Python 3.10</li>
+<li>Preferred: Torch 1.x track (<code>-E torch1</code>)</li>
+<li>Example pins: <code>torch==1.13.1</code>, <code>torchvision==0.14.1</code></li>
+<li>Python 3.11</li>
+<li>Preferred: Torch 2.x track (<code>-E torch2</code>)</li>
+<li>Example range: <code>torch&gt;=2.2,&lt;3</code>, <code>torchvision&gt;=0.17,&lt;0.20</code></li>
+<li>Basicsr</li>
+<li>Colab and CI install Basicsr from <code>master</code> to match modern <code>torchvision</code> functional API.</li>
+<li>On older Torch/Torchvision (1.x), the PyPI Basicsr release is typically fine.</li>
 </ul>
-<p>Known-good combinations</p>
-<ul>
-<li>Python 3.10 + Torch 1.13.1 + torchvision 0.14.1 + basicsr 1.4.2</li>
-<li>Python 3.11 + Torch 2.4.1 + torchvision 0.19.1 + basicsr (master)</li>
-</ul>
-<p>Matrix (guide)
-- CPU (3.11): Torch 2.4.1, Torchvision 0.19.1, Basicsr master, facexlib &gt;=0.3.0
-- CUDA 12.1 (3.11): install torch/torchvision/torchaudio from PyTorch CUDA 12.1 index; Basicsr master
-- OpenCV: use prebuilt wheels (&gt;=4.8) for 3.11; older tracks pin to &lt;4.8</p>
 <p>Notes
-- Basicsr 1.4.2 uses <code>torchvision.transforms.functional_tensor</code> which was removed in torchvision 0.15+. For Torch 2.x stacks, install BasicSR from GitHub master.
-- CPU runs disable Real-ESRGAN background upsampling by default for speed.
-- Apple Silicon: prefer Python 3.10 + constraints for prebuilt wheels; Torch 2.x on arm64 is improving but may pull heavier builds.</p>
-<p>Quick recipes
-- 3.10 stable (Torch 1.x): <code>scripts/setup_uv.sh --python 3.10 --track torch1</code>
-- 3.11 modern (Torch 2.x): <code>scripts/setup_uv.sh --python 3.11 --track torch2</code>
-- Pip + constraints (3.10): <code>pip install -e .[dev] -c constraints-3.10-compat.txt</code></p>
+- Colab installs: Torch defaults to CPU wheels (GPU optional via CUDA 12.1 index); Basicsr is installed from <code>master</code> for compatibility.
+- Real-ESRGAN background upsampling is disabled on CPU in this fork for performance—use GPU runtime in Colab for best results.
+- If you need fully deterministic runs, use <code>--seed</code> and prefer CPU (or set CUDA deterministic/env flags).</p>
 
 
 

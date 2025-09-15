@@ -729,19 +729,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Notebooks
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -753,36 +740,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#ci-smoke-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      CI Smoke Mode
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1417,23 +1374,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#ci-smoke-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      CI Smoke Mode
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1457,10 +1397,8 @@
 
 
 <h1 id="colab-guide">Colab Guide<a class="headerlink" href="#colab-guide" title="Permanent link">&para;</a></h1>
-<p>Open the notebook:</p>
-<ul>
-<li><a href="https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb">GFPGAN Colab Demo</a></li>
-</ul>
+<p>Open the notebook:
+- https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb</p>
 <p>Features
 - Install cell sets up Torch + Basicsr master (for torchvision compatibility)
 - Interactive UI for:
@@ -1474,13 +1412,6 @@
 <p>Tips
 - Use a GPU runtime to enable background upsampling (Real-ESRGAN) and for speed.
 - The notebook prints versions of Torch, Torchvision, and Basicsr to help debugging.</p>
-<h2 id="ci-smoke-mode">CI Smoke Mode<a class="headerlink" href="#ci-smoke-mode" title="Permanent link">&para;</a></h2>
-<ul>
-<li>The Colab notebook supports a lightweight smoke run for CI.</li>
-<li>Set the environment variable <code>NB_CI_SMOKE=1</code> to skip heavy installation, cloning, and inference cells.</li>
-<li>Example (local):</li>
-<li><code>NB_CI_SMOKE=1 pytest -c /dev/null --nbmake --nbmake-kernel=python3 --ignore=tests notebooks/GFPGAN_Colab.ipynb</code></li>
-</ul>
 
 
 
