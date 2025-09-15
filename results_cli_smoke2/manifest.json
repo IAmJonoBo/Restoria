@@ -1,0 +1,42 @@
+{
+  "args": {
+    "input": "assets/gfpgan_logo.png",
+    "backend": "gfpgan",
+    "background": "realesrgan",
+    "preset": "natural",
+    "compile": "none",
+    "engine_params": null,
+    "seed": null,
+    "deterministic": false,
+    "metrics": "off",
+    "csv_out": null,
+    "html_report": null,
+    "auto_backend": true,
+    "auto": true,
+    "dry_run": true,
+    "quality": "balanced",
+    "identity_lock": false,
+    "identity_threshold": 0.25,
+    "optimize": false,
+    "weights_cand": "0.3,0.5,0.7",
+    "video": false,
+    "temporal": false,
+    "output": "results_cli_smoke2",
+    "device": "auto",
+    "version": "1.4",
+    "no_download": false,
+    "model_path_onnx": null,
+    "codeformer_fidelity": null
+  },
+  "device": "auto",
+  "started_at": 1757955575.9460638,
+  "ended_at": null,
+  "results": [],
+  "models": [],
+  "metrics_file": null,
+  "env": {
+    "torch": "2.6.0",
+    "cuda": false,
+    "git": "1ffba4f"
+  }
+}

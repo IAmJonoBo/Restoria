@@ -1,5 +1,7 @@
 # Choose backend
 
+Tip: Prefer a simple choice? Try the experimental [Auto mode](auto-mode.md) which selects a backend per image using quality probes. It's opt-in and transparent.
+
 Compare restoration backends and select the best one for your needs.
 
 ## Backend comparison matrix

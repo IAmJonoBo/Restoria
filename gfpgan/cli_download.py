@@ -20,12 +20,14 @@ def load_registry():
     return converted
 
 
+
 def sha256sum(path: str) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
             h.update(chunk)
     return h.hexdigest()
+
 
 
 def download(url: str, dst: str):
@@ -43,6 +45,7 @@ def download(url: str, dst: str):
     sys.stdout.write("\n")
 
 
+
 def resolve_model_name(version: str) -> str:
     # Map version flag to model key used in inference
     mapping = {
@@ -53,6 +56,7 @@ def resolve_model_name(version: str) -> str:
         "RestoreFormer": "RestoreFormer",
     }
     return mapping.get(version, version)
+
 
 
 def main():
