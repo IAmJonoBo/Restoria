@@ -1435,15 +1435,44 @@
 <span class="c1">#   --auto-backend (choose engine per-image)</span>
 <span class="c1">#   --identity-lock --identity-threshold 0.25</span>
 <span class="c1">#   --optimize --weights-cand &quot;0.3,0.5,0.7&quot;</span>
+<span class="c1">#   --compile {none,default,max} (optional torch.compile path)</span>
+
+Plan<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>Metrics:
+
+-<span class="w"> </span>When<span class="w"> </span><span class="sb">`</span>--auto-backend<span class="sb">`</span><span class="w"> </span>is<span class="w"> </span>enabled<span class="w"> </span>each<span class="w"> </span>output<span class="w"> </span>record<span class="w"> </span>embeds<span class="w"> </span>a<span class="w"> </span><span class="sb">`</span>plan<span class="sb">`</span><span class="w"> </span>block:
+
+<span class="sb">```</span>json
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;plan&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;backend&quot;</span>:<span class="w"> </span><span class="s2">&quot;gfpgan&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;reason&quot;</span>:<span class="w"> </span><span class="s2">&quot;moderate_degradation&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;quality&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s2">&quot;niqe&quot;</span>:<span class="w"> </span><span class="m">11</span>.2,<span class="w"> </span><span class="s2">&quot;brisque&quot;</span>:<span class="w"> </span><span class="m">48</span>.5<span class="w"> </span><span class="o">}</span>,
+<span class="w">    </span><span class="s2">&quot;faces&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s2">&quot;face_count&quot;</span>:<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">}</span>,
+<span class="w">    </span><span class="s2">&quot;detail&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">&quot;routing_rules&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;few_artifacts&quot;</span>:<span class="w"> </span><span class="s2">&quot;niqe &lt; 7.5 or brisque &lt; 35&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;heavy_degradation&quot;</span>:<span class="w"> </span><span class="s2">&quot;niqe &gt;= 12 or brisque &gt;= 55&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;moderate_degradation&quot;</span>:<span class="w"> </span><span class="s2">&quot;otherwise&quot;</span>
+<span class="w">      </span><span class="o">}</span>,
+<span class="w">      </span><span class="s2">&quot;decision_inputs&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s2">&quot;niqe&quot;</span>:<span class="w"> </span><span class="m">11</span>.2,<span class="w"> </span><span class="s2">&quot;brisque&quot;</span>:<span class="w"> </span><span class="m">48</span>.5,<span class="w"> </span><span class="s2">&quot;face_count&quot;</span>:<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
 </code></pre></div>
-<p>API dev server:</p>
-<div class="highlight"><pre><span></span><code>uvicorn<span class="w"> </span>services.api.main:app<span class="w"> </span>--reload
-<span class="c1"># REST endpoints:</span>
-<span class="c1">#   POST /jobs (JobSpec)</span>
-<span class="c1">#   GET  /jobs, /jobs/:id, /results/:id</span>
-<span class="c1">#   WS   /jobs/:id/stream (status/image/manifest/eof events)</span>
-<span class="c1">#   POST /jobs/:id/rerun (overrides)</span>
-</code></pre></div>
+<ul>
+<li>Dry-run still writes a manifest and now computes no‑reference quality metrics (NIQE / BRISQUE) when <code>--metrics</code> is not <code>off</code>.</li>
+<li>If a probe or metric dependency is missing the corresponding values are omitted or set to <code>null</code> without failing the run.
+<div class="highlight"><pre><span></span><code>API dev server:
+
+```bash
+uvicorn services.api.main:app --reload
+# REST endpoints:
+#   POST /jobs (JobSpec)
+#   GET  /jobs, /jobs/:id, /results/:id
+#   WS   /jobs/:id/stream (status/image/manifest/eof events)
+#   POST /jobs/:id/rerun (overrides)
+</code></pre></div></li>
+</ul>
 <p>Web (dev):</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>apps/web
 pnpm<span class="w"> </span>i
