@@ -61,8 +61,10 @@ nav:
     - Face Enhancement: guides/face-enhancement.md
     - Batch Processing: guides/batch-processing.md
     - Choose Backend: guides/choose-backend.md
+    - Auto Mode: guides/auto-mode.md
     - Metrics & Evaluation: guides/metrics.md
     - Hardware Guide: HARDWARE_GUIDE.md
+    - Performance on your Hardware: guides/hardware.md
     - Notebooks: usage/colab.md
     - Migration Guide: MIGRATION.md
     - Accessibility: ACCESSIBILITY.md

@@ -1,3 +1,14 @@
+## Developer commands
+
+Optional extras and helper CLI are available for local development without changing defaults:
+
+- Install (editable) with extras: `pip install -e ".[dev,metrics,arcface,codeformer,restoreformerpp,ort]"`
+- Run single image with explicit backend: `gfpup run --input samples/portrait.jpg --backend gfpgan --metrics full --output out/`
+- Try Auto mode (opt-in): `gfpup run --input samples/portrait.jpg --auto --metrics fast --output out/`
+- Environment report: `gfpup doctor`
+
+Auto mode is experimental and falls back gracefully when probes or dependencies are missing. Defaults remain unchanged unless opted-in.
+
 # GFPGAN
 
 ![GFPGAN Logo](assets/gfpgan_logo.png)
