@@ -1,8 +1,7 @@
 # flake8: noqa
 # This file is used for deploying replicate models
 # running: cog predict -i img=@inputs/whole_imgs/10045.png -i version='v1.4' -i scale=2
-# push: cog push r8.im/tencentarc/gfpgan
-# push (backup): cog push r8.im/xinntao/gfpgan
+# Note: This is a legacy deployment script - update registry before use
 
 import os
 
@@ -35,19 +34,19 @@ class Predictor(BasePredictor):
             )
         if not os.path.exists("gfpgan/weights/GFPGANv1.2.pth"):
             os.system(
-                "wget https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.2.pth -P ./gfpgan/weights"
+                "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.2.pth -P ./gfpgan/weights"
             )
         if not os.path.exists("gfpgan/weights/GFPGANv1.3.pth"):
             os.system(
-                "wget https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth -P ./gfpgan/weights"
+                "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth -P ./gfpgan/weights"
             )
         if not os.path.exists("gfpgan/weights/GFPGANv1.4.pth"):
             os.system(
-                "wget https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth -P ./gfpgan/weights"
+                "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth -P ./gfpgan/weights"
             )
         if not os.path.exists("gfpgan/weights/RestoreFormer.pth"):
             os.system(
-                "wget https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth -P ./gfpgan/weights"
+                "wget https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth -P ./gfpgan/weights"
             )
 
         # background enhancer with RealESRGAN

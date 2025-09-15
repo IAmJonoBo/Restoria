@@ -64,3 +64,10 @@ def test_cli_auto_flags():
     # Autopilot flags parse
     run_ok(["--device", "cpu", "--no-download", "-v", "1.4", "--auto", "--select-by", "sharpness"])
     run_ok(["--device", "cpu", "--no-download", "-v", "1.4", "--auto-hw"])
+
+
+def test_backends_parse():
+    # RestoreFormer backend parses
+    run_ok(["--device", "cpu", "--no-download", "--backend", "restoreformer", "-v", "RestoreFormer"])
+    # CodeFormer backend parses (will warn and fallback in current implementation)
+    run_ok(["--device", "cpu", "--no-download", "--backend", "codeformer", "-v", "1.3"])

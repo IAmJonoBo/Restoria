@@ -1,22 +1,24 @@
-# Fork Notes
+# Project Independence Notes
 
-This fork aims to keep GFPGAN easy to install, test, and integrate while staying close to upstream behavior.
+This project was originally forked from TencentARC/GFPGAN but has now been completely unforked to operate as an independent project.
 
 ## Goals
 - Modern packaging with `uv` for fast, reproducible environments.
 - Default to the PyTorch 2.x track; keep compatibility options for older setups.
 - Continuous Integration: lint (`ruff`, `black`) and tests (`pytest`) on Python 3.10/3.11.
 - Safer repository defaults (branch protection on `main`).
-- Maintain API surface and outputs as close to upstream as practical.
+- Maintain API surface and outputs for compatibility.
 
-## Non‑goals
-- Feature divergence for its own sake.
-- Maintaining long‑term patches that deviate from upstream without clear value.
+## Independence Status
+- **Complete separation**: This project no longer tracks or syncs with TencentARC/GFPGAN
+- **Model hosting**: All models now served from Hugging Face Hub (TencentARC/GFPGANv1)
+- **Independent development**: Features and improvements developed independently
 
-## Coordination with Upstream
-- Track upstream `TencentARC/GFPGAN` for bug fixes and improvements.
-- Prefer small, reviewable PRs; rebase/merge from upstream periodically.
+## Historical Context
+- Originally forked from: https://github.com/TencentARC/GFPGAN
+- Original paper: [GFPGAN: Towards Real-World Blind Face Restoration with Generative Facial Prior](https://arxiv.org/abs/2101.04061)
+- All original research credit remains with TencentARC team
 
 ## Quick Links
-- Fork repository: https://github.com/IAmJonoBo/GFPGAN
-- Upstream repository: https://github.com/TencentARC/GFPGAN
+- Project repository: https://github.com/IAmJonoBo/GFPGAN
+- Model repository: https://huggingface.co/TencentARC/GFPGANv1

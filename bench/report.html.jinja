@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>GFPP Bench Report</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border-bottom: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+    </style>
+  </head>
+  <body>
+    <h1>GFPP Bench Report</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Input</th>
+          <th>Restored</th>
+          {% for k in keys %}<th>{{k}}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.input }}</td>
+          <td>{{ row.restored_img }}</td>
+          {% for k in keys %}<td>{{ row.metrics.get(k) }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
+

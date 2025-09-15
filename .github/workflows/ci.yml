@@ -1,8 +1,12 @@
 name: CI
 
+# Secure permissions - only grant what's needed
+permissions:
+  contents: read
+
 on:
   push:
-    branches: [ main, master, 'docs/**' ]
+    branches: [ main, master, docs/** ]
   pull_request:
     branches: [ main, master ]
 
@@ -20,7 +24,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: pip
           cache-dependency-path: |
             requirements.txt
             pyproject.toml
@@ -79,11 +83,11 @@ jobs:
         run: |
           set -euo pipefail
           urls=(
-            "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth"
-            "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth"
+            "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth"
             "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth"
           )
           for u in "${urls[@]}"; do
@@ -101,7 +105,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
+          cache: pip
           cache-dependency-path: |
             pyproject.toml
       - name: Build docs
@@ -109,6 +113,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -q mkdocs mkdocs-material
           mkdocs build --strict
+
+  audit:
+    name: security (pip-audit)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run pip-audit
+        run: |
+          python -m pip install --upgrade pip
+          pip install -q pip-audit
+          # Audit requirements first (runtime path)
+          if [ -f requirements.txt ]; then pip-audit -r requirements.txt || true; fi
+          # Audit the project install if possible (dev + torch track)
+          pip install -e .[dev] || true
+          pip-audit || true
 
   tests-light:
     name: tests (light)
@@ -119,10 +143,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
+          cache: pip
           cache-dependency-path: |
             requirements.txt
             pyproject.toml
+      - name: Install dependencies (runtime)
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # Ensure core libs available for tests
+          pip install -q torch torchvision opencv-python PyYAML || true
       - name: Install package (CPU)
         run: |
           python -m pip install --upgrade pip
@@ -135,6 +165,28 @@ jobs:
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
         run: pytest -q -c /dev/null tests_light
 
+  api-smoke:
+    name: api (smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install API extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[api]
+      - name: Launch API and probe
+        run: |
+          uvicorn gfpgan.api.server:app --port 8000 &
+          sleep 2
+          curl -f http://127.0.0.1:8000/healthz
+          curl -f -X POST "http://127.0.0.1:8000/restore?backend=gfpgan&dry_run=true" -F "files=@README.md"
+          curl -f -X POST "http://127.0.0.1:8000/restore?backend=restoreformer&dry_run=true" -F "files=@README.md"
+          curl -f -X POST "http://127.0.0.1:8000/restore?backend=codeformer&dry_run=true" -F "files=@README.md"
+
   nbmake:
     name: notebook (nbmake)
     runs-on: ubuntu-latest
@@ -144,12 +196,52 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install nbmake
+      - name: Install notebook runtime (CPU)
         run: |
           python -m pip install --upgrade pip
-          pip install -q pytest nbmake
+          # Kernel + pytest plugin deps
+          pip install -q ipykernel pytest nbmake
+          # Minimal runtime deps for the notebook (CPU-only Torch wheels + headless OpenCV)
+          pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
+          pip install -q opencv-python-headless pyyaml
+          # Project in editable mode (no extras) so module imports succeed if needed
+          pip install -q -e .
+          # Ensure Basicsr master to match latest torchvision API
+          pip uninstall -y basicsr || true
+          pip install --no-cache-dir --force-reinstall "git+https://github.com/xinntao/BasicSR@master"
+      - name: Register kernel (explicit)
+        run: python -m ipykernel install --user --name python3
       - name: Run nbmake (smoke)
         env:
           NB_CI_SMOKE: '1'
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
         run: |
-          pytest --nbmake -k GFPGAN_Colab.ipynb --nbmake-timeout=600 notebooks
+          # Run only the Colab notebook as a test with a known kernel; skip heavy cells via NB_CI_SMOKE
+          # Ignore tests/ during collection to avoid importing unit tests
+          # Use a null config to avoid repo-level pytest settings (e.g., testpaths) interfering
+          pytest -c /dev/null --nbmake --nbmake-kernel=python3 \
+            --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
+
+  bench-smoke:
+    name: bench (smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install runtime
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Run bench in smoke mode
+        env:
+          NB_CI_SMOKE: '1'
+        run: |
+          python bench/run_bench.py
+      - name: Upload bench artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-out
+          path: bench/out

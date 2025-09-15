@@ -13,7 +13,8 @@ Thanks for considering a contribution! This fork aims to remain close to upstrea
   - Prefer small, reviewable changes
   - Add or update tests when changing behavior
 
-- Syncing with upstream
-  - We periodically pull from upstream `TencentARC/GFPGAN` and resolve conflicts.
+- Development Status
+  - This project has been completely unforked from TencentARC/GFPGAN and operates independently.
+  - All development now follows independent roadmap and priorities.
 
 Code of Conduct: see `CODE_OF_CONDUCT.md`.

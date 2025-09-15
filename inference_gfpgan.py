@@ -5,6 +5,9 @@ import os
 # Defer heavy imports (cv2, numpy, torch, basicsr) until after --dry-run
 imwrite = None  # will be set after delayed import
 
+# Error message constants
+INVALID_SWEEP_WEIGHT_MSG = "Invalid --sweep-weight; expected comma-separated floats"
+
 
 def _save_image(path, img, ext, jpg_quality=95, png_compress=3, webp_quality=90):
     """Write image with format-specific quality options using OpenCV.
@@ -188,8 +191,15 @@ def main():
         "--backend",
         type=str,
         default="gfpgan",
-        choices=["gfpgan", "restoreformer", "codeformer"],
-        help="Model backend to use (default: gfpgan)",
+        choices=["gfpgan", "restoreformer", "restoreformerpp", "codeformer"],
+        help="Model backend to use (default: gfpgan). Deprecated in favor of --engine.",
+    )
+    parser.add_argument(
+        "--engine",
+        type=str,
+        default=None,
+        choices=["auto", "gfpgan", "restoreformer", "restoreformerpp", "codeformer"],
+        help="Engine to use. Use 'auto' for rule-based selection per image.",
     )
     parser.add_argument(
         "--bg_tile",
@@ -248,6 +258,32 @@ def main():
     )
     parser.add_argument("--no-parse", action="store_true", help="Disable face parsing for blending.")
     parser.add_argument("--manifest", type=str, default=None, help="Write a JSON manifest of outputs to this path")
+    parser.add_argument(
+        "--html-report",
+        type=str,
+        default=None,
+        help="Optional path to write an HTML report (uses manifest + metrics)",
+    )
+    parser.add_argument(
+        "--compile",
+        type=str,
+        default="none",
+        choices=["none", "default", "max"],
+        help="Torch 2.x compile mode for the face model (if available)",
+    )
+    parser.add_argument(
+        "--metrics",
+        type=str,
+        default="none",
+        choices=["none", "id", "lpips", "both"],
+        help="Compute optional quality metrics: ArcFace identity (id) and/or LPIPS (lpips)",
+    )
+    parser.add_argument(
+        "--metrics-out",
+        type=str,
+        default=None,
+        help="Write metrics JSON to this path (default: <output>/metrics.json)",
+    )
     parser.add_argument("--print-env", action="store_true", help="Print environment and versions then continue")
     parser.add_argument("--deterministic-cuda", action="store_true", help="Enable deterministic CuDNN (slower)")
     parser.add_argument("--eye-dist-threshold", type=int, default=5, help="Minimum eye distance (px) to detect a face")
@@ -308,7 +344,13 @@ def main():
             if device == "cuda":
                 total = torch.cuda.get_device_properties(0).total_memory / (1024**3)
                 args.bg_precision = "fp16"
-                args.bg_tile = 0 if total >= 10 else (600 if total >= 6 else 400)
+                # Set background tile size based on GPU memory
+                if total >= 10:
+                    args.bg_tile = 0
+                elif total >= 6:
+                    args.bg_tile = 600
+                else:
+                    args.bg_tile = 400
             else:
                 import os as _os
 
@@ -342,26 +384,35 @@ def main():
         if device == "cpu":  # CPU
             import warnings
 
-            warnings.warn("RealESRGAN on CPU is slow; background upsampling disabled.")
+            warnings.warn("RealESRGAN on CPU is slow; background upsampling disabled.", stacklevel=2)
             bg_upsampler = None
         else:
-            from basicsr.archs.rrdbnet_arch import RRDBNet
-            from realesrgan import RealESRGANer
+            try:
+                from basicsr.archs.rrdbnet_arch import RRDBNet
+                from realesrgan import RealESRGANer
 
-            model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=2)
-            if args.bg_precision == "auto":
-                half = True
-            else:
-                half = args.bg_precision == "fp16"
-            bg_upsampler = RealESRGANer(
-                scale=2,
-                model_path="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
-                model=model,
-                tile=args.bg_tile,
-                tile_pad=10,
-                pre_pad=0,
-                half=half,
-            )
+                model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=2)
+                if args.bg_precision == "auto":
+                    half = True
+                else:
+                    half = args.bg_precision == "fp16"
+                bg_upsampler = RealESRGANer(
+                    scale=2,
+                    model_path="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
+                    model=model,
+                    tile=args.bg_tile,
+                    tile_pad=10,
+                    pre_pad=0,
+                    half=half,
+                )
+            except ImportError:
+                import warnings
+                warnings.warn(
+                    "RealESRGAN dependencies not available; background upsampling disabled. "
+                    "Install realesrgan package to enable background upsampling.",
+                    stacklevel=2
+                )
+                bg_upsampler = None
     else:
         bg_upsampler = None
 
@@ -371,67 +422,132 @@ def main():
         arch = "RestoreFormer"
         channel_multiplier = 2
         model_name = "RestoreFormer"
-        url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth"
+        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth"
     elif args.backend == "codeformer":
-        # Stub: surface guidance to user; default to GFPGAN if not available
-        print("[warn] CodeFormer backend selected, but integration requires additional setup. Falling back to GFPGAN.")
-        # proceed to version mapping
-        args.backend = "gfpgan"
+        # Use CodeFormer backend path; model path resolved later
+        arch = "codeformer"
+        channel_multiplier = 2
+        model_name = "CodeFormer"
+        url = "https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth"
 
     if args.version == "1":
         arch = "original"
         channel_multiplier = 1
         model_name = "GFPGANv1"
-        url = "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth"
+        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth"
     elif args.version == "1.2":
         arch = "clean"
         channel_multiplier = 2
         model_name = "GFPGANCleanv1-NoCE-C2"
-        url = "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth"
+        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth"
     elif args.version == "1.3":
         arch = "clean"
         channel_multiplier = 2
         model_name = "GFPGANv1.3"
-        url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth"
+        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth"
     elif args.version == "1.4":
         arch = "clean"
         channel_multiplier = 2
         model_name = "GFPGANv1.4"
-        url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth"
+        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth"
     elif args.version == "RestoreFormer":
         arch = "RestoreFormer"
         channel_multiplier = 2
         model_name = "RestoreFormer"
-        url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth"
+        url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth"
     else:
         raise ValueError(f"Wrong model version {args.version}.")
 
-    # determine model paths
+    # determine model path (prefer HF cache or local, fallback to URL)
     if args.model_path:
         model_path = args.model_path
+        model_sha256 = None
     else:
-        model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
-        if not os.path.isfile(model_path):
-            model_path = os.path.join("gfpgan/weights", model_name + ".pth")
-        if not os.path.isfile(model_path):
-            if args.no_download:
-                raise FileNotFoundError(f"Model weights {model_name}.pth not found locally and --no-download is set.")
-            # download pre-trained models from url
-            model_path = url
+        try:
+            from gfpgan.weights import resolve_model_weight
+
+            model_path, model_sha256 = resolve_model_weight(model_name, no_download=args.no_download, prefer="auto")
+        except Exception as e:
+            # Fallback to legacy path/url logic
+            model_path = os.path.join("experiments/pretrained_models", model_name + ".pth")
+            if not os.path.isfile(model_path):
+                model_path = os.path.join("gfpgan/weights", model_name + ".pth")
+            if not os.path.isfile(model_path):
+                if args.no_download:
+                    raise FileNotFoundError(
+                        f"Model weights {model_name}.pth not found locally and --no-download is set."
+                    ) from e
+                model_path = url
+            model_sha256 = None
 
     # Delay heavy import until after dry-run
-    from gfpgan import GFPGANer
+    # Engines path: construct via registry (use backend/engine when provided)
+    from gfpgan.engines import get_engine  # registers defaults on import
 
-    restorer = GFPGANer(
-        model_path=model_path,
-        upscale=args.upscale,
-        arch=arch,
-        channel_multiplier=channel_multiplier,
-        bg_upsampler=bg_upsampler,
-        device=torch.device(device),
-        det_model=args.detector,
-        use_parse=not args.no_parse,
-    )
+    engine_name = None
+    if args.engine:
+        if args.engine == "auto":
+            engine_name = "auto"
+        else:
+            engine_name = args.engine
+    else:
+        # Determine engine name based on backend and architecture
+        if args.backend in {"gfpgan", "codeformer", "restoreformer", "restoreformerpp"}:
+            engine_name = args.backend
+        elif arch == "codeformer":
+            engine_name = "codeformer"
+        else:
+            engine_name = "gfpgan"
+    engine = get_engine(engine_name)
+    if engine_name == "gfpgan":
+        restorer = engine(
+            model_path=model_path,
+            device=torch.device(device),
+            upscale=args.upscale,
+            arch=arch,
+            channel_multiplier=channel_multiplier,
+            bg_upsampler=bg_upsampler,
+            det_model=args.detector,
+            use_parse=not args.no_parse,
+        )
+    elif engine_name in {"codeformer", "restoreformer", "restoreformerpp"}:
+        # All these engines use the same initialization pattern
+        restorer = engine(
+            model_path=model_path, device=torch.device(device), upscale=args.upscale, bg_upsampler=bg_upsampler
+        )
+    elif engine_name == "auto":
+        # Lazy init to a sensible default; may switch per-image below
+        engine = get_engine("gfpgan")
+        restorer = engine(
+            model_path=model_path,
+            device=torch.device(device),
+            upscale=args.upscale,
+            arch=arch,
+            channel_multiplier=channel_multiplier,
+            bg_upsampler=bg_upsampler,
+            det_model=args.detector,
+            use_parse=not args.no_parse,
+        )
+    else:
+        raise ValueError(f"Unknown engine backend: {engine_name}")
+
+    # Optional torch.compile on GFPGAN model
+    try:
+        compile_fn = getattr(__import__("torch"), "compile", None)  # type: ignore
+        if compile_fn and args.compile != "none" and getattr(restorer, "gfpgan", None) is not None:
+            # Determine compilation mode
+            if args.compile == "default":
+                mode = "default"
+            elif args.compile == "max":
+                mode = "max-autotune"
+            else:
+                mode = "default"
+            restorer.gfpgan = compile_fn(restorer.gfpgan, mode=mode)  # type: ignore
+            if args.verbose:
+                print(f"Compiled model with torch.compile(mode={mode})")
+    except Exception as _e:
+        if args.verbose:
+            print(f"torch.compile not applied: {_e}")
 
     # Optional seeding
     if args.seed is not None:
@@ -477,7 +593,7 @@ def main():
             try:
                 weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
             except Exception as _e:  # pragma: no cover - argument checked earlier
-                raise ValueError("Invalid --sweep-weight; expected comma-separated floats") from _e
+                raise ValueError(INVALID_SWEEP_WEIGHT_MSG) from _e
         else:
             weights = [args.weight]
 
@@ -521,6 +637,37 @@ def main():
 
             input_img = cv2.imread(img_path, cv2.IMREAD_COLOR)
 
+            # Optional engine auto-selection per image
+            selected_engine_name = engine_name
+            if engine_name == "auto":
+                try:
+                    from gfpgan.auto.engine_selector import select_engine_for_image
+
+                    decision = select_engine_for_image(img_path)
+                    selected_engine_name = decision.engine
+                    if args.verbose:
+                        print(
+                            f"Engine auto-select -> {selected_engine_name}"
+                            f" [rule={decision.rule}, lapvar={decision.rationale.get('lapvar')},"
+                            f" brisque={decision.rationale.get('brisque')}, niqe={decision.rationale.get('niqe')},"
+                            f" faces={decision.rationale.get('faces')}]"
+                        )
+                except Exception as _e:
+                    selected_engine_name = "gfpgan"
+                    if args.verbose:
+                        print(f"Engine auto-select failed, defaulting to gfpgan: {_e}")
+
+                # Recreate restorer if engine differs
+                if selected_engine_name != "gfpgan":
+                    engine = get_engine(selected_engine_name)
+                    # All non-gfpgan engines use the same initialization pattern
+                    restorer = engine(
+                        model_path=model_path,
+                        device=torch.device(device),
+                        upscale=args.upscale,
+                        bg_upsampler=bg_upsampler,
+                    )
+
             # restore faces and background if necessary
             best = None
             if args.auto:
@@ -542,35 +689,42 @@ def main():
                         _arch = "original"
                         _cm = 1
                         _model = "GFPGANv1"
-                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth"
+                        _url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth"
                     elif v == "1.2":
                         _arch = "clean"
                         _cm = 2
                         _model = "GFPGANCleanv1-NoCE-C2"
-                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth"
+                        _url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth"
                     elif v == "1.3":
                         _arch = "clean"
                         _cm = 2
                         _model = "GFPGANv1.3"
-                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth"
+                        _url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth"
                     elif v == "1.4":
                         _arch = "clean"
                         _cm = 2
                         _model = "GFPGANv1.4"
-                        _url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth"
+                        _url = "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth"
                     else:
                         continue
                     _mp = os.path.join("experiments/pretrained_models", _model + ".pth")
                     if not os.path.isfile(_mp):
                         _alt = os.path.join("gfpgan/weights", _model + ".pth")
-                        _mp = _mp if os.path.isfile(_mp) else (_alt if os.path.isfile(_alt) else _url)
-                    _rest = GFPGANer(
+                        # Determine model path with fallback chain
+                        if os.path.isfile(_alt):
+                            _mp = _alt
+                        else:
+                            _mp = _url
+                    from gfpgan.engines import get_engine as _get_engine
+
+                    _engine = _get_engine("gfpgan")
+                    _rest = _engine(
                         model_path=_mp,
+                        device=torch.device(device),
                         upscale=args.upscale,
                         arch=_arch,
                         channel_multiplier=_cm,
                         bg_upsampler=bg_upsampler,
-                        device=torch.device(device),
                         det_model=args.detector,
                         use_parse=not args.no_parse,
                     )
@@ -595,13 +749,13 @@ def main():
             if args.sweep_weight:
                 try:
                     weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
-                except Exception:
-                    raise ValueError("Invalid --sweep-weight; expected comma-separated floats")
+                except Exception as e:
+                    raise ValueError(INVALID_SWEEP_WEIGHT_MSG) from e
             else:
                 weights = [args.weight]
             # If autopilot selected best, override
             if args.auto and best is not None:
-                _, sel_v, sel_w, restored_img, restored_faces, cropped_faces = best
+                _, _, sel_w, restored_img, restored_faces, cropped_faces = best
                 weights = [sel_w]
 
             face_paths = []
@@ -717,8 +871,8 @@ def main():
         if args.sweep_weight:
             try:
                 weights = [float(x.strip()) for x in args.sweep_weight.split(",") if x.strip()]
-            except Exception:
-                raise ValueError("Invalid --sweep-weight; expected comma-separated floats")
+            except Exception as e:
+                raise ValueError(INVALID_SWEEP_WEIGHT_MSG) from e
         else:
             weights = [args.weight]
 
@@ -821,13 +975,75 @@ def main():
             }
         )
 
-    if args.manifest:
+    # Optional metrics
+    metrics_path = args.metrics_out or os.path.join(args.output, "metrics.json")
+    if args.metrics != "none":
         import json
 
-        with open(args.manifest, "w") as f:
-            json.dump({"results": results}, f, indent=2)
+        from gfpgan.metrics import (
+            identity_cosine_from_paths,
+            lpips_from_paths,
+            try_load_arcface,
+            try_lpips_model,
+        )
+
+        metrics = []
+        # Try to initialize optional metrics models
+        id_model = try_load_arcface(no_download=args.no_download) if args.metrics in {"id", "both"} else None
+        lpips_model = try_lpips_model() if args.metrics in {"lpips", "both"} else None
+
+        for rec in results:
+            m = {"input": rec["input"], "per_weight": []}
+            # Identity on first face only for now
+            id_score = None
+            if id_model and rec["cropped_faces"] and rec["restored_faces"]:
+                id_score = identity_cosine_from_paths(rec["cropped_faces"][0], rec["restored_faces"][0], id_model)
+            # LPIPS on restored image vs input
+            lp = None
+            if lpips_model and rec["restored_imgs"] and rec["restored_imgs"][0]:
+                lp = lpips_from_paths(rec["input"], rec["restored_imgs"][0], lpips_model)
+            m["identity_cosine"] = id_score
+            m["lpips_alex"] = lp
+            metrics.append(m)
+        try:
+            with open(metrics_path, "w") as f:
+                json.dump({"metrics": metrics}, f, indent=2)
+            if args.verbose:
+                print(f"Wrote metrics: {metrics_path}")
+        except Exception as _e:
+            if args.verbose:
+                print(f"Failed to write metrics: {_e}")
+
+    # Manifest with metadata
+    if args.manifest:
+        from gfpgan.runtime.manifest import build_manifest, write_manifest
+
+        man = build_manifest(
+            args={k: v for k, v in vars(args).items() if k not in {"dry_run"}},
+            device=device,
+            model_name=model_name,
+            model_path=model_path,
+            model_sha256=model_sha256,
+            results=results,
+            metrics_path=(
+                (args.metrics_out or os.path.join(args.output, "metrics.json")) if args.metrics != "none" else None
+            ),
+        )
+        write_manifest(args.manifest, man)
         if args.verbose:
             print(f"Wrote manifest: {args.manifest}")
+
+        # Optional HTML report from manifest
+        if args.html_report:
+            try:
+                from gfpgan.reports.html import write_html_report
+
+                out_html = write_html_report(args.output, man, report_path=args.html_report)
+                if args.verbose:
+                    print(f"Wrote HTML report: {out_html}")
+            except Exception as _e:
+                if args.verbose:
+                    print(f"Failed to write HTML report: {_e}")
 
     print(f"Results are in the [{args.output}] folder.")
 

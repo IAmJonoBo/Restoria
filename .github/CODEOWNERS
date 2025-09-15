@@ -1,0 +1,56 @@
+# Code Owners
+# This file defines who owns and should review changes to different parts of the codebase
+
+# Default owners for everything (fallback)
+* @IAmJonoBo
+
+# Core inference engine and models
+/gfpgan/ @IAmJonoBo
+/gfpgan/models/ @IAmJonoBo
+/gfpgan/archs/ @IAmJonoBo
+/experiments/ @IAmJonoBo
+
+# CLI and utilities
+/gfpgan/cli_download.py @IAmJonoBo
+/gfpgan/utils.py @IAmJonoBo
+/scripts/ @IAmJonoBo
+
+# Web interface and API
+/gfpgan/gradio_app.py @IAmJonoBo
+/services/api/ @IAmJonoBo
+/gfpgan/api/ @IAmJonoBo
+
+# Documentation
+/docs/ @IAmJonoBo
+/README.md @IAmJonoBo
+/CONTRIBUTING.md @IAmJonoBo
+/mkdocs.yml @IAmJonoBo
+
+# Testing and CI/CD
+/.github/ @IAmJonoBo
+/tests/ @IAmJonoBo
+/tests_light/ @IAmJonoBo
+/.pre-commit-config.yaml @IAmJonoBo
+
+# Configuration and build
+/pyproject.toml @IAmJonoBo
+/setup.py @IAmJonoBo
+/requirements*.txt @IAmJonoBo
+/Dockerfile* @IAmJonoBo
+/docker-compose.yml @IAmJonoBo
+
+# Security and governance
+/SECURITY.md @IAmJonoBo
+/docs/governance/ @IAmJonoBo
+/.github/ISSUE_TEMPLATE/ @IAmJonoBo
+/.github/PULL_REQUEST_TEMPLATE.md @IAmJonoBo
+
+# Product documentation (model/data cards)
+/docs/product/ @IAmJonoBo
+
+# Benchmarking and evaluation
+/bench/ @IAmJonoBo
+/gfpgan/metrics/ @IAmJonoBo
+
+# Notebooks and examples
+/notebooks/ @IAmJonoBo

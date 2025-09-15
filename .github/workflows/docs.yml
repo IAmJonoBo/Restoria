@@ -3,25 +3,49 @@ name: Docs
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for mike versioning
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install mkdocs
+
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs mkdocs-material
-      - name: Build site
-        run: mkdocs build --strict
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
+          pip install mkdocs mkdocs-material mike
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy with mike
+        run: |
+          # Get version from git tag or use 'latest'
+          VERSION=${GITHUB_REF#refs/tags/}
+          if [[ $VERSION == refs/heads/* ]]; then
+            VERSION="latest"
+          fi
+
+          # Deploy documentation with versioning
+          mike deploy --push --update-aliases $VERSION
+
+          # Set default version if this is latest
+          if [[ $VERSION == "latest" ]]; then
+            mike set-default --push latest
+          fi

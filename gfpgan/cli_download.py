@@ -8,23 +8,23 @@ import yaml
 
 BUILTIN_REGISTRY = {
     "GFPGANv1": {
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth",
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.pth",
         "fname": "GFPGANv1.pth",
     },
     "GFPGANCleanv1-NoCE-C2": {
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth",
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANCleanv1-NoCE-C2.pth",
         "fname": "GFPGANCleanv1-NoCE-C2.pth",
     },
     "GFPGANv1.3": {
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth",
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.3.pth",
         "fname": "GFPGANv1.3.pth",
     },
     "GFPGANv1.4": {
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth",
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/GFPGANv1.4.pth",
         "fname": "GFPGANv1.4.pth",
     },
     "RestoreFormer": {
-        "url": "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth",
+        "url": "https://huggingface.co/TencentARC/GFPGANv1/resolve/main/RestoreFormer.pth",
         "fname": "RestoreFormer.pth",
     },
 }

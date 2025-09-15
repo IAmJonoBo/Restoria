@@ -1,0 +1,50 @@
+FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    GFPGAN_WEIGHTS_DIR=/opt/gfpgan/weights
+
+# Create non-root user and install packages
+RUN groupadd -r gfpgan && useradd -r -g gfpgan gfpgan && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    ffmpeg \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install PyTorch CUDA wheels and project dependencies
+RUN pip3 install --upgrade pip && \
+    pip3 install --index-url https://download.pytorch.org/whl/cu121 torch torchvision torchaudio
+
+# Copy and install project (editable)
+COPY . /app
+RUN pip3 install -e .[dev,torch2] && \
+    mkdir -p ${GFPGAN_WEIGHTS_DIR} && \
+    chown -R gfpgan:gfpgan /app ${GFPGAN_WEIGHTS_DIR} && \
+    python3 - <<'PY'
+import os
+from gfpgan.weights import resolve_model_weight
+for m in ("GFPGANv1.4", "GFPGANv1.3", "RestoreFormer"):
+    try:
+        p, _ = resolve_model_weight(m, no_download=False)
+        print("cached:", m, p)
+    except Exception as e:
+        print("skip cache:", m, e)
+PY
+
+# Switch to non-root user
+USER gfpgan
+
+HEALTHCHECK --interval=30s --timeout=5s CMD python3 -c "import gfpgan; print('ok')" || exit 1
+
+ENTRYPOINT ["python3", "inference_gfpgan.py"]
+CMD ["--dry-run", "-v", "1.4"]
+
