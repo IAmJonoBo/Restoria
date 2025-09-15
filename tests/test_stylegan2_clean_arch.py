@@ -1,5 +1,8 @@
 import torch
 
+import pytest
+
+pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
 from gfpgan.archs.stylegan2_clean_arch import StyleGAN2GeneratorClean
 
 

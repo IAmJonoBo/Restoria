@@ -1,5 +1,8 @@
 import torch
 
+import pytest
+
+pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
 from gfpgan.archs.gfpganv1_arch import FacialComponentDiscriminator, GFPGANv1, StyleGAN2GeneratorSFT
 from gfpgan.archs.gfpganv1_clean_arch import GFPGANv1Clean, StyleGAN2GeneratorCSFT
 

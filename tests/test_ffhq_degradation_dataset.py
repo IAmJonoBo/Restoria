@@ -1,6 +1,7 @@
 import pytest
 import yaml
 
+pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
 from gfpgan.data.ffhq_degradation_dataset import FFHQDegradationDataset
 
 

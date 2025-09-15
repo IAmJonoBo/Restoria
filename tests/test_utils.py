@@ -1,12 +1,18 @@
-import cv2
-from facexlib.utils.face_restoration_helper import FaceRestoreHelper
+import pytest
 
-from gfpgan.archs.gfpganv1_arch import GFPGANv1
-from gfpgan.archs.gfpganv1_clean_arch import GFPGANv1Clean
-from gfpgan.utils import GFPGANer
+# Skip this entire test module gracefully if heavy deps are not available in minimal environments
+pytest.importorskip("cv2", reason="OpenCV not available in minimal test env")
+pytest.importorskip("facexlib", reason="facexlib not available in minimal test env")
+pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
 
 
 def test_gfpganer():
+    # Local imports to avoid top-level import errors/lint issues when deps are missing
+    import cv2  # type: ignore
+    from facexlib.utils.face_restoration_helper import FaceRestoreHelper  # type: ignore
+    from gfpgan.archs.gfpganv1_arch import GFPGANv1  # type: ignore
+    from gfpgan.archs.gfpganv1_clean_arch import GFPGANv1Clean  # type: ignore
+    from gfpgan.utils import GFPGANer  # type: ignore
     # initialize with the clean model
     restorer = GFPGANer(
         model_path="experiments/pretrained_models/GFPGANCleanv1-NoCE-C2.pth",

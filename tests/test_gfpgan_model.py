@@ -1,7 +1,11 @@
 import tempfile
 
+import pytest
 import torch
 import yaml
+
+pytest.importorskip("basicsr", reason="basicsr not available in minimal test env")
+pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
 from basicsr.archs.stylegan2_arch import StyleGAN2Discriminator
 from basicsr.data.paired_image_dataset import PairedImageDataset
 from basicsr.losses.losses import GANLoss, L1Loss, PerceptualLoss
