@@ -37,7 +37,7 @@ dependencies = [
   "lmdb",
   "huggingface_hub>=0.23",
   # Numpy/scipy/skimage/opencv differ across tracks; use markers for 3.10 stability
-  "numpy<2; python_version < '3.11'",
+  "numpy<3; python_version < '3.11'",
   "numpy>=2; python_version >= '3.11'",
   "scikit-image<0.26; python_version < '3.11'",
   "scikit-image>=0.22; python_version >= '3.11'",

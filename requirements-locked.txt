@@ -5,7 +5,7 @@ facexlib==0.3.0
 opencv-python==4.12.0.88
 scikit-image==0.25.2
 scipy==1.16.2
-numpy==1.26.4
+numpy==2.3.3
 tqdm==4.66.4
 huggingface_hub==0.23.0
 
