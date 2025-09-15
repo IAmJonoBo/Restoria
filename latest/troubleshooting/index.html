@@ -1460,7 +1460,22 @@
 <p>Missing model weights</p>
 </li>
 <li>Use <code>--model-path</code> to point to local weights</li>
-<li>Or remove <code>--no-download</code> to allow fetching from the release URLs</li>
+<li>
+<p>Or remove <code>--no-download</code> to allow fetching from the release URLs</p>
+</li>
+<li>
+<p>NIQE/BRISQUE not showing up</p>
+</li>
+<li>These are optional no‑reference metrics; if their dependencies aren’t installed, the run will continue and values will be omitted or null.</li>
+<li>To enable: install the <code>metrics</code> extra or the specific libraries used by your environment.</li>
+<li>
+<p>Dry‑run computes NIQE/BRISQUE too when <code>--metrics</code> is enabled, which helps validate setup without model weights.</p>
+</li>
+<li>
+<p>OpenCV import errors</p>
+</li>
+<li>The CLI and tests fall back to PIL for image I/O when OpenCV isn’t available.</li>
+<li>If you need strict OpenCV behavior, install <code>opencv-python</code> or <code>opencv-python-headless</code> explicitly.</li>
 </ul>
 
 
