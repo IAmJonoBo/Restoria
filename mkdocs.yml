@@ -1,27 +1,103 @@
-site_name: GFPGAN (Fork)
+site_name: GFPGAN
+site_description: Professional face restoration powered by generative AI
 site_url: https://IAmJonoBo.github.io/GFPGAN/
 repo_url: https://github.com/IAmJonoBo/GFPGAN
+repo_name: IAmJonoBo/GFPGAN
+edit_uri: edit/main/docs/
+
 theme:
   name: material
   language: en
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.tabs.link
+    - content.code.copy
+    - content.action.edit
+  icon:
+    edit: material/pencil
+    view: material/eye
+
+plugins:
+  - search:
+      lang: en
+  - mike:
+      version_selector: true
+      css_dir: css
+      javascript_dir: js
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/IAmJonoBo/GFPGAN
+
 nav:
   - Home: index.md
-  - Quickstart: quickstart.md
-  - Usage:
-    - CLI: usage/cli.md
-    - API: usage/api.md
-    - Colab: usage/colab.md
-    - Gradio: usage/gradio.md
-    - Recipes: usage/recipes.md
-  - Guides:
-    - UI Guide: UI_GUIDE.md
-    - ORT Guide: ORT_GUIDE.md
-    - Engine Decisions: DECISION_TABLE.md
-  - Compatibility: COMPATIBILITY.md
-  - Troubleshooting: troubleshooting.md
-  - FAQ: faq.md
-  - Contributing: contributing.md
+  - Getting Started:
+    - Quick Start: getting-started/quickstart.md
+    - Installation: getting-started/installation.md
+    - Development Environment: getting-started/dev-setup.md
+  - User Guides:
+    - Face Enhancement: guides/face-enhancement.md
+    - Batch Processing: guides/batch-processing.md
+    - Choose Backend: guides/choose-backend.md
+    - Metrics & Evaluation: guides/metrics.md
+    - Hardware Guide: HARDWARE_GUIDE.md
+    - Notebooks: usage/colab.md
+    - Migration Guide: MIGRATION.md
+    - Accessibility: ACCESSIBILITY.md
+  - API Reference:
+    - Overview: api/index.md
+    - Core Functions: api/core.md
+    - Models: api/models.md
+    - Utilities: api/utils.md
+  - Product Info:
+    - Model Card: product/model-card.md
+    - Data Card: product/data-card.md
+    - Performance: product/performance.md
+  - Governance:
+    - Contributing: governance/contributing.md
+    - Security: governance/security.md
+    - Maintainers: governance/maintainers.md
+    - Versioning: governance/versioning.md
+  - About:
+    - FAQ: faq.md
+    - Changelog: about/changelog.md
+    - Acknowledgements: about/acknowledgements.md
+    - License: about/license.md
+
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.keys
+  - attr_list
+  - md_in_html
   - toc:
       permalink: true
+      title: On this page
+
+watch:
+  - docs/

@@ -2,252 +2,215 @@
 
 ![GFPGAN Logo](assets/gfpgan_logo.png)
 
-**[English](README.md) | [简体中文](README_CN.md)**
+## Professional face restoration powered by generative AI
 
-[![Fork CI](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml/badge.svg)](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml)
+[![CI](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml/badge.svg)](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml)
 [![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/gfpgan)](https://pypi.org/project/gfpgan/)
-[![Upstream Project](https://img.shields.io/badge/upstream-TencentARC%2FGFPGAN-blue)](https://github.com/TencentARC/GFPGAN)
 [![Docs](https://img.shields.io/badge/docs-mkdocs%20material-brightgreen)](https://IAmJonoBo.github.io/GFPGAN/)
-[![Devcontainer](https://img.shields.io/badge/devcontainer-ready-blue)](.devcontainer/devcontainer.json)
+[![Security](https://img.shields.io/badge/security-policy-blue)](SECURITY.md)
 
-1. :boom: **Updated** online demo: [![Replicate](https://img.shields.io/static/v1?label=Demo&message=Replicate&color=blue)](https://replicate.com/tencentarc/gfpgan). Here is the [backup](https://replicate.com/xinntao/gfpgan).
-1. :boom: **Updated** online demo: [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Xintao/GFPGAN)
-1. Our Colab Demo (fork): [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb) (Upstream Colab: [upstream demo](https://colab.research.google.com/drive/1sVsoBd9AjckIXThgtZhGrHRfFI6UUYOo); Original paper model: [paper model demo](https://colab.research.google.com/drive/1Oa1WwKB4M4l1GmR7CtswDVgOCOeSLChA?usp=sharing))
+**Restore faces in photos with state-of-the-art generative AI.** GFPGAN combines deep learning and generative adversarial networks to intelligently reconstruct facial details from low-quality, damaged, or blurred images.
 
-<!-- 3. Online demo: [Replicate.ai](https://replicate.com/xinntao/gfpgan) (may need to sign in, return the whole image)
-4. Online demo: [Baseten.co](https://app.baseten.co/applications/Q04Lz0d/operator_views/8qZG6Bg) (backed by GPU, returns the whole image)
-5. We provide a *clean* version of GFPGAN, which can run without CUDA extensions. So that it can run in **Windows** or on **CPU mode**. -->
+## Why GFPGAN?
 
-> :rocket: **Thanks for your interest in our work. You may also want to check our new updates on the *tiny models* for *anime images and videos* in [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN/blob/master/docs/anime_video_model.md)** :blush:
+- **Production-ready**: Clean API, robust CLI, batch processing with provenance tracking
+- **Multiple backends**: Choose speed vs quality with GFPGAN, CodeFormer, RestoreFormer++
+- **Cross-platform**: Windows, macOS, Linux with GPU acceleration (CUDA, MPS, DirectML)
+- **Privacy-first**: Process images locally—no cloud uploads required
+- **Measurable quality**: Built-in metrics (LPIPS, DISTS, ArcFace) for objective evaluation
 
-GFPGAN aims at developing a **Practical Algorithm for Real-world Face Restoration**.
-It leverages rich and diverse priors encapsulated in a pretrained face GAN (*e.g.*, StyleGAN2) for blind face restoration.
+## Quick start
 
-:question: Frequently Asked Questions can be found in [FAQ.md](FAQ.md).
-
-:triangular_flag_on_post: **Updates**
-
-- :white_check_mark: Add [RestoreFormer](https://github.com/wzhouxiff/RestoreFormer) inference codes.
-- :white_check_mark: Add [V1.4 model](https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth), which produces slightly more details and better identity than V1.3.
-- :white_check_mark: Add **[V1.3 model](https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth)**, which produces **more natural** restoration results, and better results on *very low-quality* / *high-quality* inputs. See more in [Model zoo](#european_castle-model-zoo), [Comparisons.md](Comparisons.md)
-- :white_check_mark: Integrated to [Huggingface Spaces](https://huggingface.co/spaces) with [Gradio](https://github.com/gradio-app/gradio). See [Gradio Web Demo](https://huggingface.co/spaces/akhaliq/GFPGAN).
-- :white_check_mark: Support enhancing non-face regions (background) with [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN).
-- :white_check_mark: We provide a *clean* version of GFPGAN, which does not require CUDA extensions.
-- :white_check_mark: We provide an updated model without colorizing faces.
-
----
-
-If GFPGAN is helpful in your photos/projects, please help to :star: this repo or recommend it to your friends. Thanks:blush:
-
-Other recommended projects:
-
-:arrow_forward: [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN): A practical algorithm for general image restoration
-:arrow_forward: [BasicSR](https://github.com/xinntao/BasicSR): An open-source image and video restoration toolbox
-:arrow_forward: [facexlib](https://github.com/xinntao/facexlib): A collection that provides useful face-relation functions
-:arrow_forward: [HandyView](https://github.com/xinntao/HandyView): A PyQt5-based image viewer that is handy for view and comparison
-
----
-
-## Quickstart & Docs
-
-- Docs Site: [GFPGAN Documentation](https://IAmJonoBo.github.io/GFPGAN/)
-- Quickstart: `docs/quickstart.md`
-- CLI: `docs/usage/cli.md`
-- Colab Guide: `docs/usage/colab.md`
-- Compatibility Matrix: `docs/COMPATIBILITY.md`
-- Contributing: `docs/contributing.md`
-
-### GFPP (New Modular Runtime)
-
-An experimental, modular toolkit now lives under `src/gfpp` with a new CLI `gfpup`.
-
-- Install with optional extras:
-  - `pip install -e ".[dev,metrics,arcface,codeformer,restoreformerpp,ort,web]"`
-- Run baseline restoration (GFPGAN):
-  - `gfpup run --input inputs/whole_imgs --backend gfpgan --metrics fast --output out/`
-- API server (experimental):
-  - `uvicorn services.api.main:app --reload`
-
-### Quick CLI Usage (fork)
-
-- Install (editable): `pip install -e .[dev]`
-- Inference: `gfpgan-infer --input inputs/whole_imgs --version 1.4 --upscale 2 --device auto`
-- Helpful flags:
-  - `--dry-run`: validate args and exit fast
-  - `--no-download`: require local weights only
-  - `--device {auto,cpu,cuda}`: choose runtime
-  - `--bg_upsampler realesrgan|none`: disable background upsample with `none`
-
-Note: on CPU, Real-ESRGAN background upsampling is disabled for speed.
-
-### Colab (fork)
-
-- Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
-- Features: interactive UI for uploads, URLs, options; preview (grid + slider); ZIP download.
-- Compatibility: the notebook installs BasicSR master to match modern torchvision.
-
-### Compatibility notes (Torch/Torchvision/Basicsr)
-
-See `docs/COMPATIBILITY.md` for a quick matrix and notes.
-
-### :book: GFP-GAN: Towards Real-World Blind Face Restoration with Generative Facial Prior
-
-> [[Paper](https://arxiv.org/abs/2101.04061)] [[Project Page](https://xinntao.github.io/projects/gfpgan)] [Demo]
->
-> [Xintao Wang](https://xinntao.github.io/), [Yu Li](https://yu-li.github.io/), [Honglun Zhang](https://scholar.google.com/citations?hl=en&user=KjQLROoAAAAJ), [Ying Shan](https://scholar.google.com/citations?user=4oXBp9UAAAAJ&hl=en)
->
-> Applied Research Center (ARC), Tencent PCG
-
-![GFPGAN Teaser](https://xinntao.github.io/projects/GFPGAN_src/gfpgan_teaser.jpg)
-
----
-
-## :wrench: Dependencies and Installation
-
-- Python >= 3.7 (Recommend to use [Anaconda](https://www.anaconda.com/download/#linux) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
-- [PyTorch >= 1.7](https://pytorch.org/)
-- Option: NVIDIA GPU + [CUDA](https://developer.nvidia.com/cuda-downloads)
-- Option: Linux
-
-### Installation
-
-We now provide a *clean* version of GFPGAN, which does not require customized CUDA extensions.
-If you want to use the original model in our paper, please see [PaperModel.md](PaperModel.md) for installation.
-
-1. Clone repo
-
-    ```bash
-    git clone https://github.com/IAmJonoBo/GFPGAN.git
-    cd GFPGAN
-    ```
-
-1. Install dependent packages
-
-    ```bash
-    # Install basicsr - https://github.com/xinntao/BasicSR
-    # We use BasicSR for both training and inference
-    pip install basicsr
-
-    # Install facexlib - https://github.com/xinntao/facexlib
-    # We use face detection and face restoration helper in the facexlib package
-    pip install facexlib
-
-    pip install -r requirements.txt
-    python setup.py develop
-
-    # If you want to enhance the background (non-face) regions with Real-ESRGAN,
-    # you also need to install the realesrgan package
-    pip install realesrgan
-    ```
-
-## :zap: Quick Inference
-
-We take the v1.3 version for an example. More models can be found in the [Model Zoo section](#european_castle-model-zoo).
-
-Download pre-trained models: [GFPGANv1.3.pth](https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth)
+Try a single image restoration in 30 seconds:
 
 ```bash
-wget https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth -P experiments/pretrained_models
+# Install
+pip install gfpgan
+
+# Restore a photo
+gfpgan-infer --input path/to/photo.jpg --version 1.4 --upscale 2
+
+# Results saved to results/ with before/after comparison
 ```
 
-**Inference!**
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
+
+## Core capabilities
+
+### Single image restoration
+
+Restore individual photos with simple CLI or drag-and-drop web interface:
 
 ```bash
-python inference_gfpgan.py -i inputs/whole_imgs -o results -v 1.3 -s 2
+gfpgan-infer --input damaged_photo.jpg --version 1.4
 ```
 
-```console
-Usage: python inference_gfpgan.py -i inputs/whole_imgs -o results -v 1.3 -s 2 [options]...
+### Batch processing
 
-  -h                   show this help
-  -i input             Input image or folder. Default: inputs/whole_imgs
-  -o output            Output folder. Default: results
-  -v version           GFPGAN model version. Option: 1 | 1.2 | 1.3. Default: 1.3
-  -s upscale           The final upsampling scale of the image. Default: 2
-  -bg_upsampler        background upsampler. Default: realesrgan
-  -bg_tile             Tile size for background sampler, 0 for no tile during testing. Default: 400
-  -suffix              Suffix of the restored faces
-  -only_center_face    Only restore the center face
-  -aligned             Input are aligned faces
-  -ext                 Image extension. Options: auto | jpg | png, auto means using the same extension as inputs. Default: auto
+Process entire folders with consistent settings and quality metrics:
+
+```bash
+gfpgan-infer --input photos/ --backend gfpgan --metrics fast --output restored/
 ```
 
-If you want to use the original model in our paper, please see [PaperModel.md](PaperModel.md) for installation and inference.
+### Background enhancement
 
-## Development (uv)
+Combine face restoration with background upscaling using Real-ESRGAN:
 
-We use uv for fast, reproducible Python environments and locking.
+```bash
+gfpgan-infer --input photo.jpg --upscale 2 --bg_upsampler realesrgan
+```
 
-- Quick start (Python 3.11 + Torch 2.x default):
-  - `scripts/setup_uv.sh --python 3.11 --track torch2`
-  - `scripts/test.sh`
-  - `scripts/lint.sh` / `scripts/fmt.sh`
+## Supported platforms
 
-- Torch 2.x migration (Python 3.11+): see `docs/TORCH2.md`.
-- Details and Apple Silicon notes: see `docs/DEV_ENV.md`.
+| Platform | GPU Acceleration | Status |
+|----------|------------------|--------|
+| **Linux** | CUDA 11.8+ / ROCm | ✅ Full support |
+| **Windows** | CUDA / DirectML | ✅ Full support |
+| **macOS** | Metal Performance Shaders | ✅ Full support |
+| **CPU-only** | All platforms | ✅ Slower, but works |
 
-## :european_castle: Model Zoo
+## Documentation
 
-| Version | Model Name  | Description |
-| :---: | :---:        |     :---:      |
-| V1.3 | [GFPGANv1.3.pth](https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth) | Based on V1.2; **more natural** restoration results; better results on very low-quality / high-quality inputs. |
-| V1.2 | [GFPGANCleanv1-NoCE-C2.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth) | No colorization; no CUDA extensions are required. Trained with more data with pre-processing. |
-| V1 | [GFPGANv1.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/GFPGANv1.pth) | The paper model, with colorization. |
+- **[Getting started guide →](https://IAmJonoBo.github.io/GFPGAN/getting-started/install/)**
+- **[API documentation →](https://IAmJonoBo.github.io/GFPGAN/api/)**
+- **[Choose the right backend →](https://IAmJonoBo.github.io/GFPGAN/guides/choose-backend/)**
 
-The comparisons are in [Comparisons.md](Comparisons.md).
+### Key guides
 
-Note that V1.3 is not always better than V1.2. You may need to select different models based on your purpose and inputs.
+- [Restore a photo](https://IAmJonoBo.github.io/GFPGAN/guides/restore-a-photo/) — CLI and web interface
+- [Batch processing](https://IAmJonoBo.github.io/GFPGAN/guides/batch-processing/) — Folders and automation
+- [Quality metrics](https://IAmJonoBo.github.io/GFPGAN/guides/metrics/) — Measure restoration quality
+- [Hardware optimization](https://IAmJonoBo.github.io/GFPGAN/guides/hardware/) — GPU setup and troubleshooting
 
-| Version | Strengths  | Weaknesses |
-| :---: | :---:        |     :---:      |
-|V1.3 | ✓ natural outputs; ✓ better results on very low-quality inputs; ✓ work on relatively high-quality inputs; ✓ can have repeated (twice) restorations | ✗ not very sharp; ✗ have a slight change on identity |
-|V1.2 | ✓ sharper output; ✓ with beauty makeup | ✗ some outputs are unnatural |
+:question: **Questions?** Check our [FAQ](https://IAmJonoBo.github.io/GFPGAN/faq/) or [troubleshooting guide](https://IAmJonoBo.github.io/GFPGAN/troubleshooting/).
 
-You can find **more models (such as the discriminators)** here: [[Google Drive](https://drive.google.com/drive/folders/17rLiFzcUMoQuhLnptDsKolegHWwJOnHu?usp=sharing)], OR [[Tencent Cloud 腾讯微云](https://share.weiyun.com/ShYoCCoc)]
+## Installation
 
-## :computer: Training
+### Quick install
 
-We provide the training codes for GFPGAN (used in our paper).
-You could improve it according to your own needs.
+```bash
+pip install gfpgan
+```
 
-### Tips
+### Development install
 
-1. More high quality faces can improve the restoration quality.
-2. You may need to perform some pre-processing, such as beauty makeup.
+```bash
+git clone https://github.com/IAmJonoBo/GFPGAN.git
+cd GFPGAN
+pip install -e ".[dev,metrics,web]"
+```
 
-### Procedures
+### GPU acceleration
 
-(You can try a simple version ( `options/train_gfpgan_v1_simple.yml`) that does not require face component landmarks.)
+**NVIDIA (CUDA)**: Install PyTorch with CUDA support first:
 
-1. Dataset preparation: [FFHQ](https://github.com/NVlabs/ffhq-dataset)
+```bash
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+```
 
-1. Download pre-trained models and other data. Put them in the `experiments/pretrained_models` folder.
-    1. [Pre-trained StyleGAN2 model: StyleGAN2_512_Cmul1_FFHQ_B12G4_scratch_800k.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/StyleGAN2_512_Cmul1_FFHQ_B12G4_scratch_800k.pth)
-    1. [Component locations of FFHQ: FFHQ_eye_mouth_landmarks_512.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/FFHQ_eye_mouth_landmarks_512.pth)
-    1. [A simple ArcFace model: arcface_resnet18.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/arcface_resnet18.pth)
+**Apple Silicon (MPS)**: Works out of the box with recent PyTorch versions.
 
-1. Modify the configuration file `options/train_gfpgan_v1.yml` accordingly.
+**AMD (ROCm)**: Install ROCm-compatible PyTorch:
 
-1. Training
+```bash
+pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm5.6
+```
 
-> python -m torch.distributed.launch --nproc_per_node=4 --master_port=22021 gfpgan/train.py -opt options/train_gfpgan_v1.yml --launcher pytorch
+For detailed platform-specific instructions, see our [hardware guide](https://IAmJonoBo.github.io/GFPGAN/guides/hardware/).
 
-## :scroll: License and Acknowledgement
+## CLI usage
 
-GFPGAN is released under Apache License Version 2.0.
+### Basic restoration
 
-## BibTeX
+```bash
+# Restore a single image
+gfpgan-infer --input photo.jpg --version 1.4
+
+# Process a folder
+gfpgan-infer --input photos/ --output results/ --version 1.3
+
+# With background upscaling
+gfpgan-infer --input photo.jpg --upscale 2 --bg_upsampler realesrgan
+```
+
+### Advanced options
+
+```bash
+# Dry run to validate settings
+gfpgan-infer --input photos/ --dry-run
+
+# CPU-only mode
+gfpgan-infer --input photo.jpg --device cpu
+
+# Disable background upsampling for speed
+gfpgan-infer --input photo.jpg --bg_upsampler none
+```
+
+### Web interface
+
+Launch the interactive web UI:
+
+```bash
+# Basic interface
+python -m gfpgan.gradio_app
+
+# API server
+uvicorn services.api.main:app --reload
+```
+
+## Model comparison
+
+| Model | Speed | Quality | Identity Preservation | Best For |
+|-------|-------|---------|---------------------|----------|
+| **GFPGAN v1.4** | Medium | High | Excellent | General photos |
+| **GFPGAN v1.3** | Medium | High | Good | Natural results |
+| **CodeFormer** | Fast | Medium | Good | Batch processing |
+| **RestoreFormer++** | Slow | Highest | Excellent | Professional work |
+
+Choose your model with `--version` or `--backend` flags. See our [backend comparison guide](https://IAmJonoBo.github.io/GFPGAN/guides/choose-backend/) for detailed recommendations.
+
+## Contributing
+
+We welcome contributions! Please see our [contributing guide](CONTRIBUTING.md) for:
+
+- Setting up the development environment
+- Running tests and linting
+- Code style and commit conventions
+- Submitting pull requests
+
+## Security
+
+Found a security issue? Please report it privately via our [security policy](SECURITY.md).
+
+## License and acknowledgements
+
+GFPGAN is released under the Apache License 2.0. See [LICENSE](LICENSE) for details.
+
+### Acknowledgements
+
+This project builds upon the foundational research and implementations from:
+
+- [TencentARC/GFPGAN](https://github.com/TencentARC/GFPGAN) - Original GFPGAN research and implementation
+- [xinntao/BasicSR](https://github.com/xinntao/BasicSR) - Super-resolution framework
+- [xinntao/facexlib](https://github.com/xinntao/facexlib) - Face detection and analysis utilities
+
+For a complete list of dependencies and their licenses, see [LICENSES/](LICENSES/).
+
+## Citation
+
+If you use GFPGAN in your research, please cite:
 
 ```bibtex
 @InProceedings{wang2021gfpgan,
     author = {Xintao Wang and Yu Li and Honglun Zhang and Ying Shan},
     title = {Towards Real-World Blind Face Restoration with Generative Facial Prior},
-    booktitle={The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+    booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
     year = {2021}
 }
 ```
 
-## :e-mail: Contact
+---
 
-If you have any question, please email `xintao.wang@outlook.com` or `xintaowang@tencent.com`.
+**Questions?** Check our [FAQ](https://IAmJonoBo.github.io/GFPGAN/faq/) • [Documentation](https://IAmJonoBo.github.io/GFPGAN/) • [Issues](https://github.com/IAmJonoBo/GFPGAN/issues)
