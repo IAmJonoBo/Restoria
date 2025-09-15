@@ -9,6 +9,7 @@ def run_ok(args):
 def test_dry_run_device_no_download():
     run_ok(["--device", "cpu", "--no-download", "-v", "1.4"])
 
+<<<<<<< HEAD
 
 def test_cli_bg_opts_and_verbose():
     # Accept new background options and verbose flag
@@ -71,3 +72,5 @@ def test_backends_parse():
     run_ok(["--device", "cpu", "--no-download", "--backend", "restoreformer", "-v", "RestoreFormer"])
     # CodeFormer backend parses (will warn and fallback in current implementation)
     run_ok(["--device", "cpu", "--no-download", "--backend", "codeformer", "-v", "1.3"])
+=======
+>>>>>>> docs/compat-and-gallery

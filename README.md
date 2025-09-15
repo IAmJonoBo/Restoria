@@ -36,6 +36,30 @@ gfpgan-infer --input path/to/photo.jpg --version 1.4 --upscale 2
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
 
+### Quick CLI Usage
+
+- Install (editable): `pip install -e .[dev]`
+- Inference: `gfpgan-infer --input inputs/whole_imgs --version 1.4 --upscale 2 --device auto`
+- Helpful flags:
+  - `--dry-run`: validate args and exit fast
+  - `--no-download`: require local weights only
+  - `--device {auto,cpu,cuda}`: choose runtime
+  - `--bg_upsampler realesrgan|none`: disable background upsample with `none`
+
+Note: on CPU, Real-ESRGAN background upsampling is disabled for speed.
+
+### Colab Features
+
+- Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
+- Features: interactive UI for uploads, URLs, options; preview; ZIP download.
+- Compatibility: the notebook installs BasicSR master to match modern torchvision.
+
+### Compatibility notes (Torch/Torchvision/Basicsr)
+
+See `docs/COMPATIBILITY.md` for a quick matrix and notes.
+
+:question: Frequently Asked Questions can be found in [FAQ.md](FAQ.md).
+
 ## Core capabilities
 
 ### Single image restoration
