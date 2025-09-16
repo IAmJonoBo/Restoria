@@ -219,7 +219,7 @@ jobs:
           # Ignore tests/ during collection to avoid importing unit tests
           # Use a null config to avoid repo-level pytest settings (e.g., testpaths) interfering
           pytest -c /dev/null -p nbmake --nbmake --nbmake-kernel=python3 \
-            --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
+            --nbmake-timeout=600 --nbmake-find-import-errors --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
 
   bench-smoke:
     name: bench (smoke)
