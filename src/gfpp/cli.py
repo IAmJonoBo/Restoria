@@ -19,6 +19,24 @@ TMP_IN = "in.png"
 TMP_OUT = "out.png"
 
 
+def _warn(msg: str) -> None:
+    """Lightweight warning helper.
+
+    - Tries standard logging (logger name: 'gfpp.cli')
+    - Always prints with [WARN] to preserve current CLI behavior
+    """
+    try:
+        import logging
+
+        logging.getLogger("gfpp.cli").warning(msg)
+    except Exception:
+        pass
+    try:
+        print(f"[WARN] {msg}")
+    except Exception:
+        pass
+
+
 def _build_bg_upsampler(background: str, quality: str, device: str):
     if background != "realesrgan":
         return None
@@ -48,19 +66,19 @@ def _instantiate_restorer(name: str, args, bg):
         return RestoreFormerPP(device=args.device, bg_upsampler=bg), "restoreformerpp"
     if name == "hypir":
         if not getattr(args, "experimental", False):
-            print("[WARN] HYPIR is experimental. Enable with --experimental; falling back to gfpgan")
+            _warn("HYPIR is experimental. Enable with --experimental; falling back to gfpgan")
             return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
         try:
             from .restorers.hypir import HYPIRRestorer
 
             return HYPIRRestorer(device=args.device, bg_upsampler=bg), "hypir"
         except Exception:
-            print(
-                "[WARN] HYPIR backend unavailable. Install extras: "
+            _warn(
+                "HYPIR backend unavailable. Install extras: "
                 "pip install -e \".[hypir]\"; falling back to gfpgan"
             )
             return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
-    print(f"[WARN] Backend {name} not yet implemented; falling back to gfpgan")
+    _warn(f"Backend {name} not yet implemented; falling back to gfpgan")
     return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
 
 
@@ -365,7 +383,7 @@ def cmd_run(argv: list[str]) -> int:
     for pth in inputs:
         img = load_image_bgr(pth)
         if img is None:
-            print(f"[WARN] Failed to load: {pth}")
+            _warn(f"Failed to load: {pth}")
             continue
         cfg["input_path"] = pth
         # If orchestrator active, create a plan
