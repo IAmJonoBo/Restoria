@@ -9,5 +9,8 @@ if [[ "${RUN_JUNIT:-}" == "1" ]]; then
 fi
 
 # Use pytest's durations to print top 10 slow tests
-uv run pytest -q --durations=10 "${JUNIT_ARGS[@]}" "$@"
+if ! uv run pytest -q --durations=10 "${JUNIT_ARGS[@]}" "$@"; then
+	echo "[WARN] uv run failed; falling back to system pytest"
+	pytest -q --durations=10 "${JUNIT_ARGS[@]}" "$@"
+fi
 

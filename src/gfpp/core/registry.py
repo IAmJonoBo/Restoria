@@ -44,7 +44,7 @@ register("restoreformerpp", "gfpp.restorers.restoreformerpp:RestoreFormerPP")
 register("diffbir", "gfpp.restorers.diffbir:DiffBIRRestorer", experimental=True)
 register("hypir", "gfpp.restorers.hypir:HYPIRRestorer", experimental=True)
 register("ensemble", "gfpp.restorers.ensemble:EnsembleRestorer")
-register("guided", "gfpp.restorers.guided:GuidedRestorer", experimental=True)
+register("guided", "gfpp.restorers.guided:GuidedRestorer", experimental=False)
 
 
 def list_backends(include_experimental: bool = False) -> Dict[str, bool]:

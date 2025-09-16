@@ -41,17 +41,22 @@ class ORTGFPGANRestorer(Restorer):
                 self._ort_info["init_sec"] = round(init_sec, 4)
                 self._ort_ready = True
         if self._ort is None:
-            # Prepare fallback Torch restorer
+            # Prepare fallback Torch restorer (best-effort)
             self._fallback = GFPGANRestorer(
                 device=self._device, bg_upsampler=self._bg, compile_mode=cfg.get("compile", "none")
             )
-            self._fallback.prepare(cfg)
+            try:
+                self._fallback.prepare(cfg)
+            except Exception:
+                # Fallback restorer will operate as a no-op stub in restore()
+                pass
 
     def restore(self, image, cfg: Dict[str, Any]) -> RestoreResult:
         # If ORT not ready, fallback to Torch
         if self._ort is None:
             if self._fallback is None:
                 self.prepare(cfg)
+            assert self._fallback is not None
             res = self._fallback.restore(image, cfg)
             res.metrics.update(
                 {

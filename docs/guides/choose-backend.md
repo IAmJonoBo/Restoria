@@ -253,6 +253,21 @@ When comparing results, look for:
 
 ## Advanced configuration
 
+### Optional ensemble (experimental)
+
+You can blend outputs from multiple backends by selecting the ensemble backend.
+This is off by default and requires no extra installs for a simple blend.
+
+Example:
+
+        gfpup run --input photo.jpg \
+            --backend ensemble \
+            --ensemble-backends gfpgan,codeformer \
+            --ensemble-weights 0.5,0.5 \
+            --output out/
+
+Missing backends are skipped gracefully and the run proceeds.
+
 ### Backend-specific parameters
 
 === "GFPGAN tuning"
@@ -285,21 +300,20 @@ When comparing results, look for:
 
 ## Decision flowchart
 
-```
-Start
-  ↓
-Quality most important? → Yes → Use RestoreFormer++
-  ↓ No
-Speed most important? → Yes → Use CodeFormer
-  ↓ No
-Natural results preferred? → Yes → Use GFPGAN v1.3
-  ↓ No
-General use → Use GFPGAN v1.4
-```
+        Start
+            ↓
+        Quality most important? → Yes → Use RestoreFormer++
+            ↓ No
+        Speed most important? → Yes → Use CodeFormer
+            ↓ No
+        Natural results preferred? → Yes → Use GFPGAN v1.3
+            ↓ No
+        General use → Use GFPGAN v1.4
 
 ---
 
 **Next steps:**
+
 - [Measure quality with metrics →](metrics.md)
 - [Process multiple photos →](batch-processing.md)
 - [Optimize hardware performance →](../HARDWARE_GUIDE.md)

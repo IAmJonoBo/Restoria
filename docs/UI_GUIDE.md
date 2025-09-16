@@ -17,3 +17,14 @@ cd apps/web && pnpm i && pnpm dev
 
 Images are proxied via `/file?path=` for convenience in dev; in production, serve static files via a proper file server.
 
+Feedback (optional):
+
+- The local Gradio demo supports lightweight feedback logging to
+	`results/feedback.jsonl` when enabled.
+- Enable by setting an environment variable before launch:
+
+```bash
+export GFPP_FEEDBACK=1
+python -m gfpgan.gradio_app
+```
+

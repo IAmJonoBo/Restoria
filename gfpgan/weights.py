@@ -4,7 +4,9 @@ from typing import Optional, Tuple
 
 from .registry import load_model_registry, get_model_info
 
-DEFAULT_WEIGHTS_DIR = os.environ.get("GFPGAN_WEIGHTS_DIR", os.path.join(os.path.dirname(__file__), "weights"))
+# Default fallback location inside the package; do NOT bake env here to allow
+# tests to monkeypatch GFPGAN_WEIGHTS_DIR after import time.
+DEFAULT_WEIGHTS_DIR = os.path.join(os.path.dirname(__file__), "weights")
 
 
 def get_model_registry():
@@ -42,7 +44,8 @@ def resolve_model_weight(
       - GFPGAN_HF_REPO: Hugging Face repo to use (if set)
       - HF_HUB_OFFLINE: if '1', forces local cache-only
     """
-    weights_dir = root or DEFAULT_WEIGHTS_DIR
+    # Respect GFPGAN_WEIGHTS_DIR at call time (not only import time)
+    weights_dir = root or os.environ.get("GFPGAN_WEIGHTS_DIR", DEFAULT_WEIGHTS_DIR)
     _ensure_dir(weights_dir)
     # Prefer a file named after the model_name if present (helps alias/offline compatibility)
     alias_path = os.path.join(weights_dir, f"{model_name}.pth")
