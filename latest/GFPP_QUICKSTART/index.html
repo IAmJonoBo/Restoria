@@ -1436,6 +1436,8 @@
 <span class="c1">#   --identity-lock --identity-threshold 0.25</span>
 <span class="c1">#   --optimize --weights-cand &quot;0.3,0.5,0.7&quot;</span>
 <span class="c1">#   --compile {none,default,max} (optional torch.compile path)</span>
+<span class="w">  </span><span class="c1">#   --experimental (enable experimental backends/routing)</span>
+<span class="w">  </span><span class="c1">#   --prompt &quot;text&quot; --texture-richness 0.6 (HYPIR-only; experimental)</span>
 
 Plan<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>Metrics:
 
@@ -1461,7 +1463,26 @@ Plan<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>
 </code></pre></div>
 <ul>
 <li>Dry-run still writes a manifest and now computes no‑reference quality metrics (NIQE / BRISQUE) when <code>--metrics</code> is not <code>off</code>.</li>
-<li>If a probe or metric dependency is missing the corresponding values are omitted or set to <code>null</code> without failing the run.
+<li>If a probe or metric dependency is missing the corresponding values are omitted or set to <code>null</code> without failing the run.</li>
+</ul>
+<p>Experimental (opt-in):</p>
+<ul>
+<li>HYPIR backend is experimental and not installed by default. Enable via <code>--experimental</code> and install extras when available:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[hypir]&quot;</span>
+</code></pre></div>
+<ul>
+<li>You can bias routing with a prompt:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>inputs/whole_imgs<span class="w"> </span>--output<span class="w"> </span>out/<span class="w"> </span>--dry-run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--auto-backend<span class="w"> </span>--experimental<span class="w"> </span>--prompt<span class="w"> </span><span class="s2">&quot;clean skin texture&quot;</span>
+</code></pre></div>
+<ul>
+<li>Or request HYPIR directly (still gated and safe):</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>inputs/whole_imgs<span class="w"> </span>--output<span class="w"> </span>out/<span class="w"> </span>--dry-run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--backend<span class="w"> </span>hypir<span class="w"> </span>--experimental<span class="w"> </span>--prompt<span class="w"> </span><span class="s2">&quot;portrait&quot;</span><span class="w"> </span>--texture-richness<span class="w"> </span><span class="m">0</span>.7
+</code></pre></div>
 <div class="highlight"><pre><span></span><code>API dev server:
 
 ```bash
@@ -1471,8 +1492,7 @@ uvicorn services.api.main:app --reload
 #   GET  /jobs, /jobs/:id, /results/:id
 #   WS   /jobs/:id/stream (status/image/manifest/eof events)
 #   POST /jobs/:id/rerun (overrides)
-</code></pre></div></li>
-</ul>
+</code></pre></div></p>
 <p>Web (dev):</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>apps/web
 pnpm<span class="w"> </span>i
