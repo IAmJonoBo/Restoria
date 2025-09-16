@@ -1,6 +1,10 @@
+import os
 import time
 
 import pytest
+
+if not os.environ.get("RUN_API_TESTS"):
+    pytest.skip("API tests are skipped by default. Set RUN_API_TESTS=1 to enable.", allow_module_level=True)
 
 
 def test_ws_stream_dry_run(tmp_path):
