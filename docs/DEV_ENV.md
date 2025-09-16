@@ -36,3 +36,9 @@ Torch 2.x notes
 
 Apple Silicon
 - All constraints are chosen to have prebuilt wheels on macOS arm64 where possible. If you hit build issues, ensure you’re on Python 3.10 and use the 3.10 constraints.
+
+Metrics extras (BRISQUE availability)
+- The `metrics` extra installs perceptual metrics (LPIPS, DISTS, PIQ). BRISQUE is best-effort:
+  - Linux: `imquality[brisque]` is enabled.
+  - Windows: `pybrisque` is enabled.
+  - macOS: BRISQUE is not installed by default to avoid resolver/build issues on newer Python tracks. The code gracefully skips BRISQUE if unavailable.
