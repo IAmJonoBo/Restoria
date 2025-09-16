@@ -68,10 +68,12 @@ api = [
   "python-multipart>=0.0.9",
 ]
 metrics = [
+  "Pillow>=9",
   "lpips>=0.1.4",
   "dists-pytorch>=0.1", # DISTS perceptual metric
   "piq>=0.8",           # NIQE/other IQA (optional fallback)
-  "imquality[brisque]>=0.3; platform_system != 'Windows'", # BRISQUE via imquality (best effort)
+  # BRISQUE via imquality (best effort); restrict to Linux due to macOS/py312 availability issues
+  "imquality[brisque]>=0.3; platform_system == 'Linux'",
   "pybrisque>=1.0; platform_system == 'Windows'",          # BRISQUE alternative on Windows
 ]
 # New runtime extras (optional, import-light defaults):
