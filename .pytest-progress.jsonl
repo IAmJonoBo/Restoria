@@ -1,0 +1,70 @@
+{"type": "start", "nodeid": "tests/test_cli_doctor.py::test_gfpup_doctor_runs_and_lists_backends", "ts": 1758049511.757596}
+{"type": "finish", "nodeid": "tests/test_cli_doctor.py::test_gfpup_doctor_runs_and_lists_backends", "outcome": "passed", "duration": 0.9444167079927865, "ts": 1758049512.7059321}
+{"type": "start", "nodeid": "tests/test_cli_doctor_json.py::test_gfpup_doctor_json", "ts": 1758049512.706723}
+{"type": "finish", "nodeid": "tests/test_cli_doctor_json.py::test_gfpup_doctor_json", "outcome": "passed", "duration": 0.8869044160092017, "ts": 1758049513.5940201}
+{"type": "start", "nodeid": "tests/test_cli_hypir_flags.py::test_cli_hypir_prompt_passes_to_plan_and_falls_back_gracefully", "ts": 1758049513.594603}
+{"type": "finish", "nodeid": "tests/test_cli_hypir_flags.py::test_cli_hypir_prompt_passes_to_plan_and_falls_back_gracefully", "outcome": "passed", "duration": 0.9784416249895003, "ts": 1758049514.573398}
+{"type": "start", "nodeid": "tests/test_cli_hypir_flags.py::test_cli_hypir_params_parse_only", "ts": 1758049514.573924}
+{"type": "finish", "nodeid": "tests/test_cli_hypir_flags.py::test_cli_hypir_params_parse_only", "outcome": "passed", "duration": 0.9248310420080088, "ts": 1758049515.4991}
+{"type": "start", "nodeid": "tests/test_cli_list_backends.py::test_gfpup_list_backends_defaults", "ts": 1758049515.499659}
+{"type": "finish", "nodeid": "tests/test_cli_list_backends.py::test_gfpup_list_backends_defaults", "outcome": "passed", "duration": 0.046543415999622084, "ts": 1758049515.5471182}
+{"type": "start", "nodeid": "tests/test_cli_list_backends.py::test_gfpup_list_backends_all_verbose", "ts": 1758049515.54775}
+{"type": "finish", "nodeid": "tests/test_cli_list_backends.py::test_gfpup_list_backends_all_verbose", "outcome": "passed", "duration": 0.04743558399786707, "ts": 1758049515.596234}
+{"type": "start", "nodeid": "tests/test_cli_list_backends_json.py::test_gfpup_list_backends_json", "ts": 1758049515.596801}
+{"type": "finish", "nodeid": "tests/test_cli_list_backends_json.py::test_gfpup_list_backends_json", "outcome": "passed", "duration": 0.04827291700348724, "ts": 1758049515.645928}
+{"type": "start", "nodeid": "tests/test_cli_runtime_info.py::test_manifest_runtime_section_auto_backend_flag", "ts": 1758049515.646561}
+{"type": "finish", "nodeid": "tests/test_cli_runtime_info.py::test_manifest_runtime_section_auto_backend_flag", "outcome": "passed", "duration": 1.8006926250091055, "ts": 1758049517.447606}
+{"type": "start", "nodeid": "tests/test_core_registry_orchestrator.py::test_registry_lists_backends", "ts": 1758049517.448357}
+{"type": "finish", "nodeid": "tests/test_core_registry_orchestrator.py::test_registry_lists_backends", "outcome": "passed", "duration": 0.002792833009152673, "ts": 1758049517.4513369}
+{"type": "start", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_routes_with_probe_low_quality", "ts": 1758049517.451514}
+{"type": "finish", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_routes_with_probe_low_quality", "outcome": "passed", "duration": 0.0019505410018609837, "ts": 1758049517.453714}
+{"type": "start", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_routes_with_probe_good_quality", "ts": 1758049517.454043}
+{"type": "finish", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_routes_with_probe_good_quality", "outcome": "passed", "duration": 0.00020450000010896474, "ts": 1758049517.4545112}
+{"type": "start", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_routes_with_probe_moderate", "ts": 1758049517.4546702}
+{"type": "finish", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_routes_with_probe_moderate", "outcome": "passed", "duration": 0.0001392499980283901, "ts": 1758049517.454954}
+{"type": "start", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_no_probe_fallback", "ts": 1758049517.455091}
+{"type": "finish", "nodeid": "tests/test_core_registry_orchestrator.py::test_orchestrator_no_probe_fallback", "outcome": "passed", "duration": 0.00013104200479574502, "ts": 1758049517.455359}
+{"type": "start", "nodeid": "tests/test_manifest_noref_metrics.py::test_manifest_includes_noref_keys", "ts": 1758049517.4555352}
+{"type": "finish", "nodeid": "tests/test_manifest_noref_metrics.py::test_manifest_includes_noref_keys", "outcome": "skipped", "duration": 1.5852914580027573, "ts": 1758049519.041321}
+{"type": "start", "nodeid": "tests/test_metrics_wrappers.py::test_arcface_wrapper_graceful", "ts": 1758049519.041794}
+{"type": "finish", "nodeid": "tests/test_metrics_wrappers.py::test_arcface_wrapper_graceful", "outcome": "passed", "duration": 0.0027130829985253513, "ts": 1758049519.044681}
+{"type": "start", "nodeid": "tests/test_metrics_wrappers.py::test_lpips_wrapper_graceful", "ts": 1758049519.044898}
+{"type": "finish", "nodeid": "tests/test_metrics_wrappers.py::test_lpips_wrapper_graceful", "outcome": "passed", "duration": 0.0004754999972647056, "ts": 1758049519.045505}
+{"type": "start", "nodeid": "tests/test_metrics_wrappers.py::test_dists_wrapper_graceful", "ts": 1758049519.0456839}
+{"type": "finish", "nodeid": "tests/test_metrics_wrappers.py::test_dists_wrapper_graceful", "outcome": "passed", "duration": 0.0008371250005438924, "ts": 1758049519.046644}
+{"type": "start", "nodeid": "tests/test_metrics_wrappers.py::test_noref_quality_wrapper", "ts": 1758049519.04679}
+{"type": "finish", "nodeid": "tests/test_metrics_wrappers.py::test_noref_quality_wrapper", "outcome": "passed", "duration": 0.5382939580013044, "ts": 1758049519.5853581}
+{"type": "start", "nodeid": "tests/test_onnxruntime_helpers.py::test_available_eps_returns_list_or_empty", "ts": 1758049519.585644}
+{"type": "finish", "nodeid": "tests/test_onnxruntime_helpers.py::test_available_eps_returns_list_or_empty", "outcome": "passed", "duration": 0.018994750003912486, "ts": 1758049519.604873}
+{"type": "start", "nodeid": "tests/test_onnxruntime_helpers.py::test_create_session_missing_onnxruntime_returns_none", "ts": 1758049519.60511}
+{"type": "finish", "nodeid": "tests/test_onnxruntime_helpers.py::test_create_session_missing_onnxruntime_returns_none", "outcome": "passed", "duration": 0.002857375002349727, "ts": 1758049519.608554}
+{"type": "start", "nodeid": "tests/test_orchestrator_enriched_plan.py::test_enriched_plan_fields", "ts": 1758049519.60883}
+{"type": "finish", "nodeid": "tests/test_orchestrator_enriched_plan.py::test_enriched_plan_fields", "outcome": "passed", "duration": 0.0012499159929575399, "ts": 1758049519.610223}
+{"type": "start", "nodeid": "tests/test_orchestrator_hypir_rule.py::test_hypir_routes_with_prompt_when_experimental", "ts": 1758049519.610399}
+{"type": "finish", "nodeid": "tests/test_orchestrator_hypir_rule.py::test_hypir_routes_with_prompt_when_experimental", "outcome": "passed", "duration": 9.349999891128391e-05, "ts": 1758049519.6109362}
+{"type": "start", "nodeid": "tests/test_orchestrator_hypir_rule.py::test_hypir_routes_on_moderate_when_experimental", "ts": 1758049519.611076}
+{"type": "finish", "nodeid": "tests/test_orchestrator_hypir_rule.py::test_hypir_routes_on_moderate_when_experimental", "outcome": "passed", "duration": 7.300000288523734e-05, "ts": 1758049519.611501}
+{"type": "start", "nodeid": "tests/test_orchestrator_plan.py::test_plan_few_artifacts_routes_gfpgan", "ts": 1758049519.611663}
+{"type": "finish", "nodeid": "tests/test_orchestrator_plan.py::test_plan_few_artifacts_routes_gfpgan", "outcome": "passed", "duration": 7.158399967011064e-05, "ts": 1758049519.612094}
+{"type": "start", "nodeid": "tests/test_orchestrator_plan.py::test_plan_heavy_degradation_routes_codeformer", "ts": 1758049519.6122198}
+{"type": "finish", "nodeid": "tests/test_orchestrator_plan.py::test_plan_heavy_degradation_routes_codeformer", "outcome": "passed", "duration": 6.874999962747097e-05, "ts": 1758049519.612635}
+{"type": "start", "nodeid": "tests/test_orchestrator_plan.py::test_plan_heavy_many_faces_biases_gfpgan", "ts": 1758049519.612761}
+{"type": "finish", "nodeid": "tests/test_orchestrator_plan.py::test_plan_heavy_many_faces_biases_gfpgan", "outcome": "passed", "duration": 6.66659907437861e-05, "ts": 1758049519.613169}
+{"type": "start", "nodeid": "tests/test_orchestrator_plan.py::test_plan_moderate_defaults_to_gfpgan", "ts": 1758049519.613306}
+{"type": "finish", "nodeid": "tests/test_orchestrator_plan.py::test_plan_moderate_defaults_to_gfpgan", "outcome": "passed", "duration": 6.483300239779055e-05, "ts": 1758049519.613708}
+{"type": "start", "nodeid": "tests_light/test_cli_dry_run.py::test_cli_dry_run", "ts": 1758049519.613861}
+{"type": "finish", "nodeid": "tests_light/test_cli_dry_run.py::test_cli_dry_run", "outcome": "passed", "duration": 0.04009399999631569, "ts": 1758049519.6542652}
+{"type": "start", "nodeid": "tests_light/test_cli_dry_run_manifest.py::test_gfpup_run_dry_run_manifest", "ts": 1758049519.6547441}
+{"type": "finish", "nodeid": "tests_light/test_cli_dry_run_manifest.py::test_gfpup_run_dry_run_manifest", "outcome": "passed", "duration": 0.9327841250051279, "ts": 1758049520.5883222}
+{"type": "start", "nodeid": "tests_light/test_cli_flags.py::test_dry_run_device_no_download", "ts": 1758049520.5888681}
+{"type": "finish", "nodeid": "tests_light/test_cli_flags.py::test_dry_run_device_no_download", "outcome": "passed", "duration": 0.04148133299895562, "ts": 1758049520.630858}
+{"type": "start", "nodeid": "tests_light/test_engines_registry.py::test_engines_registry_has_default_entries", "ts": 1758049520.631436}
+{"type": "finish", "nodeid": "tests_light/test_engines_registry.py::test_engines_registry_has_default_entries", "outcome": "passed", "duration": 0.003031790998647921, "ts": 1758049520.6346502}
+{"type": "start", "nodeid": "tests_light/test_gfpp_cli_dry_run.py::test_gfpp_cli_dry_run", "ts": 1758049520.6348329}
+{"type": "finish", "nodeid": "tests_light/test_gfpp_cli_dry_run.py::test_gfpp_cli_dry_run", "outcome": "passed", "duration": 0.9869660000113072, "ts": 1758049521.6225548}
+{"type": "start", "nodeid": "tests_light/test_metrics_helpers.py::test_metrics_helpers_graceful", "ts": 1758049521.6237462}
+{"type": "finish", "nodeid": "tests_light/test_metrics_helpers.py::test_metrics_helpers_graceful", "outcome": "skipped", "duration": 0.0007643330027349293, "ts": 1758049521.625311}
+{"type": "start", "nodeid": "tests_light/test_weights_resolver.py::test_resolve_prefers_env_dir", "ts": 1758049521.625526}
+{"type": "finish", "nodeid": "tests_light/test_weights_resolver.py::test_resolve_prefers_env_dir", "outcome": "passed", "duration": 0.0013761250011157244, "ts": 1758049521.627501}
+{"type": "start", "nodeid": "tests_light/test_weights_resolver.py::test_offline_raises_when_missing", "ts": 1758049521.627671}
+{"type": "finish", "nodeid": "tests_light/test_weights_resolver.py::test_offline_raises_when_missing", "outcome": "passed", "duration": 0.0036172499967506155, "ts": 1758049521.63184}

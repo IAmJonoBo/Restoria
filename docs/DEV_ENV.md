@@ -13,6 +13,9 @@ Quick Start (3.11, Torch 2.x default)
    - `scripts/setup_uv.sh --python 3.11 --track torch2`
 2) Run tests:
    - `scripts/test.sh`
+   - Optional progress during tests:
+     - Console: `scripts/test.sh --progress-console`
+     - JSONL file: `scripts/test.sh --progress-log .pytest-progress.jsonl`
 3) Lint / format:
    - `scripts/lint.sh`
    - `scripts/fmt.sh`
@@ -33,3 +36,12 @@ Torch 2.x notes
 
 Apple Silicon
 - All constraints are chosen to have prebuilt wheels on macOS arm64 where possible. If you hit build issues, ensure you’re on Python 3.10 and use the 3.10 constraints.
+
+Metrics extras (BRISQUE availability)
+- The `metrics` extra installs perceptual metrics (LPIPS, DISTS, PIQ). BRISQUE is best-effort:
+  - Linux: `imquality[brisque]` is enabled.
+  - Windows: `pybrisque` is enabled.
+  - macOS: BRISQUE is not installed by default to avoid resolver/build issues on newer Python tracks. The code gracefully skips BRISQUE if unavailable.
+
+Headless environments (servers/CI)
+- For containerized or server environments where GUI libs are unnecessary, consider installing `opencv-python-headless` instead of `opencv-python`. This reduces GUI-related dependencies while keeping functionality required by the CLI and metrics.

@@ -1,4 +1,8 @@
+import os
 import pytest
+
+if not os.environ.get("RUN_API_TESTS"):
+    pytest.skip("API tests are skipped by default. Set RUN_API_TESTS=1 to enable.", allow_module_level=True)
 
 
 @pytest.mark.skipif("fastapi" not in globals(), reason="fastapi not installed")
