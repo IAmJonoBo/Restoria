@@ -137,6 +137,14 @@ class GFPGANer:
             loadnet = torch.load(model_path, map_location=self.device, weights_only=True)  # type: ignore[call-arg]
         except TypeError:
             # Older torch versions do not support weights_only
+            # Security note: full deserialization is less safe; prefer upgrading to torch>=2.0
+            try:
+                print(
+                    "[WARN] torch.load(weights_only=True) unsupported by this torch version; "
+                    "falling back to full deserialization. Consider upgrading torch for safer loads."
+                )
+            except Exception:
+                pass
             loadnet = torch.load(model_path, map_location=self.device)
         keyname = "params_ema" if "params_ema" in loadnet else "params"
         self.gfpgan.load_state_dict(loadnet[keyname], strict=True)

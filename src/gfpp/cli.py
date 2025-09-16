@@ -17,6 +17,8 @@ from .restorers.restoreformerpp import RestoreFormerPP
 # ------------------------- Small helpers (no behavior change) -------------------------
 TMP_IN = "in.png"
 TMP_OUT = "out.png"
+
+
 def _build_bg_upsampler(background: str, quality: str, device: str):
     if background != "realesrgan":
         return None
@@ -574,7 +576,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
             }
             try:
                 print(json.dumps(payload))
-            except Exception:
+            except (TypeError, ValueError):
                 # Best-effort fallback to string repr
                 print(str(payload))
         else:
@@ -659,7 +661,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
             }
             try:
                 print(json.dumps(payload))
-            except Exception:
+            except (TypeError, ValueError):
                 print(str(payload))
             return 0
 
