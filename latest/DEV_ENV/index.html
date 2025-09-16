@@ -1430,6 +1430,9 @@
    - <code>scripts/setup_uv.sh --python 3.11 --track torch2</code>
 2) Run tests:
    - <code>scripts/test.sh</code>
+   - Optional progress during tests:
+     - Console: <code>scripts/test.sh --progress-console</code>
+     - JSONL file: <code>scripts/test.sh --progress-log .pytest-progress.jsonl</code>
 3) Lint / format:
    - <code>scripts/lint.sh</code>
    - <code>scripts/fmt.sh</code></p>
@@ -1446,6 +1449,13 @@
   - Alternatively use <code>constraints-3.11-experimental.txt</code> with pip.</p>
 <p>Apple Silicon
 - All constraints are chosen to have prebuilt wheels on macOS arm64 where possible. If you hit build issues, ensure you’re on Python 3.10 and use the 3.10 constraints.</p>
+<p>Metrics extras (BRISQUE availability)
+- The <code>metrics</code> extra installs perceptual metrics (LPIPS, DISTS, PIQ). BRISQUE is best-effort:
+  - Linux: <code>imquality[brisque]</code> is enabled.
+  - Windows: <code>pybrisque</code> is enabled.
+  - macOS: BRISQUE is not installed by default to avoid resolver/build issues on newer Python tracks. The code gracefully skips BRISQUE if unavailable.</p>
+<p>Headless environments (servers/CI)
+- For containerized or server environments where GUI libs are unnecessary, consider installing <code>opencv-python-headless</code> instead of <code>opencv-python</code>. This reduces GUI-related dependencies while keeping functionality required by the CLI and metrics.</p>
 
 
 

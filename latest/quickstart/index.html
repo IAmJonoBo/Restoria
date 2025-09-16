@@ -1401,6 +1401,41 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#listing-available-backends" class="md-nav__link">
+    <span class="md-ellipsis">
+      Listing available backends
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-check-doctor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment check (doctor)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optional-perceptual-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optional perceptual metrics
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1435,6 +1470,29 @@
 <li>https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb</li>
 </ul>
 <p>See: CLI Usage (./usage/cli.md) and Colab Guide (./usage/colab.md).</p>
+<h2 id="listing-available-backends">Listing available backends<a class="headerlink" href="#listing-available-backends" title="Permanent link">&para;</a></h2>
+<p>Check which backends are available in your environment without heavy downloads:</p>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>list-backends
+</code></pre></div>
+<p>Add <code>--verbose</code> for per-backend availability, and <code>--all</code> to include experimental ones. For machine-readable output:</p>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>list-backends<span class="w"> </span>--json
+</code></pre></div>
+<p>The JSON output includes a <code>schema_version</code> field (currently "1") for forward compatibility, plus <code>experimental</code> and a <code>backends</code> dictionary mapping backend name to a boolean availability.</p>
+<h2 id="environment-check-doctor">Environment check (doctor)<a class="headerlink" href="#environment-check-doctor" title="Permanent link">&para;</a></h2>
+<p>Print environment and availability information:</p>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>doctor
+</code></pre></div>
+<p>For machine-readable output:</p>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>doctor<span class="w"> </span>--json
+</code></pre></div>
+<h2 id="optional-perceptual-metrics">Optional perceptual metrics<a class="headerlink" href="#optional-perceptual-metrics" title="Permanent link">&para;</a></h2>
+<p>You can install optional metrics for identity/perceptual scoring:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>metrics<span class="o">]</span>
+</code></pre></div>
+<p>Notes:
+- Linux: BRISQUE via <code>imquality[brisque]</code> is enabled.
+- Windows: BRISQUE via <code>pybrisque</code> is enabled.
+- macOS: BRISQUE is not installed by default to avoid resolver/build issues on newer Python versions; metrics gracefully degrade if BRISQUE is unavailable.</p>
 
 
 
