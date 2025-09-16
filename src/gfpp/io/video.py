@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Minimal video IO helpers with graceful fallbacks.
 
 Public API is intentionally small and stable; functions return None or
@@ -8,6 +6,7 @@ raise ValueError on bad inputs rather than importing heavy deps at import time.
 No new hard dependencies are introduced. If cv2 is unavailable, readers/writers
 will return None and callers should degrade gracefully.
 """
+from __future__ import annotations
 from typing import Optional, Tuple
 
 
