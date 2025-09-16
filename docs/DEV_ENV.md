@@ -13,6 +13,9 @@ Quick Start (3.11, Torch 2.x default)
    - `scripts/setup_uv.sh --python 3.11 --track torch2`
 2) Run tests:
    - `scripts/test.sh`
+   - Optional progress during tests:
+     - Console: `scripts/test.sh --progress-console`
+     - JSONL file: `scripts/test.sh --progress-log .pytest-progress.jsonl`
 3) Lint / format:
    - `scripts/lint.sh`
    - `scripts/fmt.sh`
