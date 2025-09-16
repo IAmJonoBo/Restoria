@@ -18,6 +18,18 @@
             "matchPackageNames": ["torch"],
             "allowedVersions": "<3.0.0",
             "rangeStrategy": "widen"
+        },
+        {
+            "matchPackageNames": ["huggingface_hub"],
+            "matchUpdateTypes": ["minor", "major"],
+            "enabled": false
+        },
+        {
+            "matchManagers": ["github-actions"],
+            "matchDepNames": ["python"],
+            "matchDatasources": ["python-version"],
+            "allowedVersions": "<3.13",
+            "rangeStrategy": "replace"
         }
     ]
 }
