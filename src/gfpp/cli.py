@@ -562,16 +562,28 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
         p = argparse.ArgumentParser(prog="gfpup list-backends")
         p.add_argument("--all", action="store_true", help="Include experimental backends")
         p.add_argument("--verbose", action="store_true", help="Show availability status")
+        p.add_argument("--json", action="store_true", help="Output machine-readable JSON")
         args = p.parse_args(argv[1:])
 
         avail = list_backends(include_experimental=bool(args.all))
-        header = f"Backends (experimental={'on' if args.all else 'off'}):"
-        print(header)
-        for name, ok in avail.items():
-            if args.verbose:
-                print(f"  - {name}: {'available' if ok else 'missing'}")
-            else:
-                print(f"  - {name}")
+        if args.json:
+            payload = {
+                "experimental": bool(args.all),
+                "backends": avail,
+            }
+            try:
+                print(json.dumps(payload))
+            except Exception:
+                # Best-effort fallback to string repr
+                print(str(payload))
+        else:
+            header = f"Backends (experimental={'on' if args.all else 'off'}):"
+            print(header)
+            for name, ok in avail.items():
+                if args.verbose:
+                    print(f"  - {name}: {'available' if ok else 'missing'}")
+                else:
+                    print(f"  - {name}")
         return 0
     if cmd == "run":
         return cmd_run(argv[1:])
