@@ -42,8 +42,12 @@ class GFPGANer:
 
         # Lazy-load architecture based on selection
         if arch == "clean":
-            GFPGANv1Clean = getattr(importlib.import_module("gfpgan.archs.gfpganv1_clean_arch"), "GFPGANv1Clean")
-            self.gfpgan = GFPGANv1Clean(
+            # Intentional dynamic import to keep top-level import cost low
+            arch_cls = getattr(
+                importlib.import_module("gfpgan.archs.gfpganv1_clean_arch"),
+                "GFPGANv1Clean",
+            )
+            self.gfpgan = arch_cls(
                 out_size=512,
                 num_style_feat=512,
                 channel_multiplier=channel_multiplier,
@@ -56,8 +60,12 @@ class GFPGANer:
                 sft_half=True,
             )
         elif arch == "bilinear":
-            GFPGANBilinear = getattr(importlib.import_module("gfpgan.archs.gfpgan_bilinear_arch"), "GFPGANBilinear")
-            self.gfpgan = GFPGANBilinear(
+            # Intentional dynamic import to keep top-level import cost low
+            arch_cls = getattr(
+                importlib.import_module("gfpgan.archs.gfpgan_bilinear_arch"),
+                "GFPGANBilinear",
+            )
+            self.gfpgan = arch_cls(
                 out_size=512,
                 num_style_feat=512,
                 channel_multiplier=channel_multiplier,
@@ -70,8 +78,12 @@ class GFPGANer:
                 sft_half=True,
             )
         elif arch == "original":
-            GFPGANv1 = getattr(importlib.import_module("gfpgan.archs.gfpganv1_arch"), "GFPGANv1")
-            self.gfpgan = GFPGANv1(
+            # Intentional dynamic import to keep top-level import cost low
+            arch_cls = getattr(
+                importlib.import_module("gfpgan.archs.gfpganv1_arch"),
+                "GFPGANv1",
+            )
+            self.gfpgan = arch_cls(
                 out_size=512,
                 num_style_feat=512,
                 channel_multiplier=channel_multiplier,
@@ -84,14 +96,20 @@ class GFPGANer:
                 sft_half=True,
             )
         elif arch == "RestoreFormer":
-            RestoreFormer = getattr(importlib.import_module("gfpgan.archs.restoreformer_arch"), "RestoreFormer")
-            self.gfpgan = RestoreFormer()
+            # Intentional dynamic import to keep top-level import cost low
+            arch_cls = getattr(
+                importlib.import_module("gfpgan.archs.restoreformer_arch"),
+                "RestoreFormer",
+            )
+            self.gfpgan = arch_cls()
 
         # initialize face helper
-        FaceRestoreHelper = getattr(
-            importlib.import_module("facexlib.utils.face_restoration_helper"), "FaceRestoreHelper"
+        # Intentional dynamic import to keep top-level import cost low
+        face_restore_helper_cls = getattr(
+            importlib.import_module("facexlib.utils.face_restoration_helper"),
+            "FaceRestoreHelper",
         )
-        self.face_helper = FaceRestoreHelper(
+        self.face_helper = face_restore_helper_cls(
             upscale,
             face_size=512,
             crop_ratio=(1, 1),
@@ -104,15 +122,22 @@ class GFPGANer:
 
         # Resolve URL weights if needed
         if model_path.startswith("https://"):
-            load_file_from_url = getattr(
-                importlib.import_module("basicsr.utils.download_util"), "load_file_from_url"
+            # Intentional dynamic import to keep top-level import cost low
+            download_fn = getattr(
+                importlib.import_module("basicsr.utils.download_util"),
+                "load_file_from_url",
             )
-            model_path = load_file_from_url(
+            model_path = download_fn(
                 url=model_path, model_dir=os.path.join(ROOT_DIR, "gfpgan/weights"), progress=True, file_name=None
             )
 
         # Map weights to the selected device to avoid CUDA-only loads on CPU
-        loadnet = torch.load(model_path, map_location=self.device)
+        # Prefer safer weights-only deserialization when available (PyTorch >= 2.0)
+        try:
+            loadnet = torch.load(model_path, map_location=self.device, weights_only=True)  # type: ignore[call-arg]
+        except TypeError:
+            # Older torch versions do not support weights_only
+            loadnet = torch.load(model_path, map_location=self.device)
         keyname = "params_ema" if "params_ema" in loadnet else "params"
         self.gfpgan.load_state_dict(loadnet[keyname], strict=True)
         self.gfpgan.eval()

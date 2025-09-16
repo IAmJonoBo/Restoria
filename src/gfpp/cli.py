@@ -568,6 +568,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
         avail = list_backends(include_experimental=bool(args.all))
         if args.json:
             payload = {
+                "schema_version": "1",
                 "experimental": bool(args.all),
                 "backends": avail,
             }

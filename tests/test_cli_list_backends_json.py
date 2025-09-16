@@ -16,6 +16,7 @@ def test_gfpup_list_backends_json(tmp_path):
     out = proc.stdout.strip()
     data = json.loads(out)
     assert isinstance(data, dict)
+    assert data.get("schema_version") in ("1", 1)
     assert "experimental" in data
     assert "backends" in data
     assert isinstance(data["backends"], dict)

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - CLI: new `gfpup list-backends` subcommand (flags: `--all`, `--verbose`); lightweight and non-breaking.
+- CLI: `gfpup list-backends --json` now emits a stable payload with `schema_version: "1"`.
 - Comprehensive documentation restructure with task-first information architecture
 - Model card and data card for responsible AI disclosures
 - Governance documentation (contributing, security, maintainers, versioning)
