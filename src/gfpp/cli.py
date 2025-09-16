@@ -589,53 +589,116 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
     if cmd == "run":
         return cmd_run(argv[1:])
     if cmd == "doctor":
-        # Print environment and backend availability
+        # Support optional JSON output while preserving text mode behavior
+        import argparse as _argparse
+        p = _argparse.ArgumentParser(prog="gfpup doctor")
+        p.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+        _args = p.parse_args(argv[1:])
+
+        py_ver = None
+        torch_ver = None
+        cuda_avail = None
+        cuda_device = None
+        providers = None
+        backends = None
+        suggested = []
+
+        # Collect environment info (best-effort)
         try:
-            import platform
-            import torch  # type: ignore
-            print(f"Python: {platform.python_version()}")
-            print(f"Torch: {getattr(torch, '__version__', None)}")
-            print(f"CUDA available: {torch.cuda.is_available()}")
-            if torch.cuda.is_available():
+            import platform as _platform
+            py_ver = _platform.python_version()
+        except Exception:
+            py_ver = None
+        try:
+            import torch as _torch  # type: ignore
+            torch_ver = getattr(_torch, "__version__", None)
+            cuda_avail = bool(_torch.cuda.is_available())
+            if _torch.cuda.is_available():
                 try:
-                    print(f"CUDA device: {torch.cuda.get_device_name(0)}")
+                    cuda_device = _torch.cuda.get_device_name(0)
                 except Exception:
-                    pass
+                    cuda_device = None
         except Exception:
             pass
         try:
-            import onnxruntime as ort  # type: ignore
-            providers = getattr(ort, 'get_available_providers', lambda: [])()
-            print(f"ONNX Runtime providers: {providers}")
+            import onnxruntime as _ort  # type: ignore
+            providers = list(getattr(_ort, "get_available_providers", lambda: [])())
         except Exception:
             providers = None
-            print("ONNX Runtime: not installed")
         try:
-            from gfpp.core.registry import list_backends  # type: ignore
-
-            avail = list_backends(include_experimental=True)
-            print("Backends:")
-            for k, v in avail.items():
-                print(f"  - {k}: {'available' if v else 'missing'}")
+            from gfpp.core.registry import list_backends as _list_backends  # type: ignore
+            backends = _list_backends(include_experimental=True)
         except Exception:
-            pass
-        # Minimal suggestion based on environment (best-effort, non-fatal)
-        try:
-            import torch  # type: ignore
+            backends = None
 
-            suggest = []
-            if torch.cuda.is_available():
-                suggest.append("--device cuda")
-                suggest.append("--compile default")
+        # Minimal suggestions (non-fatal)
+        try:
+            if cuda_avail:
+                suggested.append("--device cuda")
+                suggested.append("--compile default")
             if isinstance(providers, (list, tuple)) and any(p in providers for p in (
                 "CUDAExecutionProvider",
                 "TensorrtExecutionProvider",
                 "DmlExecutionProvider",
                 "CoreMLExecutionProvider",
             )):
-                suggest.append("--backend gfpgan-ort")
-            if suggest:
-                print("Suggested flags: " + " ".join(suggest))
+                suggested.append("--backend gfpgan-ort")
+        except Exception:
+            pass
+
+        if _args.json:
+            payload = {
+                "schema_version": "1",
+                "python": py_ver,
+                "torch": torch_ver,
+                "cuda_available": cuda_avail,
+                "cuda_device": cuda_device,
+                "onnxruntime_providers": providers,
+                "backends": backends,
+                "suggested_flags": suggested,
+            }
+            try:
+                print(json.dumps(payload))
+            except Exception:
+                print(str(payload))
+            return 0
+
+        # Text mode (unchanged semantics)
+        try:
+            import platform
+            import torch  # type: ignore
+            print(f"Python: {py_ver or platform.python_version()}")
+            print(f"Torch: {torch_ver or getattr(torch, '__version__', None)}")
+            ca = cuda_avail if cuda_avail is not None else torch.cuda.is_available()
+            print(f"CUDA available: {ca}")
+            if ca:
+                try:
+                    print(f"CUDA device: {cuda_device or torch.cuda.get_device_name(0)}")
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        try:
+            if providers is None:
+                import onnxruntime as ort  # type: ignore
+                providers = getattr(ort, 'get_available_providers', lambda: [])()
+            print(f"ONNX Runtime providers: {providers}")
+        except Exception:
+            providers = None
+            print("ONNX Runtime: not installed")
+        try:
+            if backends is None:
+                from gfpp.core.registry import list_backends  # type: ignore
+                backends = list_backends(include_experimental=True)
+            print("Backends:")
+            for k, v in (backends or {}).items():
+                print(f"  - {k}: {'available' if v else 'missing'}")
+        except Exception:
+            pass
+        # Suggestions
+        try:
+            if suggested:
+                print("Suggested flags: " + " ".join(suggested))
         except Exception:
             pass
         return 0

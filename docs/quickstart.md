@@ -27,3 +27,17 @@ gfpup list-backends --json
 ```
 
 The JSON output includes a `schema_version` field (currently "1") for forward compatibility, plus `experimental` and a `backends` dictionary mapping backend name to a boolean availability.
+
+## Environment check (doctor)
+
+Print environment and availability information:
+
+```bash
+gfpup doctor
+```
+
+For machine-readable output:
+
+```bash
+gfpup doctor --json
+```
