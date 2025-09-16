@@ -12,6 +12,7 @@ from .metrics import ArcFaceIdentity, DISTSMetric, LPIPSMetric
 from .restorers.codeformer import CodeFormerRestorer
 from .restorers.gfpgan import GFPGANRestorer
 from .restorers.restoreformerpp import RestoreFormerPP
+from .presets import apply_preset
 
 
 # ------------------------- Small helpers (no behavior change) -------------------------
@@ -77,6 +78,14 @@ def _instantiate_restorer(name: str, args, bg):
                 "HYPIR backend unavailable. Install extras: "
                 "pip install -e \".[hypir]\"; falling back to gfpgan"
             )
+            return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
+    if name in {"ensemble", "guided"}:
+        try:
+            from gfpp.core.registry import get as _get_backend  # type: ignore
+            backend_cls = _get_backend(name)
+            return backend_cls(device=args.device, bg_upsampler=bg), name
+        except Exception:
+            _warn(f"Backend {name} unavailable; falling back to gfpgan")
             return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
     _warn(f"Backend {name} not yet implemented; falling back to gfpgan")
     return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
@@ -241,7 +250,7 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument(
         "--backend",
         default="gfpgan",
-        choices=["gfpgan", "gfpgan-ort", "codeformer", "restoreformerpp", "diffbir", "hypir"],
+    choices=["gfpgan", "gfpgan-ort", "codeformer", "restoreformerpp", "diffbir", "hypir", "ensemble", "guided"],
     )
     p.add_argument("--background", default="realesrgan", choices=["realesrgan", "swinir", "none"])
     p.add_argument("--preset", default="natural", choices=["natural", "detail", "document"])
@@ -273,6 +282,11 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--no-download", action="store_true")
     p.add_argument("--model-path-onnx", default=None, help="Path to ONNX model (for gfpgan-ort backend)")
     p.add_argument("--codeformer-fidelity", type=float, default=None, help="CodeFormer fidelity (0..1)")
+    # Ensemble-specific optional args
+    p.add_argument("--ensemble-backends", default=None, help="Comma-separated backends for ensemble")
+    p.add_argument("--ensemble-weights", default=None, help="Comma-separated weights for ensemble")
+    # Guided-specific optional args
+    p.add_argument("--reference", default=None, help="Path to reference image for guided restoration")
     # HYPIR-specific optional args (ignored by other backends)
     p.add_argument("--prompt", default=None, help="HYPIR: prompt for light text-guided biasing")
     p.add_argument("--texture-richness", type=float, default=None, help="HYPIR: texture richness (0..1)")
@@ -296,6 +310,15 @@ def cmd_run(argv: list[str]) -> int:
     preset_weight = {"natural": 0.5, "detail": 0.7, "document": 0.3}.get(preset, 0.5)
 
     cfg: Dict[str, Any] = _base_cfg(args, preset_weight)
+    # Apply optional preset adjustments (non-destructive)
+    cfg = apply_preset(preset, cfg)
+    # Ensemble/guided pass-through config keys
+    if args.ensemble_backends:
+        cfg["ensemble_backends"] = args.ensemble_backends
+    if args.ensemble_weights:
+        cfg["ensemble_weights"] = args.ensemble_weights
+    if args.reference:
+        cfg["reference"] = args.reference
     _apply_backend_cfg(chosen_backend, args, cfg)
 
     inputs = list_inputs(args.input)

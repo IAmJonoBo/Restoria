@@ -93,6 +93,10 @@ hypir = [
 ort = [
   "onnxruntime>=1.18",
 ]
+ensemble = []
+maniq = []
+document = []
+guided = []
 arcface = [
   # ArcFace uses built-in weights; keep optional
 ]
