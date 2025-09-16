@@ -1401,6 +1401,23 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#list-available-backends-lightweight" class="md-nav__link">
+    <span class="md-ellipsis">
+      List available backends (lightweight)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1480,23 +1497,29 @@ Plan<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>
 <ul>
 <li>Or request HYPIR directly (still gated and safe):</li>
 </ul>
-<p><div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>inputs/whole_imgs<span class="w"> </span>--output<span class="w"> </span>out/<span class="w"> </span>--dry-run<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>inputs/whole_imgs<span class="w"> </span>--output<span class="w"> </span>out/<span class="w"> </span>--dry-run<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--backend<span class="w"> </span>hypir<span class="w"> </span>--experimental<span class="w"> </span>--prompt<span class="w"> </span><span class="s2">&quot;portrait&quot;</span><span class="w"> </span>--texture-richness<span class="w"> </span><span class="m">0</span>.7
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>API dev server:
-
-```bash
-uvicorn services.api.main:app --reload
-# REST endpoints:
-#   POST /jobs (JobSpec)
-#   GET  /jobs, /jobs/:id, /results/:id
-#   WS   /jobs/:id/stream (status/image/manifest/eof events)
-#   POST /jobs/:id/rerun (overrides)
-</code></pre></div></p>
+<p>API dev server:</p>
+<div class="highlight"><pre><span></span><code>uvicorn<span class="w"> </span>services.api.main:app<span class="w"> </span>--reload
+<span class="c1"># REST endpoints:</span>
+<span class="c1">#   POST /jobs (JobSpec)</span>
+<span class="c1">#   GET  /jobs, /jobs/:id, /results/:id</span>
+<span class="c1">#   WS   /jobs/:id/stream (status/image/manifest/eof events)</span>
+<span class="c1">#   POST /jobs/:id/rerun (overrides)</span>
+</code></pre></div>
 <p>Web (dev):</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>apps/web
 pnpm<span class="w"> </span>i
 pnpm<span class="w"> </span>dev
+</code></pre></div>
+<h2 id="list-available-backends-lightweight">List available backends (lightweight)<a class="headerlink" href="#list-available-backends-lightweight" title="Permanent link">&para;</a></h2>
+<p>You can quickly see which restoration backends are registered and whether they appear available in your current environment. This does not load heavy models.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Stable backends only</span>
+gfpup<span class="w"> </span>list-backends
+
+<span class="c1"># Include experimental and show availability state</span>
+gfpup<span class="w"> </span>list-backends<span class="w"> </span>--all<span class="w"> </span>--verbose
 </code></pre></div>
 
 
