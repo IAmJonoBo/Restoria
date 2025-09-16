@@ -14,6 +14,178 @@ from .restorers.gfpgan import GFPGANRestorer
 from .restorers.restoreformerpp import RestoreFormerPP
 
 
+# ------------------------- Small helpers (no behavior change) -------------------------
+TMP_IN = "in.png"
+TMP_OUT = "out.png"
+def _build_bg_upsampler(background: str, quality: str, device: str):
+    if background != "realesrgan":
+        return None
+    if quality == "quick":
+        tile = 0
+        prec = "fp16"
+    elif quality == "best":
+        tile = 0
+        prec = "fp32"
+    else:
+        tile = 400
+        prec = "auto"
+    return build_realesrgan(device=device, tile=tile, precision=prec)
+
+
+def _instantiate_restorer(name: str, args, bg):
+    # Ensure name normalization from orchestrator
+    if name == "gfpgan":
+        return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
+    if name == "gfpgan-ort":
+        from .restorers.gfpgan_ort import ORTGFPGANRestorer
+
+        return ORTGFPGANRestorer(device=args.device, bg_upsampler=bg), "gfpgan-ort"
+    if name == "codeformer":
+        return CodeFormerRestorer(device=args.device, bg_upsampler=bg), "codeformer"
+    if name in {"restoreformer", "restoreformerpp"}:
+        return RestoreFormerPP(device=args.device, bg_upsampler=bg), "restoreformerpp"
+    if name == "hypir":
+        if not getattr(args, "experimental", False):
+            print("[WARN] HYPIR is experimental. Enable with --experimental; falling back to gfpgan")
+            return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
+        try:
+            from .restorers.hypir import HYPIRRestorer
+
+            return HYPIRRestorer(device=args.device, bg_upsampler=bg), "hypir"
+        except Exception:
+            print(
+                "[WARN] HYPIR backend unavailable. Install extras: "
+                "pip install -e \".[hypir]\"; falling back to gfpgan"
+            )
+            return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
+    print(f"[WARN] Backend {name} not yet implemented; falling back to gfpgan")
+    return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
+
+
+def _base_cfg(args, preset_weight: float) -> Dict[str, Any]:
+    return {
+        "version": args.version,
+        "upscale": 2,
+        "use_parse": True,
+        "detector": "retinaface_resnet50",
+        "weight": preset_weight,
+        "no_download": args.no_download,
+    }
+
+
+def _apply_backend_cfg(chosen_backend: str, args, cfg: Dict[str, Any]) -> None:
+    if chosen_backend == "gfpgan-ort" and args.model_path_onnx:
+        cfg["model_path_onnx"] = args.model_path_onnx
+    if chosen_backend == "codeformer" and args.codeformer_fidelity is not None:
+        try:
+            cfg["weight"] = float(args.codeformer_fidelity)
+        except Exception:
+            pass
+    if chosen_backend == "hypir":
+        if args.texture_richness is not None:
+            try:
+                tr = max(0.0, min(1.0, float(args.texture_richness)))
+                cfg["texture_richness"] = tr
+            except Exception:
+                pass
+        if args.prompt is not None:
+            cfg["prompt"] = str(args.prompt)
+        cfg["identity_lock"] = bool(args.identity_lock)
+
+
+def _optimize_weight_if_requested(rest, img, cfg, preset_weight, args, arc, lpips):
+    chosen_weight = cfg.get("weight")
+    if not args.optimize:
+        return rest.restore(img, cfg), chosen_weight
+    # Parse candidate weights, keep within [0,1]
+    try:
+        cand = [min(max(float(x.strip()), 0.0), 1.0) for x in args.weights_cand.split(",") if x.strip()]
+    except Exception:
+        cand = [0.3, 0.5, 0.7]
+    best_score = None
+    best_res = None
+    best_w = None
+    for w in cand:
+        cfg["weight"] = w
+        r_try = rest.restore(img, cfg)
+        # Score: prefer ArcFace, else -LPIPS, else proximity to preset
+        score = None
+        if args.metrics in {"fast", "full"} and arc and arc.available():
+            import tempfile
+            import cv2
+
+            td = tempfile.mkdtemp()
+            a = os.path.join(td, TMP_IN)
+            b = os.path.join(td, TMP_OUT)
+            cv2.imwrite(a, img)
+            if r_try and r_try.restored_image is not None:
+                cv2.imwrite(b, r_try.restored_image)
+            else:
+                b = a
+            s = arc.cosine_from_paths(a, b)
+            score = s if s is not None else None
+        if score is None and args.metrics == "full" and lpips and lpips.available():
+            import tempfile
+            import cv2
+
+            td = tempfile.mkdtemp()
+            a = os.path.join(td, TMP_IN)
+            b = os.path.join(td, TMP_OUT)
+            cv2.imwrite(a, img)
+            if r_try and r_try.restored_image is not None:
+                cv2.imwrite(b, r_try.restored_image)
+            else:
+                b = a
+            d = lpips.distance_from_paths(a, b)
+            score = -d if isinstance(d, float) else None
+        if score is None:
+            score = -abs(w - preset_weight)
+        if best_score is None or score > best_score:
+            best_score = score
+            best_res = r_try
+            best_w = w
+    cfg["weight"] = best_w
+    return best_res, best_w
+
+
+def _maybe_identity_retry(chosen_backend, rest, img, cfg, preset_weight, arc, args, rec):
+    import tempfile
+    import cv2
+
+    td = tempfile.mkdtemp()
+    a = os.path.join(td, TMP_IN)
+    b = os.path.join(td, TMP_OUT)
+    cv2.imwrite(a, img)
+    cv2.imwrite(b, rec.get("_tmp_restored") or img)
+    s0 = arc.cosine_from_paths(a, b)
+    if s0 is None or s0 >= args.identity_threshold:
+        return None
+    cfg_strict = dict(cfg)
+    if chosen_backend == "hypir":
+        tr0 = cfg_strict.get("texture_richness", 0.6)
+        try:
+            tr0 = float(tr0)
+        except Exception:
+            tr0 = 0.6
+        cfg_strict["texture_richness"] = max(0.2, min(1.0, tr0 - 0.2))
+        cfg_strict["identity_lock"] = True
+    else:
+        stricter = max(0.2, float(cfg.get("weight", preset_weight)) - 0.2)
+        cfg_strict["weight"] = stricter
+    r2 = rest.restore(img, cfg_strict)
+    cv2.imwrite(b, r2.restored_image if (r2 and r2.restored_image is not None) else img)
+    s1 = arc.cosine_from_paths(a, b)
+    if s1 is not None and s1 > s0:
+        rec["metrics"]["identity_retry"] = True
+        if chosen_backend == "hypir":
+            rec["metrics"]["texture_richness"] = cfg_strict.get("texture_richness")
+            rec["metrics"]["identity_lock"] = True
+        else:
+            rec["metrics"]["weight"] = cfg_strict.get("weight")
+        return r2
+    return None
+
+
 def _set_deterministic(seed: int | None, deterministic: bool) -> None:
     try:
         import random
@@ -42,9 +214,7 @@ def _set_deterministic(seed: int | None, deterministic: bool) -> None:
 
 
 def cmd_run(argv: list[str]) -> int:
-    # Constants for temporary file names
-    _TEMP_INPUT_FILENAME = "in.png"
-    _TEMP_OUTPUT_FILENAME = "out.png"
+    # cmd entry
 
     p = argparse.ArgumentParser(prog="gfpup run")
     p.add_argument("--input", required=True)
@@ -59,6 +229,7 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--engine-params", default=None, help="JSON string for engine params")
     p.add_argument("--seed", type=int, default=None)
     p.add_argument("--deterministic", action="store_true")
+    p.add_argument("--experimental", action="store_true", help="Enable experimental backends and rules")
     p.add_argument("--metrics", default="off", choices=["off", "fast", "full"])
     p.add_argument("--csv-out", default=None, help="Write metrics CSV to this path")
     p.add_argument("--html-report", default=None, help="Write HTML report to this path")
@@ -82,70 +253,30 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--no-download", action="store_true")
     p.add_argument("--model-path-onnx", default=None, help="Path to ONNX model (for gfpgan-ort backend)")
     p.add_argument("--codeformer-fidelity", type=float, default=None, help="CodeFormer fidelity (0..1)")
+    # HYPIR-specific optional args (ignored by other backends)
+    p.add_argument("--prompt", default=None, help="HYPIR: prompt for light text-guided biasing")
+    p.add_argument("--texture-richness", type=float, default=None, help="HYPIR: texture richness (0..1)")
     args = p.parse_args(argv)
 
     os.makedirs(args.output, exist_ok=True)
     _set_deterministic(args.seed, args.deterministic)
 
     # Background upsampler
-    bg = None
-    if args.background == "realesrgan":
-        # Map quality preset to tile/precision (simple defaults)
-        if args.quality == "quick":
-            tile = 0
-            prec = "fp16"
-        elif args.quality == "best":
-            tile = 0
-            prec = "fp32"
-        else:  # balanced
-            tile = 400
-            prec = "auto"
-        bg = build_realesrgan(device=args.device, tile=tile, precision=prec)
+    bg = _build_bg_upsampler(args.background, args.quality, args.device)
 
     # Support --auto alias
     if args.auto:
         args.auto_backend = True
     # Choose restorer (optionally auto per-file)
-    if args.auto_backend:
-        # pick initial; will refine per-image below
-        chosen_backend = "gfpgan"
-    else:
-        chosen_backend = args.backend
-
-    if chosen_backend == "gfpgan":
-        rest = GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile)
-    elif chosen_backend == "gfpgan-ort":
-        from .restorers.gfpgan_ort import ORTGFPGANRestorer
-
-        rest = ORTGFPGANRestorer(device=args.device, bg_upsampler=bg)
-    elif chosen_backend == "codeformer":
-        rest = CodeFormerRestorer(device=args.device, bg_upsampler=bg)
-    elif chosen_backend == "restoreformerpp":
-        rest = RestoreFormerPP(device=args.device, bg_upsampler=bg)
-    else:
-        print(f"[WARN] Backend {chosen_backend} not yet implemented; falling back to gfpgan")
-        rest = GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile)
+    # Initial backend/restorer
+    chosen_backend = "gfpgan" if args.auto_backend else args.backend
+    rest, chosen_backend = _instantiate_restorer(chosen_backend, args, bg)
     # Presets (small, testable defaults)
     preset = args.preset
     preset_weight = {"natural": 0.5, "detail": 0.7, "document": 0.3}.get(preset, 0.5)
 
-    cfg: Dict[str, Any] = {
-        "version": args.version,
-        "upscale": 2,
-        "use_parse": True,
-        "detector": "retinaface_resnet50",
-        "weight": preset_weight,
-        "no_download": args.no_download,
-    }
-    if chosen_backend == "gfpgan-ort" and args.model_path_onnx:
-        cfg["model_path_onnx"] = args.model_path_onnx
-    if chosen_backend == "codeformer" and args.codeformer_fidelity is not None:
-        try:
-            cfg["weight"] = float(args.codeformer_fidelity)
-        except Exception:
-            pass
-    if chosen_backend == "gfpgan-ort" and args.model_path_onnx:
-        cfg["model_path_onnx"] = args.model_path_onnx
+    cfg: Dict[str, Any] = _base_cfg(args, preset_weight)
+    _apply_backend_cfg(chosen_backend, args, cfg)
 
     inputs = list_inputs(args.input)
     # Optional orchestrator (new path). If import fails, we silently fall back.
@@ -244,12 +375,18 @@ def cmd_run(argv: list[str]) -> int:
                         "backend": chosen_backend,
                         "background": args.background,
                         "weight": cfg.get("weight", 0.5),
+                        "experimental": bool(args.experimental),
+                        "prompt": args.prompt,
                     },
                 )
+                prev_backend = chosen_backend
                 chosen_backend = pl.backend
                 # merge params with precedence to plan
                 for k, v in pl.params.items():
                     cfg[k] = v
+                # If backend changed, re-instantiate rest accordingly (auto mode is opt-in)
+                if chosen_backend != prev_backend:
+                    rest, chosen_backend = _instantiate_restorer(chosen_backend, args, bg)
                 plan_info = {
                     "backend": pl.backend,
                     "params": pl.params,
@@ -292,64 +429,7 @@ def cmd_run(argv: list[str]) -> int:
                     rest = RestoreFormerPP(device=args.device, bg_upsampler=bg)
 
         # Optional multi-try optimizer
-        chosen_weight = cfg.get("weight")
-        res = None
-        if args.optimize:
-            # Parse candidate weights, keep within [0,1]
-            try:
-                cand = [min(max(float(x.strip()), 0.0), 1.0) for x in args.weights_cand.split(",") if x.strip()]
-            except Exception:
-                cand = [0.3, 0.5, 0.7]
-            best_score = None
-            best_res = None
-            best_w = None
-            for w in cand:
-                cfg["weight"] = w
-                r_try = rest.restore(img, cfg)
-                # Score: prefer ArcFace (higher better), else use -LPIPS (lower better)
-                score = None
-                if args.metrics in {"fast", "full"} and arc and arc.available():
-                    # identity vs input; use restored image path later but we operate in-memory for now
-                    # Save temp files if needed for metric calculation via file paths
-                    import tempfile
-                    import cv2
-
-                    td = tempfile.mkdtemp()
-                    a = os.path.join(td, _TEMP_INPUT_FILENAME)
-                    b = os.path.join(td, _TEMP_OUTPUT_FILENAME)
-                    cv2.imwrite(a, img)
-                    if r_try and r_try.restored_image is not None:
-                        cv2.imwrite(b, r_try.restored_image)
-                    else:
-                        b = a
-                    s = arc.cosine_from_paths(a, b)
-                    score = s if s is not None else None
-                if score is None and args.metrics == "full" and lpips and lpips.available():
-                    import tempfile
-                    import cv2
-
-                    td = tempfile.mkdtemp()
-                    a = os.path.join(td, _TEMP_INPUT_FILENAME)
-                    b = os.path.join(td, _TEMP_OUTPUT_FILENAME)
-                    cv2.imwrite(a, img)
-                    if r_try and r_try.restored_image is not None:
-                        cv2.imwrite(b, r_try.restored_image)
-                    else:
-                        b = a
-                    d = lpips.distance_from_paths(a, b)
-                    score = -d if isinstance(d, float) else None
-                # If no metrics, fallback to w proximity to preset
-                if score is None:
-                    score = -abs(w - preset_weight)
-                if best_score is None or score > best_score:
-                    best_score = score
-                    best_res = r_try
-                    best_w = w
-            res = best_res
-            chosen_weight = best_w
-            cfg["weight"] = chosen_weight
-        else:
-            res = rest.restore(img, cfg)
+        res, chosen_weight = _optimize_weight_if_requested(rest, img, cfg, preset_weight, args, arc, lpips)
         dur = time.time() - t0
         try:
             import torch  # type: ignore
@@ -382,28 +462,13 @@ def cmd_run(argv: list[str]) -> int:
             rec["metrics"]["weight"] = chosen_weight
         # Identity lock: if identity below threshold and ArcFace available, retry with stricter preset
         if args.identity_lock and (args.metrics in {"fast", "full"}) and arc and arc.available():
-            import tempfile
-            import cv2
-
-            td = tempfile.mkdtemp()
-            a = os.path.join(td, _TEMP_INPUT_FILENAME)
-            b = os.path.join(td, _TEMP_OUTPUT_FILENAME)
-            cv2.imwrite(a, img)
-            cv2.imwrite(b, res.restored_image if (res and res.restored_image is not None) else img)
-            s0 = arc.cosine_from_paths(a, b)
-            if s0 is not None and s0 < args.identity_threshold:
-                # Try stricter: lower weight
-                stricter = max(0.2, float(cfg.get("weight", preset_weight)) - 0.2)
-                cfg_strict = dict(cfg)
-                cfg_strict["weight"] = stricter
-                r2 = rest.restore(img, cfg_strict)
-                cv2.imwrite(b, r2.restored_image if (r2 and r2.restored_image is not None) else img)
-                s1 = arc.cosine_from_paths(a, b)
-                if s1 is not None and s1 > s0:
-                    res = r2
-                    save_image(out_img, res.restored_image if res.restored_image is not None else img)
-                    rec["metrics"]["identity_retry"] = True
-                    rec["metrics"]["weight"] = stricter
+            # keep temp restored to measure s0 inside helper
+            rec["_tmp_restored"] = res.restored_image if (res and res.restored_image is not None) else img
+            r2 = _maybe_identity_retry(chosen_backend, rest, img, cfg, preset_weight, arc, args, rec)
+            if r2 is not None:
+                res = r2
+                save_image(out_img, res.restored_image if res.restored_image is not None else img)
+            rec.pop("_tmp_restored", None)
         # Compute metrics vs input/restored when possible
         if args.metrics != "off":
             if arc and arc.available():

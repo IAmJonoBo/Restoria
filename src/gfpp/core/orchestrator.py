@@ -93,6 +93,38 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
 
     # Background upsampling suggestion
     post["background"] = opts.get("background", "realesrgan")
+    # Optional experimental HYPIR routing rule (opt-in only)
+    try:
+        experimental = bool(opts.get("experimental", False))
+    except Exception:
+        experimental = False
+    if experimental:
+        try:
+            from gfpp.core.registry import list_backends  # type: ignore
+
+            avail = list_backends(include_experimental=True)
+            hypir_ok = bool(avail.get("hypir"))
+        except Exception:
+            hypir_ok = False
+        prompt = opts.get("prompt")
+        # Rule A: prompt provided → prefer HYPIR
+        if hypir_ok and isinstance(prompt, str) and len(prompt.strip()) > 0:
+            backend = "hypir"
+            reason = "experimental_hypir_prompt"
+            params["prompt"] = prompt
+            # Standardize texture richness when unspecified to keep determinism
+            params.setdefault("texture_richness", 0.6)
+            params.setdefault("identity_lock", False)
+            # small confidence boost for explicit prompt intent (applied later)
+            params.setdefault("_conf_boost", 0.05)
+        # Rule B: moderate degradation, few faces → try HYPIR
+        elif hypir_ok and reason == "moderate_degradation":
+            fc = face_count if isinstance(face_count, int) else None
+            if fc is None or fc <= 2:
+                backend = "hypir"
+                reason = "experimental_hypir_moderate"
+                params.setdefault("texture_richness", 0.6)
+                params.setdefault("identity_lock", False)
     # Confidence estimation (0..1), based on margin from thresholds and face info
     conf = 0.5
     if reason in {"few_artifacts", "moderate_degradation", "heavy_degradation", "heavy_degradation_many_faces"}:
@@ -125,9 +157,19 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
             "heavy_degradation": "niqe >= 12 or brisque >= 55",
             "heavy_degradation_many_faces": "heavy_degradation and face_count >= 3",
             "moderate_degradation": "otherwise",
+            # experimental rules (active only with --experimental)
+            "experimental_hypir_prompt": "experimental and prompt provided",
+            "experimental_hypir_moderate": "experimental and moderate_degradation and face_count <= 2",
         },
         "decision_inputs": {"niqe": niqe, "brisque": bris, "face_count": faces.get("face_count")},
     }
+    # Apply any requested confidence boost
+    conf_boost = 0.0
+    try:
+        conf_boost = float(params.pop("_conf_boost", 0.0))
+    except Exception:
+        conf_boost = 0.0
+    conf = min(0.99, float(conf) + max(0.0, conf_boost))
     return Plan(
         backend=backend,
         params=params,

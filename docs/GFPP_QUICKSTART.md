@@ -17,6 +17,8 @@ gfpup run --input inputs/whole_imgs --backend gfpgan --metrics fast --output out
 #   --identity-lock --identity-threshold 0.25
 #   --optimize --weights-cand "0.3,0.5,0.7"
 #   --compile {none,default,max} (optional torch.compile path)
+  #   --experimental (enable experimental backends/routing)
+  #   --prompt "text" --texture-richness 0.6 (HYPIR-only; experimental)
 
 Plan & Metrics:
 
@@ -43,6 +45,28 @@ Plan & Metrics:
 
 - Dry-run still writes a manifest and now computes no‑reference quality metrics (NIQE / BRISQUE) when `--metrics` is not `off`.
 - If a probe or metric dependency is missing the corresponding values are omitted or set to `null` without failing the run.
+
+Experimental (opt-in):
+
+- HYPIR backend is experimental and not installed by default. Enable via `--experimental` and install extras when available:
+
+```bash
+pip install -e ".[hypir]"
+```
+
+- You can bias routing with a prompt:
+
+```bash
+gfpup run --input inputs/whole_imgs --output out/ --dry-run \
+  --auto-backend --experimental --prompt "clean skin texture"
+```
+
+- Or request HYPIR directly (still gated and safe):
+
+```bash
+gfpup run --input inputs/whole_imgs --output out/ --dry-run \
+  --backend hypir --experimental --prompt "portrait" --texture-richness 0.7
+```
 ```
 
 API dev server:

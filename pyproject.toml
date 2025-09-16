@@ -88,6 +88,7 @@ diffbir = [
 ]
 hypir = [
   # EXPERIMENTAL heavy deps
+  # Intentionally empty to avoid heavy installs by default.
 ]
 ort = [
   "onnxruntime>=1.18",
