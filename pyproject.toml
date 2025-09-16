@@ -154,6 +154,8 @@ exclude = [
 [tool.ruff.lint.per-file-ignores]
 # Tests often perform environment setup before imports; keep code intent and avoid risky refactors
 "tests/**" = ["E402"]
+"src/gfpp/cli.py" = ["C901"]
+"gfpgan/utils.py" = ["C901"]
 
 [tool.pytest.ini_options]
 markers = [

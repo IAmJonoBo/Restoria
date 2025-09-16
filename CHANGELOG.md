@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - CLI: new `gfpup list-backends` subcommand (flags: `--all`, `--verbose`); lightweight and non-breaking.
-- CLI: `gfpup list-backends --json` now emits a stable payload with `schema_version: "1"`.
+- CLI: `gfpup list-backends --json` now emits a stable payload with
+  `schema_version: "1"`.
+- CLI: `gfpup doctor --json` outputs a stable payload with
+  `schema_version: "1"` and environment info.
 - Comprehensive documentation restructure with task-first information architecture
 - Model card and data card for responsible AI disclosures
 - Governance documentation (contributing, security, maintainers, versioning)
@@ -21,9 +24,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Colab: pin torch/vision/audio versions and improve NB_CI_SMOKE parsing for reliability.
 - Removed all fork/upstream references from documentation (except acknowledgements)
-- Restructured docs with getting-started/, guides/, api/, governance/, product/, about/ directories
+- Restructured docs with getting-started/, guides/, api/, governance/, product/,
+  about/ directories
 - Updated mkdocs.yml with improved navigation and Material theme features
 - Enhanced API documentation with FastAPI auto-docs integration
+
+### Security
+
+- Prefer `torch.load(weights_only=True)` when available; emit a `[WARN]` and
+  fall back to full deserialization on older Torch versions.
 
 ### Fixed
 
