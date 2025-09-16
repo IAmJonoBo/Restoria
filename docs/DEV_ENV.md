@@ -42,3 +42,6 @@ Metrics extras (BRISQUE availability)
   - Linux: `imquality[brisque]` is enabled.
   - Windows: `pybrisque` is enabled.
   - macOS: BRISQUE is not installed by default to avoid resolver/build issues on newer Python tracks. The code gracefully skips BRISQUE if unavailable.
+
+Headless environments (servers/CI)
+- For containerized or server environments where GUI libs are unnecessary, consider installing `opencv-python-headless` instead of `opencv-python`. This reduces GUI-related dependencies while keeping functionality required by the CLI and metrics.

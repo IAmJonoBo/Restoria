@@ -41,3 +41,16 @@ For machine-readable output:
 ```bash
 gfpup doctor --json
 ```
+
+## Optional perceptual metrics
+
+You can install optional metrics for identity/perceptual scoring:
+
+```bash
+pip install -e .[metrics]
+```
+
+Notes:
+- Linux: BRISQUE via `imquality[brisque]` is enabled.
+- Windows: BRISQUE via `pybrisque` is enabled.
+- macOS: BRISQUE is not installed by default to avoid resolver/build issues on newer Python versions; metrics gracefully degrade if BRISQUE is unavailable.
