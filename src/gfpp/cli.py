@@ -546,7 +546,7 @@ def cmd_run(argv: list[str]) -> int:
     return 0
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI dispatcher kept monolithic for startup cost
     import sys
 
     argv = list(sys.argv[1:] if argv is None else argv)
@@ -554,6 +554,25 @@ def main(argv: list[str] | None = None) -> int:
         print("Usage: gfpup run --input <path> --output out/ [options]")
         return 2
     cmd = argv[0]
+    if cmd == "list-backends":
+        # Lightweight listing of registered backends (no heavy imports)
+        import argparse
+        from gfpp.core.registry import list_backends  # type: ignore
+
+        p = argparse.ArgumentParser(prog="gfpup list-backends")
+        p.add_argument("--all", action="store_true", help="Include experimental backends")
+        p.add_argument("--verbose", action="store_true", help="Show availability status")
+        args = p.parse_args(argv[1:])
+
+        avail = list_backends(include_experimental=bool(args.all))
+        header = f"Backends (experimental={'on' if args.all else 'off'}):"
+        print(header)
+        for name, ok in avail.items():
+            if args.verbose:
+                print(f"  - {name}: {'available' if ok else 'missing'}")
+            else:
+                print(f"  - {name}")
+        return 0
     if cmd == "run":
         return cmd_run(argv[1:])
     if cmd == "doctor":
