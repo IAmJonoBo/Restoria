@@ -1,14 +1,12 @@
 from typing import Any
 
-import torch
-
 from gfpgan.utils import GFPGANer
 
 
 class RestoreFormerEngine:
     """Engine wrapper for RestoreFormer via GFPGANer arch."""
 
-    def __init__(self, model_path: str, device: torch.device, **kwargs: Any) -> None:
+    def __init__(self, model_path: str, device: Any, **kwargs: Any) -> None:
         # Force arch to RestoreFormer while allowing other GFPGANer kwargs
         kwargs = dict(kwargs)
         kwargs.update({"arch": "RestoreFormer"})

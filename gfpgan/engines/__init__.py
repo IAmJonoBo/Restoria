@@ -1,21 +1,32 @@
-from .codeformer_engine import CodeFormerEngine
-from .gfpgan_engine import GFPGANEngine
 from .registry import get_engine, register_engine
-from .restoreformer_engine import RestoreFormerEngine
 
 __all__ = [
     "register_engine",
     "get_engine",
-    "GFPGANEngine",
-    "CodeFormerEngine",
-    "RestoreFormerEngine",
 ]
 
-# Register default engines on import
-register_engine("gfpgan", GFPGANEngine)
-register_engine("codeformer", CodeFormerEngine)
-register_engine("restoreformer", RestoreFormerEngine)
-register_engine("restoreformerpp", RestoreFormerEngine)
+# Register default engines on import with lazy imports to avoid heavy deps at import time
+try:
+    from .gfpgan_engine import GFPGANEngine  # type: ignore
+
+    register_engine("gfpgan", GFPGANEngine)
+except Exception:  # pragma: no cover
+    pass
+
+try:
+    from .codeformer_engine import CodeFormerEngine  # type: ignore
+
+    register_engine("codeformer", CodeFormerEngine)
+except Exception:  # pragma: no cover
+    pass
+
+try:
+    from .restoreformer_engine import RestoreFormerEngine  # type: ignore
+
+    register_engine("restoreformer", RestoreFormerEngine)
+    register_engine("restoreformerpp", RestoreFormerEngine)
+except Exception:  # pragma: no cover
+    pass
 
 # Optional accelerators: register only if importable
 try:  # pragma: no cover

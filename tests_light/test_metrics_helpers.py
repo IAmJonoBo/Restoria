@@ -2,11 +2,15 @@ import os
 import tempfile
 
 import numpy as np
+import importlib
+import pytest
 
 
 def _write_png(path: str, seed: int = 0) -> None:
-    import cv2
-
+    try:
+        cv2 = importlib.import_module("cv2")
+    except Exception:  # pragma: no cover - optional dep in light suite
+        pytest.skip("OpenCV not installed for light tests")
     rng = np.random.default_rng(seed)
     img = (rng.random((16, 16, 3)) * 255).astype("uint8")
     cv2.imwrite(path, img)

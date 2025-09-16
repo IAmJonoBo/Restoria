@@ -1,16 +1,13 @@
 # Experimental constraints for Python 3.11+
-# Note: This set moves to torch/torchvision 2.x and BasicSR from GitHub master
-# to avoid torchvision internal API issues seen with Basicsr 1.4.2.
-# Expect changes as upstream projects evolve.
+# Align with Basicsr <= 1.4.2 compatibility. Avoid torchvision >=0.17.
 
 --constraint constraints-3.10-compat.txt  # inherit common pins where reasonable
 
 # Core deep learning stack
-torch>=2.2,<3
-torchvision>=0.17,<0.20
+torch>=2.0,<3
+torchvision>=0.13,<0.17
 
-# Basicsr from master for torchvision compatibility
-git+https://github.com/xinntao/BasicSR@master
+# Basicsr pinned via inherited constraint (1.4.2)
 
 # Scientific stack compatible with torch 2.x
 numpy>=2,<3

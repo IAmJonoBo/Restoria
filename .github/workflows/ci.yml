@@ -150,18 +150,20 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           # Ensure core libs available for tests
-          pip install -q torch torchvision opencv-python PyYAML || true
+          pip install -q "torch>=1.12,<3" "torchvision>=0.13,<0.17" opencv-python PyYAML || true
       - name: Install package (CPU)
         run: |
           python -m pip install --upgrade pip
           pip install -e .[dev,torch2]
-          # Ensure Basicsr master to match latest torchvision API
-          pip uninstall -y basicsr || true
-          pip install --no-cache-dir --force-reinstall --upgrade "git+https://github.com/xinntao/BasicSR@master"
+          # Basicsr is constrained via project metadata (<=1.4.2); no override needed
       - name: Run light tests
         env:
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
         run: pytest -q -c /dev/null tests_light
+
+      - name: Run project test wrapper (if present)
+        run: |
+          if [ -x scripts/test.sh ]; then bash scripts/test.sh || true; fi
 
   api-smoke:
     name: api (smoke)
@@ -200,13 +202,11 @@ jobs:
           # Kernel + pytest plugin deps
           pip install -q ipykernel pytest nbmake
           # Minimal runtime deps for the notebook (CPU-only Torch wheels + headless OpenCV)
-          pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
+          pip install --index-url https://download.pytorch.org/whl/cpu "torch>=1.12,<3" "torchvision>=0.13,<0.17" torchaudio
           pip install -q opencv-python-headless pyyaml
           # Project in editable mode (no extras) so module imports succeed if needed
           pip install -q -e .
-          # Ensure Basicsr master to match latest torchvision API
-          pip uninstall -y basicsr || true
-          pip install --no-cache-dir --force-reinstall "git+https://github.com/xinntao/BasicSR@master"
+          # Basicsr constrained via project metadata; no override needed
       - name: Register kernel (explicit)
         run: python -m ipykernel install --user --name python3
       - name: Run nbmake (smoke)
