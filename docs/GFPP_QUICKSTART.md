@@ -67,7 +67,6 @@ gfpup run --input inputs/whole_imgs --output out/ --dry-run \
 gfpup run --input inputs/whole_imgs --output out/ --dry-run \
   --backend hypir --experimental --prompt "portrait" --texture-richness 0.7
 ```
-```
 
 API dev server:
 
@@ -86,4 +85,16 @@ Web (dev):
 cd apps/web
 pnpm i
 pnpm dev
+```
+
+## List available backends (lightweight)
+
+You can quickly see which restoration backends are registered and whether they appear available in your current environment. This does not load heavy models.
+
+```bash
+# Stable backends only
+gfpup list-backends
+
+# Include experimental and show availability state
+gfpup list-backends --all --verbose
 ```

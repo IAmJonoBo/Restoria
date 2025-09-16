@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- CLI: new `gfpup list-backends` subcommand (flags: `--all`, `--verbose`); lightweight and non-breaking.
 - Comprehensive documentation restructure with task-first information architecture
 - Model card and data card for responsible AI disclosures
 - Governance documentation (contributing, security, maintainers, versioning)
@@ -15,12 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub issue and PR templates with detailed fields
 
 ### Changed
+
+- Colab: pin torch/vision/audio versions and improve NB_CI_SMOKE parsing for reliability.
 - Removed all fork/upstream references from documentation (except acknowledgements)
 - Restructured docs with getting-started/, guides/, api/, governance/, product/, about/ directories
 - Updated mkdocs.yml with improved navigation and Material theme features
 - Enhanced API documentation with FastAPI auto-docs integration
 
 ### Fixed
+
 - Documentation organization and navigation flow
 - Consistent branding and messaging throughout project
 

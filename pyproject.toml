@@ -149,6 +149,10 @@ exclude = [
   "notebooks/**"
 ]
 
+[tool.ruff.lint.per-file-ignores]
+# Tests often perform environment setup before imports; keep code intent and avoid risky refactors
+"tests/**" = ["E402"]
+
 [tool.pytest.ini_options]
 markers = [
   "heavy: tests that require heavy optional dependencies or model files",

@@ -1,0 +1,15 @@
+{
+  "include": [
+    "gfpgan",
+    "src/gfpp",
+    "tests_light"
+  ],
+  "exclude": [
+    "notebooks",
+    "bench",
+    "tests"
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none"
+}

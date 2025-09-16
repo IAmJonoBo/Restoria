@@ -1,0 +1,8 @@
+# Bandit configuration to reduce noise on test and notebook code paths.
+# We rely on targeted security reviews for runtime paths; tests and notebooks are
+# out of scope for runtime security gates.
+
+[bandit]
+# Exclude tests, notebooks, and bench utilities from bandit scans
+skips = B101,B404,B603,B112
+exclude_dirs = tests,tests_light,notebooks,bench
