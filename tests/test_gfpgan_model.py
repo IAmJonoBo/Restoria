@@ -1,4 +1,4 @@
-# ruff: noqa: E402
+# ruff: noqa: E402,C408
 import tempfile
 
 import pytest
@@ -131,7 +131,7 @@ def test_gfpgan_model():
         name="Demo",
         dataroot_gt="tests/data/gt",
         dataroot_lq="tests/data/gt",
-    io_backend=dict(type="disk"),  # noqa: C408
+        io_backend=dict(type="disk"),  # noqa: C408
         scale=4,
         phase="val",
     )
