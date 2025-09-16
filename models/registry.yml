@@ -17,6 +17,12 @@ GFPGANv1.3:
   aliases: [1.3, v1.3]
   description: "Latest stable GFPGAN - more natural restoration, better on low/high quality inputs"
 
+# Common alias used in some scripts/tests
+GFPGANv1.4:
+  url: https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth
+  aliases: [1.4, v1.4]
+  description: "Alias mapping to GFPGANv1.3 weight for compatibility"
+
 # RestoreFormer Models - Latest RestoreFormer++ versions
 RestoreFormer:
   url: https://github.com/wzhouxiff/RestoreFormerPlusPlus/releases/download/v1.0.0/RestoreFormer.ckpt

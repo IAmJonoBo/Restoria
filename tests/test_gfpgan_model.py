@@ -1,9 +1,11 @@
+# ruff: noqa: E402,C408
 import tempfile
 
 import pytest
-pytestmark = pytest.mark.heavy
 import torch
 import yaml
+
+pytestmark = pytest.mark.heavy
 
 pytest.importorskip("basicsr", reason="basicsr not available in minimal test env")
 pytest.importorskip("gfpgan", reason="gfpgan package not available in minimal test env")
@@ -18,7 +20,7 @@ from gfpgan.models.gfpgan_model import GFPGANModel
 
 def test_gfpgan_model():
     with open("tests/data/test_gfpgan_model.yml", mode="r") as f:
-        opt = yaml.load(f, Loader=yaml.FullLoader)
+        opt = yaml.safe_load(f)
 
     # build model
     model = GFPGANModel(opt)
@@ -47,7 +49,7 @@ def test_gfpgan_model():
     loc_left_eye = torch.rand((1, 4), dtype=torch.float32)
     loc_right_eye = torch.rand((1, 4), dtype=torch.float32)
     loc_mouth = torch.rand((1, 4), dtype=torch.float32)
-    data = dict(gt=gt, lq=lq, loc_left_eye=loc_left_eye, loc_right_eye=loc_right_eye, loc_mouth=loc_mouth)
+    data = dict(gt=gt, lq=lq, loc_left_eye=loc_left_eye, loc_right_eye=loc_right_eye, loc_mouth=loc_mouth)  # noqa: C408
     model.feed_data(data)
     # check data shape
     assert model.lq.shape == (1, 3, 512, 512)
@@ -125,11 +127,11 @@ def test_gfpgan_model():
 
     # ----------------- test nondist_validation -------------------- #
     # construct dataloader
-    dataset_opt = dict(
+    dataset_opt = dict(  # noqa: C408
         name="Demo",
         dataroot_gt="tests/data/gt",
         dataroot_lq="tests/data/gt",
-        io_backend=dict(type="disk"),
+        io_backend=dict(type="disk"),  # noqa: C408
         scale=4,
         phase="val",
     )

@@ -2,5 +2,22 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "config:recommended"
+    ],
+    "packageRules": [
+        {
+            "matchPackageNames": ["basicsr"],
+            "allowedVersions": "<=1.4.2",
+            "rangeStrategy": "widen"
+        },
+        {
+            "matchPackageNames": ["torchvision"],
+            "allowedVersions": "<0.17.0",
+            "rangeStrategy": "widen"
+        },
+        {
+            "matchPackageNames": ["torch"],
+            "allowedVersions": "<3.0.0",
+            "rangeStrategy": "widen"
+        }
     ]
 }

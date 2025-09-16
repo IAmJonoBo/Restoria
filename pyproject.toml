@@ -32,7 +32,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "basicsr>=1.4.2",
+  "basicsr<=1.4.2",
   "facexlib>=0.2.5",
   "lmdb",
   "huggingface_hub>=0.23",
@@ -45,11 +45,9 @@ dependencies = [
   "scipy>=1.12; python_version >= '3.11'",
   "opencv-python<4.13; python_version < '3.11'",
   "opencv-python>=4.8; python_version >= '3.11'",
-  # Torch/torchvision compatibility with basicsr (functional_tensor module removed in 0.17+)
-  "torch>=2.0,<3.0; python_version >= '3.11'",
-  "torchvision>=0.15,<0.20; python_version >= '3.11'",
-  "torch>=2.0,<3.0; python_version < '3.11'",
-  "torchvision>=0.15,<0.20; python_version < '3.11'",
+  # Torch/torchvision compatibility with basicsr<=1.4.2 (functional_tensor API used; <0.17 recommended)
+  "torch>=1.12,<3.0",
+  "torchvision>=0.13,<0.17",
   "PyYAML",
   "tensorboard",
   "tqdm",
@@ -100,12 +98,12 @@ web = [
   # Placeholder for web UI tooling deps
 ]
 torch1 = [
-  "torch>=2.0,<3.0; python_version < '3.11'",
-  "torchvision>=0.15,<0.20; python_version < '3.11'",
+  "torch>=1.12,<3.0; python_version < '3.11'",
+  "torchvision>=0.13,<0.17; python_version < '3.11'",
 ]
 torch2 = [
-  "torch>=2.0,<3.0; python_version >= '3.11'",
-  "torchvision>=0.15,<0.20; python_version >= '3.11'",
+  "torch>=1.12,<3.0; python_version >= '3.11'",
+  "torchvision>=0.13,<0.17; python_version >= '3.11'",
 ]
 
 [project.scripts]

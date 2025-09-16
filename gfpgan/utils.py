@@ -1,15 +1,5 @@
 import os
-
-import cv2
-import torch
-from basicsr.utils import img2tensor, tensor2img
-from basicsr.utils.download_util import load_file_from_url
-from facexlib.utils.face_restoration_helper import FaceRestoreHelper
-from torchvision.transforms.functional import normalize
-
-from gfpgan.archs.gfpgan_bilinear_arch import GFPGANBilinear
-from gfpgan.archs.gfpganv1_arch import GFPGANv1
-from gfpgan.archs.gfpganv1_clean_arch import GFPGANv1Clean
+import importlib
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -41,13 +31,18 @@ class GFPGANer:
         det_model: str = "retinaface_resnet50",
         use_parse: bool = True,
     ):
+        # Defer heavy imports here to keep module import light
+        import torch  # local import
+
         self.upscale = upscale
         self.bg_upsampler = bg_upsampler
 
         # initialize model
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else device
-        # initialize the GFP-GAN
+
+        # Lazy-load architecture based on selection
         if arch == "clean":
+            GFPGANv1Clean = getattr(importlib.import_module("gfpgan.archs.gfpganv1_clean_arch"), "GFPGANv1Clean")
             self.gfpgan = GFPGANv1Clean(
                 out_size=512,
                 num_style_feat=512,
@@ -61,6 +56,7 @@ class GFPGANer:
                 sft_half=True,
             )
         elif arch == "bilinear":
+            GFPGANBilinear = getattr(importlib.import_module("gfpgan.archs.gfpgan_bilinear_arch"), "GFPGANBilinear")
             self.gfpgan = GFPGANBilinear(
                 out_size=512,
                 num_style_feat=512,
@@ -74,6 +70,7 @@ class GFPGANer:
                 sft_half=True,
             )
         elif arch == "original":
+            GFPGANv1 = getattr(importlib.import_module("gfpgan.archs.gfpganv1_arch"), "GFPGANv1")
             self.gfpgan = GFPGANv1(
                 out_size=512,
                 num_style_feat=512,
@@ -87,10 +84,13 @@ class GFPGANer:
                 sft_half=True,
             )
         elif arch == "RestoreFormer":
-            from gfpgan.archs.restoreformer_arch import RestoreFormer
-
+            RestoreFormer = getattr(importlib.import_module("gfpgan.archs.restoreformer_arch"), "RestoreFormer")
             self.gfpgan = RestoreFormer()
+
         # initialize face helper
+        FaceRestoreHelper = getattr(
+            importlib.import_module("facexlib.utils.face_restoration_helper"), "FaceRestoreHelper"
+        )
         self.face_helper = FaceRestoreHelper(
             upscale,
             face_size=512,
@@ -102,21 +102,22 @@ class GFPGANer:
             model_rootpath="gfpgan/weights",
         )
 
+        # Resolve URL weights if needed
         if model_path.startswith("https://"):
+            load_file_from_url = getattr(
+                importlib.import_module("basicsr.utils.download_util"), "load_file_from_url"
+            )
             model_path = load_file_from_url(
                 url=model_path, model_dir=os.path.join(ROOT_DIR, "gfpgan/weights"), progress=True, file_name=None
             )
+
         # Map weights to the selected device to avoid CUDA-only loads on CPU
         loadnet = torch.load(model_path, map_location=self.device)
-        if "params_ema" in loadnet:
-            keyname = "params_ema"
-        else:
-            keyname = "params"
+        keyname = "params_ema" if "params_ema" in loadnet else "params"
         self.gfpgan.load_state_dict(loadnet[keyname], strict=True)
         self.gfpgan.eval()
         self.gfpgan = self.gfpgan.to(self.device)
 
-    @torch.no_grad()
     def enhance(
         self,
         img,
@@ -126,6 +127,12 @@ class GFPGANer:
         weight=0.5,
         eye_dist_threshold=5,
     ):
+        # Localize heavy imports
+        import torch  # local import
+        import cv2  # local import
+        from basicsr.utils import img2tensor, tensor2img
+        from torchvision.transforms.functional import normalize
+
         self.face_helper.clean_all()
 
         if has_aligned:  # the inputs are already aligned
@@ -160,22 +167,23 @@ class GFPGANer:
                         continue
 
         # face restoration
-        for cropped_face in self.face_helper.cropped_faces:
-            # prepare data
-            cropped_face_t = img2tensor(cropped_face / 255.0, bgr2rgb=True, float32=True)
-            normalize(cropped_face_t, (0.5, 0.5, 0.5), (0.5, 0.5, 0.5), inplace=True)
-            cropped_face_t = cropped_face_t.unsqueeze(0).to(self.device)
+        with torch.no_grad():
+            for cropped_face in self.face_helper.cropped_faces:
+                # prepare data
+                cropped_face_t = img2tensor(cropped_face / 255.0, bgr2rgb=True, float32=True)
+                normalize(cropped_face_t, (0.5, 0.5, 0.5), (0.5, 0.5, 0.5), inplace=True)
+                cropped_face_t = cropped_face_t.unsqueeze(0).to(self.device)
 
-            try:
-                output = self.gfpgan(cropped_face_t, return_rgb=False, weight=weight)[0]
-                # convert to image
-                restored_face = tensor2img(output.squeeze(0), rgb2bgr=True, min_max=(-1, 1))
-            except RuntimeError as error:
-                print(f"\tFailed inference for GFPGAN: {error}.")
-                restored_face = cropped_face
+                try:
+                    output = self.gfpgan(cropped_face_t, return_rgb=False, weight=weight)[0]
+                    # convert to image
+                    restored_face = tensor2img(output.squeeze(0), rgb2bgr=True, min_max=(-1, 1))
+                except RuntimeError as error:
+                    print(f"\tFailed inference for GFPGAN: {error}.")
+                    restored_face = cropped_face
 
-            restored_face = restored_face.astype("uint8")
-            self.face_helper.add_restored_face(restored_face)
+                restored_face = restored_face.astype("uint8")
+                self.face_helper.add_restored_face(restored_face)
 
         if not has_aligned and paste_back:
             # upsample the background

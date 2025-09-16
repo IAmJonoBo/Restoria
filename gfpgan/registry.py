@@ -6,8 +6,12 @@ across all GFPGAN components.
 """
 
 import os
-import yaml
 from typing import Dict, Any, Optional
+
+try:
+    import yaml  # type: ignore
+except Exception:  # pragma: no cover
+    yaml = None  # type: ignore
 
 
 def load_model_registry() -> Dict[str, Dict[str, Any]]:
@@ -24,7 +28,7 @@ def load_model_registry() -> Dict[str, Dict[str, Any]]:
         "registry.yml"
     )
 
-    if os.path.exists(registry_path):
+    if os.path.exists(registry_path) and yaml is not None:
         try:
             with open(registry_path, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f) or {}
@@ -109,7 +113,10 @@ def _get_fallback_registry() -> Dict[str, Dict[str, Any]]:
             "aliases": ["restoreformer", "rf"]
         },
         "RestoreFormerPlusPlus": {
-            "url": "https://github.com/wzhouxiff/RestoreFormerPlusPlus/releases/download/v1.0.0/RestoreFormer%2B%2B.ckpt",
+            "url": (
+                "https://github.com/wzhouxiff/RestoreFormerPlusPlus/releases/download/"
+                "v1.0.0/RestoreFormer%2B%2B.ckpt"
+            ),
             "filename": "RestoreFormer++.ckpt",
             "description": "Latest RestoreFormer++ model (TPAMI 2023) - improved version of RestoreFormer",
             "aliases": ["restoreformer++", "rfpp", "rf++"]

@@ -42,13 +42,19 @@ def resolve_model_weight(
       - GFPGAN_HF_REPO: Hugging Face repo to use (if set)
       - HF_HUB_OFFLINE: if '1', forces local cache-only
     """
-    spec = get_model_info(model_name)
-    if spec is None:
-        available_models = ", ".join(load_model_registry().keys())
-        raise ValueError(f"Unknown model '{model_name}'. Available models: {available_models}")
-
     weights_dir = root or DEFAULT_WEIGHTS_DIR
     _ensure_dir(weights_dir)
+    # Prefer a file named after the model_name if present (helps alias/offline compatibility)
+    alias_path = os.path.join(weights_dir, f"{model_name}.pth")
+    if os.path.isfile(alias_path):
+        return alias_path, _sha256(alias_path)
+
+    spec = get_model_info(model_name)
+    if spec is None:
+        # Ensure keys are converted to strings in case YAML produced non-string keys
+        available_models = ", ".join(str(k) for k in load_model_registry().keys())
+        raise ValueError(f"Unknown model '{model_name}'. Available models: {available_models}")
+
     local_path = os.path.join(weights_dir, spec["filename"])
     if os.path.isfile(local_path):
         return local_path, _sha256(local_path)

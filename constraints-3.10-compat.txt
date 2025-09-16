@@ -1,5 +1,6 @@
 # Pinned versions verified in a Python 3.10 virtualenv
 # These constrain GFPGAN runtime deps to a compatible set for local testing.
+# Basicsr pinned to 1.4.2 for compatibility with torchvision <0.17
 
 basicsr==1.4.2
 facexlib==0.3.0
