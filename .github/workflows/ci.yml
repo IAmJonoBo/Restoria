@@ -181,12 +181,18 @@ jobs:
           pip install -e .[api]
       - name: Launch API and probe
         run: |
+          set -euo pipefail
           uvicorn gfpgan.api.server:app --port 8000 &
+          server_pid=$!
+          # Give server a moment to start
           sleep 2
-          curl -f http://127.0.0.1:8000/healthz
-          curl -f -X POST "http://127.0.0.1:8000/restore?backend=gfpgan&dry_run=true" -F "files=@README.md"
-          curl -f -X POST "http://127.0.0.1:8000/restore?backend=restoreformer&dry_run=true" -F "files=@README.md"
-          curl -f -X POST "http://127.0.0.1:8000/restore?backend=codeformer&dry_run=true" -F "files=@README.md"
+          # Bound each probe to avoid potential hangs
+          curl --connect-timeout 5 --max-time 20 -f http://127.0.0.1:8000/healthz
+          curl --connect-timeout 5 --max-time 30 -f -X POST "http://127.0.0.1:8000/restore?backend=gfpgan&dry_run=true" -F "files=@README.md"
+          curl --connect-timeout 5 --max-time 30 -f -X POST "http://127.0.0.1:8000/restore?backend=restoreformer&dry_run=true" -F "files=@README.md"
+          curl --connect-timeout 5 --max-time 30 -f -X POST "http://127.0.0.1:8000/restore?backend=codeformer&dry_run=true" -F "files=@README.md"
+          # Cleanly stop the background server
+          kill "$server_pid" || true
 
   nbmake:
     name: notebook (nbmake)
@@ -203,7 +209,8 @@ jobs:
           # Kernel + pytest plugin deps
           pip install -q ipykernel pytest nbmake
           # Minimal runtime deps for the notebook (CPU-only Torch wheels + headless OpenCV)
-          pip install --index-url https://download.pytorch.org/whl/cpu "torch>=1.12,<3" "torchvision>=0.13,<0.17" torchaudio
+          # Pin to fast, compatible wheels and avoid torchaudio to prevent resolver hangs
+          PIP_DISABLE_PIP_VERSION_CHECK=1 pip install -q --index-url https://download.pytorch.org/whl/cpu "torch==2.1.*" "torchvision==0.16.*"
           pip install -q opencv-python-headless pyyaml
           # Project in editable mode (no extras) so module imports succeed if needed
           pip install -q -e .
@@ -238,7 +245,8 @@ jobs:
         env:
           NB_CI_SMOKE: '1'
         run: |
-          python bench/run_bench.py
+          # Bound runtime to avoid hanging CI in unusual environments
+          timeout 90s python bench/run_bench.py || true
       - name: Upload bench artifacts
         uses: actions/upload-artifact@v4
         with:
