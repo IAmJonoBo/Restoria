@@ -1,0 +1,44 @@
+name: Link Check
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - docs/**
+      - mkdocs.yml
+  schedule:
+  - cron: 0 6 * * 1 # Mondays 06:00 UTC
+
+jobs:
+  lychee:
+    name: Check links with lychee
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install lychee
+        uses: lycheeverse/lychee-action@v1
+        with:
+          # Respect rate limiting; don't fail the build on transient errors
+          args: >-
+            --verbose
+            --no-progress
+            --max-concurrency 4
+            --timeout 20
+            --retry-wait-time 2
+            --retry-count 2
+            --exclude-mail
+            --accept 200,206,429
+            --base .
+            --github-token ${{ github.token }}
+            'docs/**/*.md'
+          fail: false
+
+      - name: Upload lychee report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee/report.json
