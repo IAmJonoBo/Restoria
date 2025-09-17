@@ -2160,17 +2160,29 @@ practical limits when using CUDA.</p>
   and options.</li>
 </ul>
 <h2 id="restoria-cli">Restoria CLI<a class="headerlink" href="#restoria-cli" title="Permanent link">&para;</a></h2>
-<p>Restoria's <code>restoria run</code> currently focuses on consistent planning and
-best-effort reproducible outputs without exposing new seed flags. Planning is
-deterministic: given the same image and flags (backend, experimental, compile,
-ort providers), the same plan is produced.</p>
+<p>Restoria's <code>restoria run</code> provides explicit seeding and deterministic options:</p>
+<ul>
+<li><code>--seed &lt;int&gt;</code>: seeds Python <code>random</code>, NumPy, and Torch (if available).</li>
+<li><code>--deterministic</code>: enables CuDNN deterministic mode and disables benchmarking
+  when Torch is present and CUDA is used.</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>out/<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--device<span class="w"> </span>cuda<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--seed<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--deterministic
+</code></pre></div>
+<p>Planning is deterministic: given the same image and flags (backend,
+experimental, compile, and ORT providers), the same plan is produced. The seed
+and deterministic choices are recorded in the run manifest.</p>
 <p>Tips for reproducibility with Restoria:</p>
 <ul>
 <li>Prefer CPU for stricter determinism when comparing outputs across machines.</li>
 <li>Keep <code>--metrics</code> mode the same between runs; metrics affect what is computed
   but not the restoration itself.</li>
-<li>Use the legacy GFPP CLI (<code>gfpup run</code>) if you need explicit <code>--seed</code>/
-  <code>--deterministic</code> controls today.</li>
 </ul>
 <h2 id="gfpp-cli-gfpup">GFPP CLI (gfpup)<a class="headerlink" href="#gfpp-cli-gfpup" title="Permanent link">&para;</a></h2>
 <p>GFPP exposes seeding and deterministic controls directly.</p>
