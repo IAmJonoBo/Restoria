@@ -1,11 +1,13 @@
 # CLI Usage
 
-Two CLIs are available:
+Primary CLI: `restoria` (recommended)
 
-- `gfpup` — new, modular CLI powered by `gfpp` (recommended)
-- `gfpgan-infer` — legacy shim, kept for backward compatibility
+Compatibility shims:
 
-## gfpup run
+- `gfpup` — modular CLI powered by `gfpp`
+- `gfpgan-infer` — legacy GFPGAN CLI kept for backward compatibility
+
+## restoria run
 
 Key flags:
 
@@ -19,21 +21,21 @@ Key flags:
 - `--compile` try torch.compile (safe fallback)
 - `--ort-providers` providers for ORT when applicable
 
-Examples:
+Examples (Restoria):
 
 ```bash
-# Basic run with GFPGAN
-gfpup run --input inputs/whole_imgs --backend gfpgan --output out/
+# Basic run with GFPGAN backend
+restoria run --input inputs/whole_imgs --backend gfpgan --output out/
 
 # Let the planner pick a backend and parameters
-gfpup run --input samples/portrait.jpg --auto --metrics fast --output out/
+restoria run --input samples/portrait.jpg --auto --metrics fast --output out/
 
 # Plan-only / dry-run
-gfpup run --input samples/portrait.jpg --plan-only
-gfpup run --input samples/portrait.jpg --dry-run --output out/
+restoria run --input samples/portrait.jpg --plan-only
+restoria run --input samples/portrait.jpg --dry-run --output out/
 
 # Deterministic with seed
-gfpup run --input samples/portrait.jpg --seed 123 --deterministic
+restoria run --input samples/portrait.jpg --seed 123 --deterministic
 ```
 
 Outputs:
@@ -46,6 +48,22 @@ Notes:
 - Optional features degrade gracefully; missing metrics result in `null`
   values rather than errors.
 - Heavy libraries (torch, cv2) are imported lazily to keep startup fast.
+
+## gfpup run (compatibility shim)
+
+Examples:
+
+```bash
+gfpup run --input inputs/whole_imgs --backend gfpgan --output out/
+gfpup run --input samples/portrait.jpg --auto --metrics fast --output out/
+gfpup run --input samples/portrait.jpg --plan-only
+gfpup run --input samples/portrait.jpg --dry-run --output out/
+```
+
+Notes:
+
+- Mirrors Restoria behavior; heavy features degrade gracefully.
+- Keep flags stable; may be removed in a future major.
 
 ## Legacy shim: gfpgan-infer
 

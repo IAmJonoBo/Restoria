@@ -1,5 +1,7 @@
 # Installation
 
+<!-- markdownlint-disable MD034 MD046 -->
+
 ## Quick install
 
 The fastest way to get started:
@@ -8,7 +10,15 @@ The fastest way to get started:
 pip install gfpgan
 ```
 
-This installs the core GFPGAN package with basic dependencies.
+This installs the core GFPGAN package with basic dependencies. The Restoria
+CLI (`restoria`) is provided by this package as part of the toolkit shim.
+
+Optional (CLI-first): install with pipx to keep the CLI isolated from your
+system/site packages.
+
+```bash
+pipx install gfpgan
+```
 
 ## Platform-specific setup
 
@@ -17,7 +27,7 @@ This installs the core GFPGAN package with basic dependencies.
 === "NVIDIA GPU"
     ```bash
     # Install PyTorch with CUDA support first
-    pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+    pip install torch torchvision --index-url 'https://download.pytorch.org/whl/cu121'
 
     # Install GFPGAN
     pip install gfpgan
@@ -58,7 +68,7 @@ This installs the core GFPGAN package with basic dependencies.
 === "NVIDIA GPU"
     ```bash
     # Install PyTorch with CUDA support
-    pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+    pip install torch torchvision --index-url 'https://download.pytorch.org/whl/cu121'
 
     # Install GFPGAN
     pip install gfpgan
@@ -67,7 +77,7 @@ This installs the core GFPGAN package with basic dependencies.
 === "AMD GPU (ROCm)"
     ```bash
     # Install PyTorch with ROCm support
-    pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm5.6
+    pip install torch torchvision --index-url 'https://download.pytorch.org/whl/rocm5.6'
 
     # Install GFPGAN
     pip install gfpgan
@@ -112,11 +122,14 @@ pip install -e ".[dev,metrics,web]"
 Test your installation:
 
 ```bash
-# Check if GFPGAN is installed
-gfpgan-infer --help
+# Restoria CLI help
+restoria --help
 
-# Test with a simple command (dry run)
-gfpgan-infer --input test.jpg --dry-run
+# Test Restoria (dry run)
+restoria run --input test.jpg --dry-run --backend gfpgan --output out/
+
+# Legacy GFPGAN CLI (still available)
+gfpgan-infer --help
 ```
 
 ## Troubleshooting

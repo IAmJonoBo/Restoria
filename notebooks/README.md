@@ -1,12 +1,14 @@
 # Notebooks
 
-This directory contains Jupyter notebooks for interactive face restoration with GFPGAN.
+<!-- markdownlint-disable MD013 -->
+
+This directory contains Jupyter notebooks for interactive restoration with Restoria (GFPGAN-compatible).
 
 ## Available Notebooks
 
-### GFPGAN_Colab.ipynb
+### Restoria_Colab.ipynb
 
-Interactive Google Colab notebook for easy experimentation with GFPGAN:
+Interactive Google Colab notebook for easy experimentation with Restoria:
 
 - **Purpose**: Quick start guide and interactive demos
 - **Platform**: Google Colab (can also run locally)
@@ -16,7 +18,17 @@ Interactive Google Colab notebook for easy experimentation with GFPGAN:
   - Multiple model comparisons
   - Quality metrics evaluation
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/Restoria_Colab.ipynb)
+
+Additional Restoria notebooks:
+
+- Restoria_Document_Demo.ipynb – document restoration and enhancement
+- Restoria_Ensemble_Demo.ipynb – combine multiple backends for higher quality
+- Restoria_Benchmark.ipynb – quick benchmarks across backends/engines/metrics
+
+Legacy:
+
+- GFPGAN_Colab.ipynb – kept for backward compatibility; new work should use Restoria_Colab.ipynb
 
 ## Development Workflow
 
@@ -36,6 +48,7 @@ jupytext --sync notebook.ipynb
 ```
 
 Benefits:
+
 - **Version control**: Python scripts are git-friendly
 - **Code review**: Easier to review changes in .py format
 - **Reproducibility**: Scripts can run in CI/CD pipelines
@@ -145,10 +158,10 @@ else:
 
 ### Recommended Organization
 
-```
+```text
 notebooks/
 ├── README.md                 # This file
-├── GFPGAN_Colab.ipynb       # Main tutorial notebook
+├── Restoria_Colab.ipynb     # Main tutorial notebook
 ├── examples/                 # Example notebooks
 │   ├── batch_processing.ipynb
 │   ├── quality_metrics.ipynb

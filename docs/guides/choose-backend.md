@@ -18,10 +18,11 @@ Compare restoration backends and select the best one for your needs.
 
 === "GFPGAN v1.4 (Recommended)"
     ```bash
-    # New CLI
-    gfpup run --input photo.jpg --backend gfpgan --output out/
+    # Primary CLI
+    restoria run --input photo.jpg --backend gfpgan --output out/
 
-    # Legacy shim
+    # Compatibility shims
+    gfpup run --input photo.jpg --backend gfpgan --output out/
     gfpgan-infer --input photo.jpg --version 1.4
     ```
 
@@ -40,10 +41,10 @@ Compare restoration backends and select the best one for your needs.
 
 === "GFPGAN v1.3 (Natural)"
     ```bash
-    # New CLI (select model via param if supported)
-    gfpup run --input photo.jpg --backend gfpgan --output out/
+    # Primary CLI
+    restoria run --input photo.jpg --backend gfpgan --output out/
 
-    # Legacy shim
+    # Compatibility shim
     gfpgan-infer --input photo.jpg --version 1.3
     ```
 
@@ -66,7 +67,7 @@ Compare restoration backends and select the best one for your needs.
 
 === "GFPGAN v1.2 (Sharp)"
     ```bash
-    # Legacy shim example only
+    # Compatibility-only example
     gfpgan-infer --input photo.jpg --version 1.2
     ```
 
@@ -88,10 +89,11 @@ Compare restoration backends and select the best one for your needs.
 
 === "CodeFormer (Fast)"
     ```bash
-    # New CLI
-    gfpup run --input photo.jpg --backend codeformer --output out/
+    # Primary CLI
+    restoria run --input photo.jpg --backend codeformer --output out/
 
-    # Legacy shim
+    # Compatibility shims
+    gfpup run --input photo.jpg --backend codeformer --output out/
     gfpgan-infer --input photo.jpg --backend codeformer
     ```
 
@@ -114,10 +116,11 @@ Compare restoration backends and select the best one for your needs.
 
 === "RestoreFormer++ (Premium)"
     ```bash
-    # New CLI uses canonical name restoreformerpp
-    gfpup run --input photo.jpg --backend restoreformerpp --output out/
+    # Primary CLI uses canonical name restoreformerpp
+    restoria run --input photo.jpg --backend restoreformerpp --output out/
 
-    # Legacy shim alias
+    # Compatibility shims
+    gfpup run --input photo.jpg --backend restoreformerpp --output out/
     gfpgan-infer --input photo.jpg --backend restoreformer
     ```
 
@@ -155,7 +158,7 @@ Compare restoration backends and select the best one for your needs.
 === "Professional work"
     **Recommended:** RestoreFormer++
     ```bash
-        gfpup run \
+        restoria run \
             --input portrait.jpg \
             --backend restoreformerpp \
             --metrics full \
@@ -168,7 +171,7 @@ Compare restoration backends and select the best one for your needs.
 === "Batch processing"
     **Recommended:** CodeFormer
     ```bash
-    gfpup run --input photos/ --backend codeformer --output out/
+    restoria run --input photos/ --backend codeformer --output out/
     ```
     - Fastest processing
     - Lower resource usage
@@ -181,7 +184,7 @@ Compare restoration backends and select the best one for your needs.
     gfpgan-infer --input old_photo.jpg --version 1.3
 
     # For maximum quality
-    gfpup run --input old_photo.jpg --backend restoreformerpp --output out/
+    restoria run --input old_photo.jpg --backend restoreformerpp --output out/
     ```
 
 ### By hardware
@@ -192,7 +195,7 @@ Compare restoration backends and select the best one for your needs.
     - **Alternative:** GFPGAN v1.4 for speed
 
     ```bash
-    gfpup run --input photo.jpg --backend restoreformerpp --output out/ --compile
+    restoria run --input photo.jpg --backend restoreformerpp --output out/ --compile
     ```
 
 === "Mid-range GPU (4-8GB VRAM)"
@@ -210,7 +213,7 @@ Compare restoration backends and select the best one for your needs.
     - ❌ RestoreFormer++ (use CPU)
 
     ```bash
-    gfpup run --input photo.jpg --backend codeformer --output out/
+    restoria run --input photo.jpg --backend codeformer --output out/
     ```
 
 === "CPU only"
@@ -219,7 +222,7 @@ Compare restoration backends and select the best one for your needs.
     - Disable background enhancement
 
     ```bash
-    gfpup run --input photo.jpg --device cpu --backend codeformer --output out/
+    restoria run --input photo.jpg --device cpu --backend codeformer --output out/
     ```
 
 ## Performance benchmarks
@@ -251,11 +254,11 @@ Note: benchmarks based on 512x512 input images with background enhancement.
 Use built-in metrics to compare backends:
 
         # Test multiple backends on the same image
-        gfpup run --input test_photo.jpg \
+        restoria run --input test_photo.jpg \
             --backend gfpgan --metrics full --output v14/
-        gfpup run --input test_photo.jpg \
+        restoria run --input test_photo.jpg \
             --backend codeformer --metrics full --output cf/
-        gfpup run \
+        restoria run \
             --input test_photo.jpg \
             --backend restoreformerpp \
             --metrics full \
@@ -286,7 +289,7 @@ This is off by default and requires no extra installs for a simple blend.
 
 Example:
 
-        gfpup run --input photo.jpg \
+        restoria run --input photo.jpg \
             --backend ensemble \
             --ensemble-backends gfpgan,codeformer \
             --ensemble-weights 0.5,0.5 \

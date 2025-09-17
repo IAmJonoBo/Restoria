@@ -1,0 +1,5 @@
+# Ignore heavy model weights; use resolve_model_weight / download logic
+*.pth
+*.pt
+*.onnx
+!.gitignore

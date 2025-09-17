@@ -4,9 +4,13 @@ on:
     tags:
       - '*'
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    permissions: write-all
+    permissions:
+      contents: write
     name: Create Release
     runs-on: ubuntu-latest
     steps:

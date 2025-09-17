@@ -9,7 +9,6 @@
 
 ![Restoria Logo](assets/gfpgan_logo.png)
 
-
 ## Why Restoria?
 
 - **Production-ready**: Clean API, robust CLI, batch processing with provenance tracking
@@ -32,7 +31,7 @@ gfpgan-infer --input path/to/photo.jpg --version 1.3 --upscale 2
 # Results saved to results/ with before/after comparison
 ```
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/Restoria_Colab.ipynb)
 
 ### Quick CLI Usage
 
@@ -67,7 +66,7 @@ restoria doctor
 
 ### Colab Features
 
-- Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
+- Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/Restoria_Colab.ipynb)
 - Features: interactive UI for uploads, URLs, options; preview; ZIP download.
 - Compatibility: the notebook installs BasicSR master to match modern torchvision.
 

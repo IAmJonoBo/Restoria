@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD012 -->
+
 # Quality metrics
 
 Measure restoration quality with optional metrics and learn how to
@@ -15,7 +17,8 @@ Compute metrics during a run and write a metrics file next to outputs:
 # Restoria (recommended)
 restoria run --input photos/ --output out/ --metrics full
 
-# Legacy helper (maps to the same metrics under the hood)
+# Compatibility helper (maps to the same metrics under the hood)
+gfpup run --input photos/ --output out/ --metrics full
 
 ```
 

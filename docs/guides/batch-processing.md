@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD031 MD032 MD046 MD013 -->
+
 # Batch processing
 
 Process entire folders of images with consistent settings and quality tracking.
@@ -7,7 +9,7 @@ Process entire folders of images with consistent settings and quality tracking.
 Restore all images in a folder:
 
 ```bash
-gfpgan-infer --input photos/ --output results/ --version 1.4
+restoria run --input photos/ --output results/ --backend gfpgan
 ```
 
 GFPGAN automatically processes all supported image formats (JPG, PNG, WEBP) in the input folder.
@@ -18,22 +20,23 @@ GFPGAN automatically processes all supported image formats (JPG, PNG, WEBP) in t
 
 === "Default settings"
     ```bash
-    gfpgan-infer --input photos/ --version 1.4
+    restoria run --input photos/ --backend gfpgan
     ```
 
 === "Custom output folder"
     ```bash
-    gfpgan-infer --input photos/ --output restored_photos/ --version 1.4
+    restoria run --input photos/ --output restored_photos/ --backend gfpgan
     ```
 
 === "With quality metrics"
     ```bash
-    gfpgan-infer --input photos/ --metrics fast --report-path batch_report.json
+    restoria run --input photos/ --metrics fast --output batch_fast/
     ```
 
 ### Supported file formats
 
 GFPGAN processes these image formats:
+
 - **JPEG/JPG** - Most common format
 - **PNG** - Lossless format, good for high quality
 - **WEBP** - Modern format with good compression
@@ -47,51 +50,55 @@ GFPGAN processes these image formats:
 === "Quality-focused"
     ```bash
     # Best quality, slower processing
-    gfpgan-infer --input photos/ --backend restoreformer --metrics detailed
+        restoria run \
+            --input photos/ \
+            --backend restoreformerpp \
+            --metrics full \
+            --output out_rfpp/
     ```
 
 === "Speed-focused"
     ```bash
     # Faster processing, good quality
-    gfpgan-infer --input photos/ --backend codeformer --bg_upsampler none
+    restoria run --input photos/ --backend codeformer --output out_cf/
     ```
 
 === "Balanced"
     ```bash
     # Good balance of speed and quality
-    gfpgan-infer --input photos/ --version 1.4 --metrics fast
+    restoria run --input photos/ --backend gfpgan --metrics fast --output out_v14/
     ```
 
 ### Batch with background enhancement
 
 === "Full enhancement"
     ```bash
-    # Restore faces and enhance backgrounds
-    gfpgan-infer --input photos/ --bg_upsampler realesrgan --upscale 2
+    # Restore faces (background handled by backend pipeline if available)
+    restoria run --input photos/ --backend gfpgan --output out/
     ```
 
 === "Face-only (faster)"
     ```bash
-    # Skip background processing for speed
-    gfpgan-infer --input photos/ --bg_upsampler none
+    # Keep minimal processing for speed
+    restoria run --input photos/ --backend codeformer --output out_fast/
     ```
 
 ### Device and memory management
 
 === "Auto device selection"
     ```bash
-    gfpgan-infer --input photos/ --device auto
+    restoria run --input photos/ --device auto --backend gfpgan
     ```
 
 === "Force CPU (low memory)"
     ```bash
-    gfpgan-infer --input photos/ --device cpu
+    restoria run --input photos/ --device cpu --backend codeformer
     ```
 
 === "GPU with memory limits"
     ```bash
-    # Process smaller batches if GPU memory is limited
-    gfpgan-infer --input photos/ --device cuda --bg_tile 200
+    # Prefer lighter backends if GPU memory is limited
+    restoria run --input photos/ --backend codeformer --output out/
     ```
 
 ## Quality tracking and metrics
@@ -100,17 +107,17 @@ GFPGAN processes these image formats:
 
 === "Fast metrics (LPIPS only)"
     ```bash
-    gfpgan-infer --input photos/ --metrics fast --report-path quick_report.json
+    restoria run --input photos/ --metrics fast --output out_fast/
     ```
 
 === "Detailed metrics (LPIPS, DISTS, ArcFace)"
     ```bash
-    gfpgan-infer --input photos/ --metrics detailed --report-path full_report.json
+    restoria run --input photos/ --metrics full --output out_full/
     ```
 
 === "No metrics (fastest)"
     ```bash
-    gfpgan-infer --input photos/ --metrics none
+    restoria run --input photos/ --metrics off --output out_nometrics/
     ```
 
 ### Understanding metric reports
@@ -139,6 +146,7 @@ The generated JSON report includes:
 ```
 
 **Metric meanings:**
+
 - **LPIPS**: Lower is better (perceptual similarity)
 - **DISTS**: Lower is better (structural similarity)
 - **ArcFace**: Higher is better (identity preservation)
@@ -150,7 +158,12 @@ The generated JSON report includes:
 For reproducible results across runs:
 
 ```bash
-gfpgan-infer --input photos/ --deterministic --random-seed 42
+restoria run \
+    --input photos/ \
+    --seed 42 \
+    --deterministic \
+    --backend gfpgan \
+    --output out/
 ```
 
 ### Preserve metadata
@@ -158,19 +171,19 @@ gfpgan-infer --input photos/ --deterministic --random-seed 42
 Keep original EXIF data:
 
 ```bash
-gfpgan-infer --input photos/ --preserve-metadata
+# Restoria preserves core provenance via manifest.json.
+# EXIF preservation may depend on backend.
 ```
 
 ### Provenance tracking
 
 GFPGAN automatically saves processing information:
 
-```
-results/
-├── restored_photos/         # Processed images
-├── batch_report.json       # Quality metrics
-├── processing_log.txt      # Detailed log
-└── provenance.json         # Settings and environment info
+```text
+out/
+├── restored_imgs/           # Processed images (if backend writes them separately)
+├── metrics.json             # Per-image metrics (+ plan for Restoria)
+└── manifest.json            # Run manifest (args, device, runtime env)
 ```
 
 ## Monitoring progress
@@ -179,17 +192,17 @@ results/
 
 === "Simple progress bar"
     ```bash
-    gfpgan-infer --input photos/ --progress
+    restoria run --input photos/ --backend gfpgan --output out/
     ```
 
 === "Detailed logging"
     ```bash
-    gfpgan-infer --input photos/ --verbose --log-file batch.log
+    restoria run --input photos/ --backend gfpgan --output out/
     ```
 
 === "Silent mode"
     ```bash
-    gfpgan-infer --input photos/ --quiet
+    restoria run --input photos/ --backend gfpgan --output out/
     ```
 
 ### Handling interruptions
@@ -197,8 +210,7 @@ results/
 If processing is interrupted:
 
 ```bash
-# Resume from where it left off
-gfpgan-infer --input photos/ --resume --checkpoint-dir .checkpoints/
+# Resume strategy varies by backend; Restoria records args/manifests for reproducibility.
 ```
 
 ## Presets and automation
@@ -207,69 +219,75 @@ gfpgan-infer --input photos/ --resume --checkpoint-dir .checkpoints/
 
 Save commonly used settings:
 
-=== "High quality preset"
-    ```bash
-    # Create alias or script
-    alias gfpgan-hq='gfpgan-infer --version 1.4 --bg_upsampler realesrgan --metrics detailed'
+=== "High quality preset (example alias)"
 
-    # Use the preset
-    gfpgan-hq --input photos/ --output results/
-    ```
+```bash
+# Create alias or script
+alias restoria-hq='restoria run --backend restoreformerpp --metrics full'
+```
+```bash
 
-=== "Fast processing preset"
-    ```bash
-    alias gfpgan-fast='gfpgan-infer --backend codeformer --bg_upsampler none --metrics fast'
+```bash
+# Use the preset
+restoria-hq --input photos/ --output results/
+```
 
-    gfpgan-fast --input photos/ --output results/
-    ```
+=== "Fast processing preset (example alias)"
+
+```bash
+alias restoria-fast='restoria run --backend codeformer --metrics fast'
+```
+```bash
+
+```bash
+restoria-fast --input photos/ --output results/
+```
 
 ### Automation scripts
 
 === "Bash script example"
-    ```bash
-    #!/bin/bash
-    # batch_restore.sh
 
-    INPUT_DIR="$1"
-    OUTPUT_DIR="$2"
+```bash
+#!/bin/bash
+# batch_restore.sh
 
-    if [ -z "$INPUT_DIR" ] || [ -z "$OUTPUT_DIR" ]; then
-        echo "Usage: $0 <input_dir> <output_dir>"
-        exit 1
-    fi
+INPUT_DIR="$1"
+OUTPUT_DIR="$2"
 
-    gfpgan-infer \
-        --input "$INPUT_DIR" \
-        --output "$OUTPUT_DIR" \
-        --version 1.4 \
-        --metrics detailed \
-        --progress \
-        --report-path "$OUTPUT_DIR/quality_report.json"
-    ```
+if [ -z "$INPUT_DIR" ] || [ -z "$OUTPUT_DIR" ]; then
+    echo "Usage: $0 <input_dir> <output_dir>"
+    exit 1
+fi
+
+restoria run \
+    --input "$INPUT_DIR" \
+    --output "$OUTPUT_DIR" \
+    --backend gfpgan \
+    --metrics fast
+```
 
 === "Python script example"
-    ```python
-    #!/usr/bin/env python3
-    import subprocess
-    import sys
-    from pathlib import Path
 
-    def batch_restore(input_dir, output_dir, backend="gfpgan", version="1.4"):
-        cmd = [
-            "gfpgan-infer",
-            "--input", str(input_dir),
-            "--output", str(output_dir),
-            "--backend", backend,
-            "--version", version,
-            "--metrics", "detailed",
-            "--progress"
-        ]
+```python
+#!/usr/bin/env python3
+import subprocess
+import sys
+from pathlib import Path
 
-        subprocess.run(cmd, check=True)
+def batch_restore(input_dir, output_dir, backend="gfpgan"):
+    cmd = [
+        "restoria", "run",
+        "--input", str(input_dir),
+        "--output", str(output_dir),
+        "--backend", backend,
+        "--metrics", "fast",
+    ]
 
-    if __name__ == "__main__":
-        batch_restore(sys.argv[1], sys.argv[2])
-    ```
+    subprocess.run(cmd, check=True)
+
+if __name__ == "__main__":
+    batch_restore(sys.argv[1], sys.argv[2])
+```
 
 ## Troubleshooting batch jobs
 
@@ -277,21 +295,27 @@ Save commonly used settings:
 
 !!! error "Out of memory during batch processing"
     **Solutions:**
+
     ```bash
     # Use CPU mode
-    gfpgan-infer --input photos/ --device cpu
+    restoria run --input photos/ --device cpu --backend codeformer
+    ```
 
-    # Reduce background tile size
-    gfpgan-infer --input photos/ --bg_tile 200
+    ```bash
+    # Prefer lighter backend
+    restoria run --input photos/ --backend codeformer
+    ```
 
-    # Disable background enhancement
-    gfpgan-infer --input photos/ --bg_upsampler none
+    ```bash
+    # Skip metrics
+    restoria run --input photos/ --metrics off --backend gfpgan
     ```
 
 !!! warning "Some images failed to process"
     Check the processing log:
+
     ```bash
-    gfpgan-infer --input photos/ --log-file processing.log --verbose
+    restoria run --input photos/ --backend gfpgan --output out/
     ```
     Common causes:
     - Corrupted image files
@@ -300,6 +324,7 @@ Save commonly used settings:
 
 !!! info "Processing is too slow"
     **Speed optimizations:**
+
     ```bash
     # Use faster backend
     gfpgan-infer --input photos/ --backend codeformer
@@ -321,6 +346,7 @@ Save commonly used settings:
 ---
 
 **Next steps:**
+
 - [Measure quality with metrics →](metrics.md)
 - [Choose the right backend →](choose-backend.md)
 - [Optimize hardware performance →](../HARDWARE_GUIDE.md)

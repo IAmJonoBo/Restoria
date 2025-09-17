@@ -2,7 +2,7 @@
 
 Open the notebook:
 
-- [GFPGAN Colab Notebook](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
+- [Restoria Colab Notebook](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/Restoria_Colab.ipynb)
 
 Features
 

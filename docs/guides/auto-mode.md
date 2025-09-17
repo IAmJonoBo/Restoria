@@ -3,7 +3,8 @@
 Auto mode selects a backend and parameters per image using lightweight probes.
 It is disabled by default and can be enabled with:
 
-- CLI: `gfpup run --auto --input <path> --output out/`
+- CLI (recommended): `restoria run --auto --input <path> --output out/`
+- Compatibility shim: `gfpup run --auto --input <path> --output out/`
 - API/UI: toggle the auto backend option
 
 What it does (transparent rules):

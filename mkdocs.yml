@@ -74,6 +74,7 @@ nav:
     - Restore a Photo: guides/restore-a-photo.md
   - Reference:
     - CLI Usage: usage/cli.md
+    - Doctor: reference/doctor.md
     - Backend Matrix: BACKEND_MATRIX.md
     - Compatibility: COMPATIBILITY.md
     - ORT Guide: ORT_GUIDE.md

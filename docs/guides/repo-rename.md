@@ -19,40 +19,40 @@ for existing workflows until users opt in.
 
 - Rename GitHub repo to the new name in Settings.
 - Verify redirects are auto-created (GitHub handles this). Keep old
-	remote URLs in docs for one minor release.
+  remote URLs in docs for one minor release.
 - Update badges and links in README and docs.
 
 1. Package metadata
 
 - Update `pyproject.toml` project name and URLs.
 - Keep console scripts for both new and legacy entry points during the
-	transition.
+  transition.
 - Bump minor version and add a changelog entry noting the rename and
-	deprecation window.
+  deprecation window.
 
 1. CI and docs
 
 - Update release workflows to publish to the new package name (if
-	changing on PyPI).
+  changing on PyPI).
 - Keep a compatibility wheel that provides legacy entry points if
-	feasible.
+  feasible.
 - Use mike to version the docs. Add a banner on latest docs highlighting
-	the new name.
+  the new name.
 
 1. Deprecation policy
 
 - Show a one-time deprecation notice in legacy CLI recommending the new
-	CLI name and commands.
+  CLI name and commands.
 - Provide a migration guide (see Migration to Restoria) with
-	side-by-side examples.
+  side-by-side examples.
 - After two minor versions, consider removing the legacy shim, following
-	SemVer (major) if behavior changes.
+  SemVer (major) if behavior changes.
 
 1. Weight and model registries
 
 - Keep weight resolution modules stable; do not rename on disk abruptly.
 - Provide redirects or lookup fallbacks for old registry names to new
-	names.
+  names.
 
 ## Validation
 
@@ -63,8 +63,8 @@ for existing workflows until users opt in.
 ## Rollback
 
 - If users report blockers, you can temporarily restore older wheel
-	versions and mark the latest as yanked on PyPI while issuing a patch
-	release.
+  versions and mark the latest as yanked on PyPI while issuing a patch
+  release.
 
 ## See also
 

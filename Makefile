@@ -44,7 +44,7 @@ docs-build:
 nb-smoke:
 	$(PY) -m pip install -q ipykernel pytest nbmake ipywidgets requests
 	$(PY) -m ipykernel install --user --name python3
-	NB_CI_SMOKE=1 pytest -c /dev/null --nbmake --nbmake-kernel=python3 --nbmake-timeout=600 --ignore=tests notebooks/GFPGAN_Colab.ipynb -q
+	NB_CI_SMOKE=1 pytest -c /dev/null --nbmake --nbmake-kernel=python3 --nbmake-timeout=600 --ignore=tests notebooks/Restoria_Colab.ipynb -q
 
 docker-build-cuda12:
 	docker build -t gfpgan-cli:cuda12 -f docker/Dockerfile.cuda12 .

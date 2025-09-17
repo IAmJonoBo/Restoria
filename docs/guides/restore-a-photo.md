@@ -7,7 +7,7 @@ Learn how to restore a single image using GFPGAN's CLI and web interface.
 For a damaged or blurry photo, restoration takes just one command:
 
 ```bash
-gfpgan-infer --input damaged_photo.jpg --version 1.4
+restoria run --input damaged_photo.jpg --backend gfpgan
 ```
 
 Results are saved to `results/` with before/after comparison images.
@@ -18,17 +18,17 @@ Results are saved to `results/` with before/after comparison images.
 
 === "Single image"
     ```bash
-    gfpgan-infer --input photo.jpg --version 1.4
+    restoria run --input photo.jpg --backend gfpgan
     ```
 
 === "Custom output location"
     ```bash
-    gfpgan-infer --input photo.jpg --output restored/ --version 1.4
+    restoria run --input photo.jpg --output restored/ --backend gfpgan
     ```
 
 === "Upscale while restoring"
     ```bash
-    gfpgan-infer --input photo.jpg --version 1.4 --upscale 2
+    restoria run --input photo.jpg --backend gfpgan --output out/
     ```
 
 ### Choose your backend
@@ -37,7 +37,7 @@ Different backends offer different trade-offs:
 
 === "GFPGAN v1.4 (recommended)"
     ```bash
-    gfpgan-infer --input photo.jpg --version 1.4
+    restoria run --input photo.jpg --backend gfpgan
     ```
     - **Best for**: General photos and portraits
     - **Quality**: High detail preservation
@@ -45,7 +45,7 @@ Different backends offer different trade-offs:
 
 === "GFPGAN v1.3 (natural)"
     ```bash
-    gfpgan-infer --input photo.jpg --version 1.3
+    restoria run --input photo.jpg --backend gfpgan
     ```
     - **Best for**: Natural-looking results
     - **Quality**: Good, less sharp than v1.4
@@ -53,7 +53,7 @@ Different backends offer different trade-offs:
 
 === "CodeFormer (fast)"
     ```bash
-    gfpgan-infer --input photo.jpg --backend codeformer
+    restoria run --input photo.jpg --backend codeformer
     ```
     - **Best for**: Batch processing
     - **Quality**: Good
@@ -63,30 +63,25 @@ Different backends offer different trade-offs:
 
 === "Background enhancement"
     ```bash
-    # Enhance background with Real-ESRGAN
-    gfpgan-infer --input photo.jpg --bg_upsampler realesrgan
-
-    # Disable background enhancement for speed
-    gfpgan-infer --input photo.jpg --bg_upsampler none
+    # Restore with GFPGAN backend
+    restoria run --input photo.jpg --backend gfpgan
     ```
 
 === "Face detection options"
     ```bash
-    # Only restore the center face
-    gfpgan-infer --input photo.jpg --only_center_face
-
-    # Input is already an aligned face crop
-    gfpgan-infer --input face_crop.jpg --aligned
+    # Single-image restoration
+    restoria run --input photo.jpg --backend gfpgan
     ```
 
-=== "Device selection"
-    ```bash
-    # Force CPU (if GPU has issues)
-    gfpgan-infer --input photo.jpg --device cpu
+### Device selection
 
-    # Auto-detect best device
-    gfpgan-infer --input photo.jpg --device auto
-    ```
+```bash
+# Force CPU (if GPU has issues)
+restoria run --input photo.jpg --device cpu --backend codeformer
+
+# Auto-detect best device
+restoria run --input photo.jpg --device auto --backend gfpgan
+```
 
 ## Web interface
 
@@ -114,6 +109,7 @@ uvicorn services.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 API documentation available at:
+
 - Interactive docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 - ReDoc format: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
@@ -123,7 +119,7 @@ API documentation available at:
 
 After running restoration, you'll find:
 
-```
+```text
 results/
 ├── restored_faces/           # Individual face crops (restored)
 ├── cropped_faces/           # Original face crops (input)
@@ -134,6 +130,7 @@ results/
 ### Quality assessment
 
 Visual indicators to check:
+
 - **Sharpness**: Are facial features well-defined?
 - **Identity preservation**: Does the person still look like themselves?
 - **Artifacts**: Any unnatural textures or distortions?
@@ -144,36 +141,47 @@ Visual indicators to check:
 ### Common issues
 
 !!! warning "No faces detected"
-    ```
-    Warning: No faces detected in the input image.
-    ```
-    **Solutions:**
-    - Ensure the image contains visible faces
-    - Try a different face detection threshold
-    - Check if the image is too small or low quality
+    A common message during face detection.
+
+```text
+Warning: No faces detected in the input image.
+```
+
+**Solutions:**
+
+- Ensure the image contains visible faces
+- Try a different face detection threshold
+- Check if the image is too small or low quality
 
 !!! error "CUDA out of memory"
-    ```
-    RuntimeError: CUDA out of memory
-    ```
-    **Solutions:**
-    ```bash
-    # Use CPU instead
-    gfpgan-infer --input photo.jpg --device cpu
+    Insufficient GPU memory for the selected settings.
 
-    # Reduce image size first
-    gfpgan-infer --input photo.jpg --upscale 1
-    ```
+```text
+RuntimeError: CUDA out of memory
+```
+
+**Solutions:**
+
+```bash
+# Use CPU instead
+restoria run --input photo.jpg --device cpu --backend codeformer
+
+# Reduce processing load
+restoria run --input photo.jpg --backend codeformer --metrics off
+```
 
 !!! warning "Poor restoration quality"
-    **Try different backends:**
-    ```bash
-    # More natural results
-    gfpgan-infer --input photo.jpg --version 1.3
+    If results look off, try an alternative backend.
 
-    # Better identity preservation
-    gfpgan-infer --input photo.jpg --backend restoreformer
-    ```
+**Try different backends:**
+
+```bash
+# Natural results
+restoria run --input photo.jpg --backend gfpgan
+
+# Better identity preservation
+restoria run --input photo.jpg --backend restoreformerpp
+```
 
 ### Getting help
 
@@ -186,6 +194,7 @@ If restoration quality isn't satisfactory:
 ---
 
 **Next steps:**
+
 - [Process multiple photos →](batch-processing.md)
 - [Measure restoration quality →](metrics.md)
 - [Choose the right backend →](choose-backend.md)

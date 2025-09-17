@@ -166,9 +166,9 @@ def _optimize_weight_if_requested(rest, img, cfg, preset_weight, args, arc, lpip
             td = tempfile.mkdtemp()
             a = os.path.join(td, TMP_IN)
             b = os.path.join(td, TMP_OUT)
-            cv2.imwrite(a, img)
+            cv2.imwrite(a, img)  # type: ignore[attr-defined]
             if r_try and r_try.restored_image is not None:
-                cv2.imwrite(b, r_try.restored_image)
+                cv2.imwrite(b, r_try.restored_image)  # type: ignore[attr-defined]
             else:
                 b = a
             s = arc.cosine_from_paths(a, b)
@@ -180,9 +180,9 @@ def _optimize_weight_if_requested(rest, img, cfg, preset_weight, args, arc, lpip
             td = tempfile.mkdtemp()
             a = os.path.join(td, TMP_IN)
             b = os.path.join(td, TMP_OUT)
-            cv2.imwrite(a, img)
+            cv2.imwrite(a, img)  # type: ignore[attr-defined]
             if r_try and r_try.restored_image is not None:
-                cv2.imwrite(b, r_try.restored_image)
+                cv2.imwrite(b, r_try.restored_image)  # type: ignore[attr-defined]
             else:
                 b = a
             d = lpips.distance_from_paths(a, b)
@@ -204,8 +204,8 @@ def _maybe_identity_retry(chosen_backend, rest, img, cfg, preset_weight, arc, ar
     td = tempfile.mkdtemp()
     a = os.path.join(td, TMP_IN)
     b = os.path.join(td, TMP_OUT)
-    cv2.imwrite(a, img)
-    cv2.imwrite(b, rec.get("_tmp_restored") or img)
+    cv2.imwrite(a, img)  # type: ignore[attr-defined]
+    cv2.imwrite(b, rec.get("_tmp_restored") or img)  # type: ignore[attr-defined]
     s0 = arc.cosine_from_paths(a, b)
     if s0 is None or s0 >= args.identity_threshold:
         return None
@@ -222,7 +222,7 @@ def _maybe_identity_retry(chosen_backend, rest, img, cfg, preset_weight, arc, ar
         stricter = max(0.2, float(cfg.get("weight", preset_weight)) - 0.2)
         cfg_strict["weight"] = stricter
     r2 = rest.restore(img, cfg_strict)
-    cv2.imwrite(b, r2.restored_image if (r2 and r2.restored_image is not None) else img)
+    cv2.imwrite(b, r2.restored_image if (r2 and r2.restored_image is not None) else img)  # type: ignore[attr-defined]
     s1 = arc.cosine_from_paths(a, b)
     if s1 is not None and s1 > s0:
         rec["metrics"]["identity_retry"] = True

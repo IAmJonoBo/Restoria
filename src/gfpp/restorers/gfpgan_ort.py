@@ -99,8 +99,8 @@ class ORTGFPGANRestorer(Restorer):
             out_name = sess.get_outputs()[0].name
 
             for cropped_face in helper.cropped_faces:
-                rgb = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2RGB)
-                rgb = cv2.resize(rgb, (512, 512), interpolation=cv2.INTER_CUBIC)
+                rgb = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2RGB)  # type: ignore[attr-defined]
+                rgb = cv2.resize(rgb, (512, 512), interpolation=cv2.INTER_CUBIC)  # type: ignore[attr-defined]
                 x = (rgb.astype("float32") / 255.0) * 2.0 - 1.0
                 x = np.transpose(x, (2, 0, 1))[None, ...]
                 y = sess.run([out_name], {in_name: x})[0]
@@ -108,7 +108,7 @@ class ORTGFPGANRestorer(Restorer):
                     y = y[0]
                 y = np.transpose(y, (1, 2, 0))
                 y = np.clip((y + 1.0) / 2.0, 0.0, 1.0)
-                bgr = cv2.cvtColor((y * 255.0).astype("uint8"), cv2.COLOR_RGB2BGR)
+                bgr = cv2.cvtColor((y * 255.0).astype("uint8"), cv2.COLOR_RGB2BGR)  # type: ignore[attr-defined]
                 helper.add_restored_face(bgr)
 
             bg_img = None
