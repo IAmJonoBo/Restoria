@@ -18,6 +18,10 @@ Compare restoration backends and select the best one for your needs.
 
 === "GFPGAN v1.4 (Recommended)"
     ```bash
+    # New CLI
+    gfpup run --input photo.jpg --backend gfpgan --output out/
+
+    # Legacy shim
     gfpgan-infer --input photo.jpg --version 1.4
     ```
 
@@ -36,6 +40,10 @@ Compare restoration backends and select the best one for your needs.
 
 === "GFPGAN v1.3 (Natural)"
     ```bash
+    # New CLI (select model via param if supported)
+    gfpup run --input photo.jpg --backend gfpgan --output out/
+
+    # Legacy shim
     gfpgan-infer --input photo.jpg --version 1.3
     ```
 
@@ -58,6 +66,7 @@ Compare restoration backends and select the best one for your needs.
 
 === "GFPGAN v1.2 (Sharp)"
     ```bash
+    # Legacy shim example only
     gfpgan-infer --input photo.jpg --version 1.2
     ```
 
@@ -79,6 +88,10 @@ Compare restoration backends and select the best one for your needs.
 
 === "CodeFormer (Fast)"
     ```bash
+    # New CLI
+    gfpup run --input photo.jpg --backend codeformer --output out/
+
+    # Legacy shim
     gfpgan-infer --input photo.jpg --backend codeformer
     ```
 
@@ -101,6 +114,10 @@ Compare restoration backends and select the best one for your needs.
 
 === "RestoreFormer++ (Premium)"
     ```bash
+    # New CLI uses canonical name restoreformerpp
+    gfpup run --input photo.jpg --backend restoreformerpp --output out/
+
+    # Legacy shim alias
     gfpgan-infer --input photo.jpg --backend restoreformer
     ```
 
@@ -138,7 +155,11 @@ Compare restoration backends and select the best one for your needs.
 === "Professional work"
     **Recommended:** RestoreFormer++
     ```bash
-    gfpgan-infer --input portrait.jpg --backend restoreformer --metrics detailed
+        gfpup run \
+            --input portrait.jpg \
+            --backend restoreformerpp \
+            --metrics full \
+            --output out/
     ```
     - Highest quality output
     - Excellent for client work
@@ -147,7 +168,7 @@ Compare restoration backends and select the best one for your needs.
 === "Batch processing"
     **Recommended:** CodeFormer
     ```bash
-    gfpgan-infer --input photos/ --backend codeformer --bg_upsampler none
+    gfpup run --input photos/ --backend codeformer --output out/
     ```
     - Fastest processing
     - Lower resource usage
@@ -160,7 +181,7 @@ Compare restoration backends and select the best one for your needs.
     gfpgan-infer --input old_photo.jpg --version 1.3
 
     # For maximum quality
-    gfpgan-infer --input old_photo.jpg --backend restoreformer
+    gfpup run --input old_photo.jpg --backend restoreformerpp --output out/
     ```
 
 ### By hardware
@@ -171,7 +192,7 @@ Compare restoration backends and select the best one for your needs.
     - **Alternative:** GFPGAN v1.4 for speed
 
     ```bash
-    gfpgan-infer --input photo.jpg --backend restoreformer --upscale 2
+    gfpup run --input photo.jpg --backend restoreformerpp --output out/ --compile
     ```
 
 === "Mid-range GPU (4-8GB VRAM)"
@@ -189,7 +210,7 @@ Compare restoration backends and select the best one for your needs.
     - ❌ RestoreFormer++ (use CPU)
 
     ```bash
-    gfpgan-infer --input photo.jpg --backend codeformer --bg_upsampler none
+    gfpup run --input photo.jpg --backend codeformer --output out/
     ```
 
 === "CPU only"
@@ -198,7 +219,7 @@ Compare restoration backends and select the best one for your needs.
     - Disable background enhancement
 
     ```bash
-    gfpgan-infer --input photo.jpg --device cpu --backend codeformer
+    gfpup run --input photo.jpg --device cpu --backend codeformer --output out/
     ```
 
 ## Performance benchmarks
@@ -221,7 +242,7 @@ Compare restoration backends and select the best one for your needs.
 | GFPGAN v1.3 | 3GB | 6GB |
 | RestoreFormer++ | 5GB | 8GB |
 
-*Benchmarks based on 512x512 input images with background enhancement*
+Note: benchmarks based on 512x512 input images with background enhancement.
 
 ## Quality evaluation
 
@@ -229,14 +250,19 @@ Compare restoration backends and select the best one for your needs.
 
 Use built-in metrics to compare backends:
 
-```bash
-# Test multiple backends on the same image
-gfpgan-infer --input test_photo.jpg --version 1.4 --metrics detailed --output v14/
-gfpgan-infer --input test_photo.jpg --backend codeformer --metrics detailed --output cf/
-gfpgan-infer --input test_photo.jpg --backend restoreformer --metrics detailed --output rf/
-```
+        # Test multiple backends on the same image
+        gfpup run --input test_photo.jpg \
+            --backend gfpgan --metrics full --output v14/
+        gfpup run --input test_photo.jpg \
+            --backend codeformer --metrics full --output cf/
+        gfpup run \
+            --input test_photo.jpg \
+            --backend restoreformerpp \
+            --metrics full \
+            --output rf/
 
 **Typical metric ranges:**
+
 - **LPIPS**: 0.1-0.4 (lower is better)
 - **DISTS**: 0.1-0.3 (lower is better)
 - **ArcFace**: 0.7-0.95 (higher is better)
