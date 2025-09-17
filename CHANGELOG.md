@@ -18,7 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- N/A
+- Restoria CLI: record `seed` and `deterministic` in dry-run manifests for
+  consistency with plan-only and normal runs; add tests to verify manifest
+  consistency.
 
 ### Security
 
