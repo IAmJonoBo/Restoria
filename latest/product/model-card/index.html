@@ -1134,6 +1134,52 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/determinism/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Determinism & Seeding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/manifests-and-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manifests & Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../usage/recipes/" class="md-nav__link">
         
   
@@ -3059,12 +3105,14 @@
 <li><strong>Researchers</strong>: Computer vision and image processing studies</li>
 </ul>
 <h3 id="out-of-scope-uses">Out-of-Scope Uses<a class="headerlink" href="#out-of-scope-uses" title="Permanent link">&para;</a></h3>
-<p>❌ <strong>Not intended for:</strong>
-- Real-time video processing (performance limitations)
-- Non-facial image enhancement (specialized for faces)
-- Identity modification or deepfake creation
-- Medical diagnosis or analysis
-- Surveillance or law enforcement identification</p>
+<p>❌ <strong>Not intended for:</strong></p>
+<ul>
+<li>Real-time video processing (performance limitations)</li>
+<li>Non-facial image enhancement (specialized for faces)</li>
+<li>Identity modification or deepfake creation</li>
+<li>Medical diagnosis or analysis</li>
+<li>Surveillance or law enforcement identification</li>
+</ul>
 <h2 id="model-details">Model Details<a class="headerlink" href="#model-details" title="Permanent link">&para;</a></h2>
 <h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3154,16 +3202,20 @@
 </tbody>
 </table>
 <h4 id="qualitative-assessment">Qualitative Assessment<a class="headerlink" href="#qualitative-assessment" title="Permanent link">&para;</a></h4>
-<p>✅ <strong>Strengths:</strong>
-- Excellent identity preservation
-- Natural-looking texture generation
-- Robust to various degradation types
-- Maintains facial structure and features</p>
-<p>⚠️ <strong>Limitations:</strong>
-- Performance degrades with extreme degradation
-- May struggle with very small faces (&lt;64px)
-- Requires GPU for reasonable performance
-- Limited to frontal and near-frontal faces</p>
+<p>✅ <strong>Strengths:</strong></p>
+<ul>
+<li>Excellent identity preservation</li>
+<li>Natural-looking texture generation</li>
+<li>Robust to various degradation types</li>
+<li>Maintains facial structure and features</li>
+</ul>
+<p>⚠️ <strong>Limitations:</strong></p>
+<ul>
+<li>Performance degrades with extreme degradation</li>
+<li>May struggle with very small faces (&lt;64px)</li>
+<li>Requires GPU for reasonable performance</li>
+<li>Limited to frontal and near-frontal faces</li>
+</ul>
 <h3 id="known-biases-and-fairness">Known Biases and Fairness<a class="headerlink" href="#known-biases-and-fairness" title="Permanent link">&para;</a></h3>
 <p><strong>⚠️ TODO</strong>: Comprehensive bias analysis needed</p>
 <h4 id="demographic-performance">Demographic Performance<a class="headerlink" href="#demographic-performance" title="Permanent link">&para;</a></h4>
@@ -3221,14 +3273,18 @@
 </ul>
 <h3 id="potential-risks">Potential Risks<a class="headerlink" href="#potential-risks" title="Permanent link">&para;</a></h3>
 <h4 id="misuse-scenarios">Misuse Scenarios<a class="headerlink" href="#misuse-scenarios" title="Permanent link">&para;</a></h4>
-<p>⚠️ <strong>High Risk:</strong>
-- <strong>Identity manipulation</strong>: Creating misleading enhanced photos
-- <strong>Deepfake preparation</strong>: Using enhanced faces for synthetic media
-- <strong>Non-consensual enhancement</strong>: Processing photos without permission</p>
-<p>⚠️ <strong>Medium Risk:</strong>
-- <strong>Historical revisionism</strong>: Inappropriately "correcting" historical photos
-- <strong>Surveillance enhancement</strong>: Improving low-quality surveillance footage
-- <strong>Bias amplification</strong>: Reinforcing beauty standards or demographic preferences</p>
+<p>⚠️ <strong>High Risk:</strong></p>
+<ul>
+<li><strong>Identity manipulation</strong>: Creating misleading enhanced photos</li>
+<li><strong>Deepfake preparation</strong>: Using enhanced faces for synthetic media</li>
+<li><strong>Non-consensual enhancement</strong>: Processing photos without permission</li>
+</ul>
+<p>⚠️ <strong>Medium Risk:</strong></p>
+<ul>
+<li><strong>Historical revisionism</strong>: Inappropriately "correcting" historical photos</li>
+<li><strong>Surveillance enhancement</strong>: Improving low-quality surveillance footage</li>
+<li><strong>Bias amplification</strong>: Reinforcing beauty standards or demographic preferences</li>
+</ul>
 <h4 id="risk-mitigation">Risk Mitigation<a class="headerlink" href="#risk-mitigation" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Clear documentation of appropriate uses</li>
@@ -3314,9 +3370,9 @@
 <h3 id="reporting-issues">Reporting Issues<a class="headerlink" href="#reporting-issues" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Technical issues</strong>: <a href="https://github.com/IAmJonoBo/Restoria/issues">GitHub Issues</a></li>
-<li><strong>Ethical concerns</strong>: ethics@gfpgan.ai</li>
+<li><strong>Ethical concerns</strong>: <a href="mailto:ethics@gfpgan.ai">mailto:ethics@gfpgan.ai</a></li>
 <li><strong>Security vulnerabilities</strong>: <a href="../../governance/security/">Security Policy</a></li>
-<li><strong>Bias reports</strong>: bias@gfpgan.ai</li>
+<li><strong>Bias reports</strong>: <a href="mailto:bias@gfpgan.ai">mailto:bias@gfpgan.ai</a></li>
 </ul>
 <h3 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3346,7 +3402,9 @@
 <strong>Next Review</strong>: December 2024
 <strong>Status</strong>: Active development - some evaluations pending</p>
 <hr />
-<p>⚠️ <strong>Note</strong>: This model card is under active development. Sections marked with "TODO" require additional research and evaluation. We welcome community contributions to improve the completeness and accuracy of this documentation.</p>
+<p>⚠️ <strong>Note</strong>: This model card is under active development. Sections marked
+with "TODO" require additional research and evaluation. We welcome community
+contributions to improve the completeness and accuracy of this documentation.</p>
 
 
 
