@@ -8,8 +8,10 @@
 
 - Install (editable):
   - `pip install -e .[dev]`
-- Inference on CPU or GPU:
-  - `gfpgan-infer --input inputs/whole_imgs --version 1.4 --upscale 2 --device auto`
+- Inference on CPU or GPU (recommended):
+  - `restoria run --input inputs/whole_imgs --output out/ --backend gfpgan --metrics fast`
+  - `gfpup run --input inputs/whole_imgs --backend gfpgan --metrics fast --output out/`
+  - Legacy: `gfpgan-infer --input inputs/whole_imgs --version 1.4 --upscale 2 --device auto`
 - Helpful flags:
   - `--dry-run` (validate args), `--no-download` (require local weights), `--model-path` (override weights)
 - Colab notebook (UI):
