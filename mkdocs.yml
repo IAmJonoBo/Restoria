@@ -79,6 +79,8 @@ nav:
     - ORT Guide: ORT_GUIDE.md
     - Torch 2 Notes: TORCH2.md
     - Decision Table: DECISION_TABLE.md
+    - Determinism & Seeding: reference/determinism.md
+    - Manifests & Metrics: reference/manifests-and-metrics.md
     - Recipes: usage/recipes.md
     - Gradio Usage: usage/gradio.md
     - REST API Usage: usage/api.md

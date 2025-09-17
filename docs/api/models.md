@@ -40,9 +40,9 @@ print(path, sha256)
 Notes:
 
 - If `no_download=True`, this will not attempt network access and may raise
-	from the underlying resolver if the weight is missing.
+  from the underlying resolver if the weight is missing.
 - The central resolver supports local caches and may fetch from configured
-	sources when permitted.
+  sources when permitted.
 
 ## Per-backend options (overview)
 

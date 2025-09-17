@@ -26,6 +26,7 @@
 ### Out-of-Scope Uses
 
 ❌ **Not intended for:**
+
 - Real-time video processing (performance limitations)
 - Non-facial image enhancement (specialized for faces)
 - Identity modification or deepfake creation
@@ -77,12 +78,14 @@
 #### Qualitative Assessment
 
 ✅ **Strengths:**
+
 - Excellent identity preservation
 - Natural-looking texture generation
 - Robust to various degradation types
 - Maintains facial structure and features
 
 ⚠️ **Limitations:**
+
 - Performance degrades with extreme degradation
 - May struggle with very small faces (<64px)
 - Requires GPU for reasonable performance
@@ -125,21 +128,25 @@
 ### Responsible AI Principles
 
 #### Transparency
+
 - Open-source implementation and weights
 - Documented limitations and failure cases
 - Clear usage guidelines and best practices
 
 #### Fairness
+
 - **⚠️ TODO**: Bias evaluation across demographic groups
 - Commitment to addressing identified biases
 - Inclusive evaluation methodologies
 
 #### Privacy
+
 - Local processing (no cloud upload required)
 - No data retention or telemetry by default
 - User control over all processed images
 
 #### Accountability
+
 - Clear documentation of intended uses
 - Guidance on inappropriate applications
 - Community reporting mechanisms
@@ -149,11 +156,13 @@
 #### Misuse Scenarios
 
 ⚠️ **High Risk:**
+
 - **Identity manipulation**: Creating misleading enhanced photos
 - **Deepfake preparation**: Using enhanced faces for synthetic media
 - **Non-consensual enhancement**: Processing photos without permission
 
 ⚠️ **Medium Risk:**
+
 - **Historical revisionism**: Inappropriately "correcting" historical photos
 - **Surveillance enhancement**: Improving low-quality surveillance footage
 - **Bias amplification**: Reinforcing beauty standards or demographic preferences
@@ -179,17 +188,20 @@
 ### Evaluation Metrics
 
 #### Technical Quality
+
 - **LPIPS**: Perceptual similarity measurement
 - **DISTS**: Image structural similarity
 - **SSIM**: Structural similarity index
 - **PSNR**: Peak signal-to-noise ratio
 
 #### Identity Preservation
+
 - **ArcFace**: Identity similarity scores
 - **FaceNet**: Feature distance measurement
 - **Human evaluation**: Perceptual identity studies
 
 #### Fairness Evaluation
+
 - **⚠️ TODO**: Demographic parity analysis
 - **⚠️ TODO**: Equal opportunity assessment
 - **⚠️ TODO**: Individual fairness evaluation
@@ -248,9 +260,9 @@
 ### Reporting Issues
 
 - **Technical issues**: [GitHub Issues](https://github.com/IAmJonoBo/Restoria/issues)
-- **Ethical concerns**: ethics@gfpgan.ai
+- **Ethical concerns**: [mailto:ethics@gfpgan.ai](mailto:ethics@gfpgan.ai)
 - **Security vulnerabilities**: [Security Policy](../governance/security.md)
-- **Bias reports**: bias@gfpgan.ai
+- **Bias reports**: [mailto:bias@gfpgan.ai](mailto:bias@gfpgan.ai)
 
 ### Contributing
 
@@ -287,4 +299,6 @@
 
 ---
 
-⚠️ **Note**: This model card is under active development. Sections marked with "TODO" require additional research and evaluation. We welcome community contributions to improve the completeness and accuracy of this documentation.
+⚠️ **Note**: This model card is under active development. Sections marked
+with "TODO" require additional research and evaluation. We welcome community
+contributions to improve the completeness and accuracy of this documentation.
