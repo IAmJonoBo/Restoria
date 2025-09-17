@@ -5,6 +5,7 @@ import json
 import os
 import time
 from typing import Any, Dict
+import os as _os
 
 from .background import build_realesrgan
 from .io import RunManifest, list_inputs, load_image_bgr, save_image, write_manifest
@@ -18,6 +19,25 @@ from .presets import apply_preset
 # ------------------------- Small helpers (no behavior change) -------------------------
 TMP_IN = "in.png"
 TMP_OUT = "out.png"
+
+_DEPRECATION_EMITTED = False
+
+def _maybe_deprecation_notice():
+    global _DEPRECATION_EMITTED
+    if _DEPRECATION_EMITTED:
+        return
+    if _os.environ.get("GFPP_NO_DEPRECATION"):
+        _DEPRECATION_EMITTED = True
+        return
+    try:
+        import sys as _sys
+        print(
+            "[WARN] gfpup is deprecated; please use 'restoria' CLI (restoria run/doctor/list-backends).",
+            file=_sys.stderr,
+        )
+    except Exception:
+        pass
+    _DEPRECATION_EMITTED = True
 
 
 def _warn(msg: str) -> None:
@@ -620,6 +640,7 @@ def cmd_run(argv: list[str]) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI dispatcher kept monolithic for startup cost
+    _maybe_deprecation_notice()
     import sys
 
     argv = list(sys.argv[1:] if argv is None else argv)

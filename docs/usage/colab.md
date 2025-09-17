@@ -1,9 +1,11 @@
 # Colab Guide
 
 Open the notebook:
-- https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb
+
+- [GFPGAN Colab Notebook](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
 
 Features
+
 - Install cell sets up Torch + Basicsr master (for torchvision compatibility)
 - Interactive UI for:
   - Uploading images
@@ -15,5 +17,6 @@ Features
 - First-image before/after slider when original is available
 
 Tips
+
 - Use a GPU runtime to enable background upsampling (Real-ESRGAN) and for speed.
 - The notebook prints versions of Torch, Torchvision, and Basicsr to help debugging.

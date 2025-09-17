@@ -1,6 +1,10 @@
 # API Documentation
 
-GFPGAN provides both REST API and Python API for integrating face restoration into your applications.
+This project provides two integration surfaces:
+
+- REST API (FastAPI) for HTTP-based usage
+- Python API via the new modular layer under `src/gfpp/` (preferred), with
+    a legacy GFPGAN API kept for backward compatibility
 
 ## REST API
 
@@ -8,8 +12,10 @@ GFPGAN provides both REST API and Python API for integrating face restoration in
 
 GFPGAN includes a FastAPI-based REST API with automatic documentation:
 
-- **Interactive docs**: [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI)
-- **Alternative docs**: [http://localhost:8000/redoc](http:For implementation examples and advanced usage patterns, see our [user guides](../guides/face-enhancement.md)./localhost:8000/redoc) (ReDoc)
+- **Interactive docs**:
+    [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI)
+- **Alternative docs**:
+    [http://localhost:8000/redoc](http://localhost:8000/redoc) (ReDoc)
 - **OpenAPI spec**: [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
 
 ### Starting the API Server
@@ -24,7 +30,8 @@ uvicorn services.api.main:app --reload --port 8000
 
 ### Authentication
 
-Currently, the API runs without authentication for simplicity. For production deployments, implement authentication:
+Currently, the API runs without authentication for simplicity.
+For production deployments, implement authentication:
 
 ```python
 # Example: API key authentication
@@ -47,6 +54,7 @@ def verify_api_key(token: str = Depends(security)):
 #### Single Image Restoration
 
 **Request:**
+
 ```bash
 curl -X POST "http://localhost:8000/restore" \
   -H "Content-Type: multipart/form-data" \
@@ -56,6 +64,7 @@ curl -X POST "http://localhost:8000/restore" \
 ```
 
 **Response:**
+
 ```json
 {
   "status": "success",
@@ -70,6 +79,7 @@ curl -X POST "http://localhost:8000/restore" \
 #### Batch Processing
 
 **Request:**
+
 ```bash
 curl -X POST "http://localhost:8000/batch" \
   -H "Content-Type: application/json" \
@@ -87,6 +97,7 @@ curl -X POST "http://localhost:8000/batch" \
 ```
 
 **Response:**
+
 ```json
 {
   "status": "accepted",
@@ -99,6 +110,7 @@ curl -X POST "http://localhost:8000/batch" \
 #### Quality Metrics
 
 **Request:**
+
 ```bash
 curl -X POST "http://localhost:8000/metrics" \
   -H "Content-Type: multipart/form-data" \
@@ -109,6 +121,7 @@ curl -X POST "http://localhost:8000/metrics" \
 ```
 
 **Response:**
+
 ```json
 {
   "metrics": {
@@ -124,165 +137,82 @@ curl -X POST "http://localhost:8000/metrics" \
 }
 ```
 
-## Python API
+## Python API (gfpp)
 
-### Core Classes
+Prefer the modular `gfpp` API for new integrations. It exposes:
 
-#### GFPGANer
+- Orchestrator: produce a deterministic Plan for an image and options
+- Registry: list/resolve backends without importing heavy deps
+- IO: run manifest helpers and centralized weight resolution
+- Restorers: lightweight adapters that implement a shared protocol
 
-Main restoration class for processing images:
+### Orchestrator and Plan
 
 ```python
-from gfpgan import GFPGANer
-import cv2
+from gfpp.core.orchestrator import plan
 
-# Initialize restorer
-restorer = GFPGANer(
-    model_path='experiments/pretrained_models/GFPGANv1.4.pth',
-    upscale=2,
-    arch='clean',
-    channel_multiplier=2,
-    bg_upsampler=None  # or 'realesrgan'
+pl = plan(
+    "samples/portrait.jpg",
+    {"backend": "gfpgan", "weight": 0.6, "experimental": False},
 )
-
-# Restore image
-input_img = cv2.imread('input.jpg')
-cropped_faces, restored_imgs, restored_faces = restorer.enhance(
-    input_img,
-    has_aligned=False,
-    only_center_face=False,
-    paste_back=True
-)
-
-# Save result
-cv2.imwrite('output.jpg', restored_imgs[0])
+print(pl.backend, pl.params, pl.reason, pl.confidence)
+print(pl.quality)  # may include niqe/brisque (best-effort)
 ```
 
-#### Key Parameters
+Plan fields (dataclass):
 
-- **model_path**: Path to GFPGAN model file
-- **upscale**: Upscaling factor (1, 2, or 4)
-- **arch**: Model architecture ('clean', 'original')
-- **channel_multiplier**: Channel multiplier for StyleGAN decoder
-- **bg_upsampler**: Background upsampler ('realesrgan', 'esrgan', None)
+- backend: str
+- params: dict[str, any]
+- postproc: dict[str, any]
+- reason: str
+- confidence: float (0..1)
+- quality: dict[str, float | None]
+- faces: dict[str, any]
+- detail: dict[str, any] (routing explanation and inputs)
 
-### Utility Functions
-
-#### Image Processing
+### Registry
 
 ```python
-from gfpgan.utils import restore_image
+from gfpp.core.registry import list_backends, get
 
-# Simple restoration function
-restored_img = restore_image(
-    image_path='input.jpg',
-    output_path='output.jpg',
-    version='1.4',
-    upscale=2
-)
+avail = list_backends()           # {'gfpgan': True, 'codeformer': False, ...}
+RestorerClass = get('gfpgan')     # returns a class, import deferred until here
 ```
 
-#### Model Management
+### Restorer Protocol
 
 ```python
-from gfpgan.utils import download_model, list_models
+from gfpp.restorers.base import Restorer, RestoreResult
 
-# Download model if not present
-model_path = download_model('GFPGANv1.4')
-
-# List available models
-models = list_models()
-print(models)  # ['GFPGANv1.3', 'GFPGANv1.4', 'RestoreFormer++']
+def run_restoration(img):
+    RestorerClass = get('gfpgan')
+    restorer: Restorer = RestorerClass()
+    restorer.prepare({"device": "auto"})  # lazy import heavy deps
+    result: RestoreResult = restorer.restore(img, {"weight": 0.6})
+    return result.restored_image, result.metrics
 ```
 
-#### Quality Metrics
+RestoreResult fields:
+
+- input_path: str | None
+- restored_path: str | None
+- restored_image: any | None (e.g., numpy.ndarray)
+- cropped_faces: list[str]
+- restored_faces: list[str]
+- metrics: dict[str, any]
+
+### IO helpers
 
 ```python
-from gfpgan.metrics import calculate_metrics
+from gfpp.io.manifest import RunManifest, write_manifest
+from gfpp.io.weights import ensure_weight
 
-# Calculate quality metrics
-metrics = calculate_metrics(
-    original_img='original.jpg',
-    restored_img='restored.jpg',
-    metrics=['lpips', 'dists', 'arcface']
-)
-
-print(f"LPIPS: {metrics['lpips']:.3f}")
-print(f"DISTS: {metrics['dists']:.3f}")
-print(f"ArcFace Similarity: {metrics['arcface']:.3f}")
+man = RunManifest(args={"backend": "gfpgan", "metrics": "fast"}, device="cpu")
+ensure_weight("GFPGANv1.4")  # delegates to centralized resolver
+write_manifest("out/manifest.json", man)
 ```
 
-### Advanced Usage
-
-#### Custom Model Configuration
-
-```python
-from gfpgan import GFPGANer
-
-# Custom model configuration
-restorer = GFPGANer(
-    model_path='path/to/custom_model.pth',
-    upscale=2,
-    arch='clean',
-    channel_multiplier=2,
-    bg_upsampler='realesrgan',
-    device='cuda',  # or 'cpu', 'mps'
-    model_root_path='experiments/pretrained_models'
-)
-
-# Process with custom settings
-output = restorer.enhance(
-    img=input_image,
-    has_aligned=False,
-    only_center_face=False,
-    paste_back=True,
-    weight=0.5  # Blend weight with original
-)
-```
-
-#### Batch Processing
-
-```python
-import os
-from pathlib import Path
-from gfpgan import GFPGANer
-
-restorer = GFPGANer(model_path='GFPGANv1.4.pth', upscale=2)
-
-# Process directory
-input_dir = Path('input_images')
-output_dir = Path('restored_images')
-output_dir.mkdir(exist_ok=True)
-
-for img_path in input_dir.glob('*.jpg'):
-    img = cv2.imread(str(img_path))
-    _, restored_imgs, _ = restorer.enhance(img)
-
-    output_path = output_dir / f"restored_{img_path.name}"
-    cv2.imwrite(str(output_path), restored_imgs[0])
-    print(f"Processed: {img_path.name}")
-```
-
-#### Error Handling
-
-```python
-from gfpgan import GFPGANer
-from gfpgan.exceptions import GFPGANError, ModelNotFoundError
-
-try:
-    restorer = GFPGANer(model_path='invalid_model.pth')
-except ModelNotFoundError:
-    print("Model not found, downloading...")
-    # Handle model download
-
-try:
-    result = restorer.enhance(damaged_image)
-except GFPGANError as e:
-    print(f"Restoration failed: {e}")
-    # Handle restoration failure
-```
-
-## Integration Examples
+## Integration Examples (legacy GFPGAN API)
 
 ### Flask Application
 
@@ -394,4 +324,4 @@ if torch.cuda.is_available():
 
 ---
 
-**Need help?** Check our [guides](../guides/) or [create an issue](https://github.com/IAmJonoBo/GFPGAN/issues).
+**Need help?** Check our [guides](../guides/face-enhancement.md) or [create an issue](https://github.com/IAmJonoBo/Restoria/issues).

@@ -1,29 +1,16 @@
-## Developer commands
+# Restoria
 
-Optional extras and helper CLI are available for local development without changing defaults:
+<!-- markdownlint-disable MD013 -->
 
-- Install (editable) with extras: `pip install -e ".[dev,metrics,arcface,codeformer,restoreformerpp,ort]"`
-- Run single image with explicit backend: `gfpup run --input samples/portrait.jpg --backend gfpgan --metrics full --output out/`
-- Try Auto mode (opt-in): `gfpup run --input samples/portrait.jpg --auto --metrics fast --output out/`
-- Environment report: `gfpup doctor`
+> Note: We are rebranding and rebooting this project as Restoria —
+> intelligent image revival. The new primary CLI is `restoria`; existing
+> commands remain available during the transition. See
+> docs/guides/migration.md.
 
-Auto mode is experimental and falls back gracefully when probes or dependencies are missing. Defaults remain unchanged unless opted-in.
+![Restoria Logo](assets/gfpgan_logo.png)
 
-# GFPGAN
 
-![GFPGAN Logo](assets/gfpgan_logo.png)
-
-## Professional face restoration powered by generative AI
-
-[![CI](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml/badge.svg)](https://github.com/IAmJonoBo/GFPGAN/actions/workflows/ci.yml)
-[![LICENSE](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/gfpgan)](https://pypi.org/project/gfpgan/)
-[![Docs](https://img.shields.io/badge/docs-mkdocs%20material-brightgreen)](https://IAmJonoBo.github.io/GFPGAN/)
-[![Security](https://img.shields.io/badge/security-policy-blue)](SECURITY.md)
-
-**Restore faces in photos with state-of-the-art generative AI.** GFPGAN combines deep learning and generative adversarial networks to intelligently reconstruct facial details from low-quality, damaged, or blurred images.
-
-## Why GFPGAN?
+## Why Restoria?
 
 - **Production-ready**: Clean API, robust CLI, batch processing with provenance tracking
 - **Multiple backends**: Choose speed vs quality with GFPGAN, CodeFormer, RestoreFormer++
@@ -45,7 +32,7 @@ gfpgan-infer --input path/to/photo.jpg --version 1.3 --upscale 2
 # Results saved to results/ with before/after comparison
 ```
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
 
 ### Quick CLI Usage
 
@@ -59,9 +46,28 @@ gfpgan-infer --input path/to/photo.jpg --version 1.3 --upscale 2
 
 Note: on CPU, Real-ESRGAN background upsampling is disabled for speed.
 
+### Restoria quick examples
+
+Try the new modular CLI (Restoria) side-by-side with legacy commands:
+
+```bash
+# Single image (plan-only, no execution; writes plan + manifest)
+restoria run --input assets/gfpgan_logo.png --output out/ --plan-only
+
+# Single image (run through default backend)
+restoria run --input assets/gfpgan_logo.png --output out/
+
+# Folder
+restoria run --input inputs/whole_imgs --output out_folder/
+
+# Discover backends and check environment
+restoria list-backends
+restoria doctor
+```
+
 ### Colab Features
 
-- Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
+- Open: [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
 - Features: interactive UI for uploads, URLs, options; preview; ZIP download.
 - Compatibility: the notebook installs BasicSR master to match modern torchvision.
 
@@ -108,18 +114,18 @@ gfpgan-infer --input photo.jpg --upscale 2 --bg_upsampler realesrgan
 
 ## Documentation
 
-- **[Getting started guide →](https://IAmJonoBo.github.io/GFPGAN/getting-started/install/)**
-- **[API documentation →](https://IAmJonoBo.github.io/GFPGAN/api/)**
-- **[Choose the right backend →](https://IAmJonoBo.github.io/GFPGAN/guides/choose-backend/)**
+- **[Getting started guide →](https://IAmJonoBo.github.io/Restoria/getting-started/install/)**
+- **[API documentation →](https://IAmJonoBo.github.io/Restoria/api/)**
+- **[Choose the right backend →](https://IAmJonoBo.github.io/Restoria/guides/choose-backend/)**
 
 ### Key guides
 
-- [Restore a photo](https://IAmJonoBo.github.io/GFPGAN/guides/restore-a-photo/) — CLI and web interface
-- [Batch processing](https://IAmJonoBo.github.io/GFPGAN/guides/batch-processing/) — Folders and automation
-- [Quality metrics](https://IAmJonoBo.github.io/GFPGAN/guides/metrics/) — Measure restoration quality
-- [Hardware optimization](https://IAmJonoBo.github.io/GFPGAN/guides/hardware/) — GPU setup and troubleshooting
+- [Restore a photo](https://IAmJonoBo.github.io/Restoria/guides/restore-a-photo/) — CLI and web interface
+- [Batch processing](https://IAmJonoBo.github.io/Restoria/guides/batch-processing/) — Folders and automation
+- [Quality metrics](https://IAmJonoBo.github.io/Restoria/guides/metrics/) — Measure restoration quality
+- [Hardware optimization](https://IAmJonoBo.github.io/Restoria/guides/hardware/) — GPU setup and troubleshooting
 
-:question: **Questions?** Check our [FAQ](https://IAmJonoBo.github.io/GFPGAN/faq/) or [troubleshooting guide](https://IAmJonoBo.github.io/GFPGAN/troubleshooting/).
+:question: **Questions?** Check our [FAQ](https://IAmJonoBo.github.io/Restoria/faq/) or [troubleshooting guide](https://IAmJonoBo.github.io/Restoria/troubleshooting/).
 
 ## Installation
 
@@ -132,8 +138,8 @@ pip install gfpgan
 ### Development install
 
 ```bash
-git clone https://github.com/IAmJonoBo/GFPGAN.git
-cd GFPGAN
+git clone https://github.com/IAmJonoBo/Restoria.git
+cd Restoria
 pip install -e ".[dev,metrics,web]"
 ```
 
@@ -153,7 +159,7 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm5.6
 ```
 
-For detailed platform-specific instructions, see our [hardware guide](https://IAmJonoBo.github.io/GFPGAN/guides/hardware/).
+For detailed platform-specific instructions, see our [hardware guide](https://IAmJonoBo.github.io/Restoria/guides/hardware/).
 
 ## CLI usage
 
@@ -254,4 +260,4 @@ If you use GFPGAN in your research, please cite:
 
 ---
 
-**Questions?** Check our [FAQ](https://IAmJonoBo.github.io/GFPGAN/faq/) • [Documentation](https://IAmJonoBo.github.io/GFPGAN/) • [Issues](https://github.com/IAmJonoBo/GFPGAN/issues)
+**Questions?** Check our [FAQ](https://IAmJonoBo.github.io/Restoria/faq/) • [Documentation](https://IAmJonoBo.github.io/Restoria/) • [Issues](https://github.com/IAmJonoBo/Restoria/issues)

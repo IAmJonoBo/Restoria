@@ -1,6 +1,7 @@
 # Acknowledgements
 
-We express our gratitude to the researchers, developers, and communities whose foundational work and contributions made GFPGAN possible.
+We express our gratitude to the researchers, developers, and communities
+whose foundational work and contributions made GFPGAN possible.
 
 ## Research Foundations
 
@@ -13,7 +14,11 @@ This project builds upon the foundational research and implementations from:
 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2021
 [Paper](https://arxiv.org/abs/2101.04061) | [Original Implementation](https://github.com/TencentARC/GFPGAN)
 
-We acknowledge and thank the original authors for their groundbreaking research in generative facial priors and their open-source contribution that enabled this project. This project has been completely unforked and operates independently while preserving attribution to the original research.
+We acknowledge and thank the original authors for their groundbreaking
+research in generative facial priors and their open-source contribution
+that enabled this project. This project has been completely unforked and
+operates independently while preserving attribution to the original
+research.
 
 ## Core Dependencies
 
@@ -32,7 +37,8 @@ Essential for face detection, alignment, and facial feature analysis.
 ### Model Architectures
 
 **StyleGAN2** - Generative Adversarial Networks
-*Tero Karras, Samuli Laine, Miika Aittala, Janne Hellsten, Jaakko Lehtinen, Timo Aila*
+*Tero Karras, Samuli Laine, Miika Aittala, Janne Hellsten, Jaakko
+Lehtinen, Timo Aila*
 Provides the core generative architecture for high-quality face synthesis.
 
 **Real-ESRGAN** - Real-World Image Super-Resolution
@@ -155,11 +161,14 @@ We thank all community members who have contributed to this project through:
 ### Standards and Guidelines
 
 **Model Cards for Model Reporting**
-*Margaret Mitchell, Simone Wu, Andrew Zaldivar, Parker Barnes, Lucy Vasserman, Ben Hutchinson, Elena Spitzer, Inioluwa Deborah Raji, Timnit Gebru*
+*Margaret Mitchell, Simone Wu, Andrew Zaldivar, Parker Barnes, Lucy
+Vasserman, Ben Hutchinson, Elena Spitzer, Inioluwa Deborah Raji, Timnit
+Gebru*
 Framework for transparent model documentation.
 
 **Datasheets for Datasets**
-*Timnit Gebru, Jamie Morgenstern, Briana Vecchione, Jennifer Wortman Vaughan, Hanna Wallach, Hal Daumé III, Kate Crawford*
+*Timnit Gebru, Jamie Morgenstern, Briana Vecchione, Jennifer Wortman
+Vaughan, Hanna Wallach, Hal Daumé III, Kate Crawford*
 Guidelines for comprehensive dataset documentation.
 
 ## License and Legal
@@ -168,23 +177,37 @@ Guidelines for comprehensive dataset documentation.
 
 This project is made possible by the generous open-source licenses of our dependencies:
 
-- **Apache License 2.0**: Core project license ensuring freedom to use, modify, and distribute
+- **Apache License 2.0**: Core project license ensuring freedom to use,
+  modify, and distribute
 - **MIT License**: Many utility libraries and tools
 - **BSD Licenses**: Scientific computing and computer vision libraries
 - **Creative Commons**: Documentation and educational content
 
 ### Patent Considerations
 
-We acknowledge that some techniques used in this project may be covered by patents. Users should ensure compliance with applicable patent laws in their jurisdiction.
+We acknowledge that some techniques used in this project may be covered by
+patents. Users should ensure compliance with applicable patent laws in
+their jurisdiction.
 
 ## Disclaimer
 
-While we strive to acknowledge all contributors and influences, this list may not be exhaustive. If you believe your work should be acknowledged here, please contact us at acknowledgements@gfpgan.ai.
+While we strive to acknowledge all contributors and influences, this list
+may not be exhaustive. If you believe your work should be acknowledged
+here, please contact us at
+[acknowledgements@gfpgan.ai](mailto:acknowledgements@gfpgan.ai).
 
-The inclusion of any work, dataset, or contribution in these acknowledgements does not imply endorsement of this project by the original authors or institutions.
+The inclusion of any work, dataset, or contribution in these acknowledgements
+does not imply endorsement of this project by the original authors or
+institutions.
 
 ---
 
-**Contributing to acknowledgements**: If you've contributed to this project or believe your work should be acknowledged, please [open an issue](https://github.com/IAmJonoBo/GFPGAN/issues) or contact us directly.
+**Contributing to acknowledgements**:
+If you've contributed to this project or believe your work should be acknowledged,
+please [open an issue](https://github.com/IAmJonoBo/Restoria/issues) or
+contact us directly.
+Alternatively, you can reach the maintainers via email if GitHub is not an option.
 
-**Citation**: When citing this project, please also consider citing the foundational research and key dependencies that make this work possible.
+**Citation**:
+When citing this project, please also consider citing the foundational research and
+key dependencies that make this work possible.

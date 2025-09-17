@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: Check Colab notebook link
         run: |
-          URL="https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb"
+          URL="https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb"
           code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
           echo "Colab URL status: $code"
           [ "$code" -eq 200 ]

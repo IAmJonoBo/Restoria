@@ -1,8 +1,8 @@
-site_name: GFPGAN
+site_name: Restoria
 site_description: Professional face restoration powered by generative AI
-site_url: https://IAmJonoBo.github.io/GFPGAN/
-repo_url: https://github.com/IAmJonoBo/GFPGAN
-repo_name: IAmJonoBo/GFPGAN
+site_url: https://IAmJonoBo.github.io/Restoria/
+repo_url: https://github.com/IAmJonoBo/Restoria
+repo_name: IAmJonoBo/Restoria
 edit_uri: edit/main/docs/
 
 theme:
@@ -49,14 +49,14 @@ extra:
     provider: mike
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/IAmJonoBo/GFPGAN
+      link: https://github.com/IAmJonoBo/Restoria
 
 nav:
   - Home: index.md
   - Getting Started:
     - Quick Start: getting-started/quickstart.md
-    - Installation: getting-started/installation.md
-    - Development Environment: getting-started/dev-setup.md
+    - Installation: getting-started/install.md
+    - Development Environment: DEV_ENV.md
   - User Guides:
     - Face Enhancement: guides/face-enhancement.md
     - Batch Processing: guides/batch-processing.md
@@ -66,8 +66,22 @@ nav:
     - Hardware Guide: HARDWARE_GUIDE.md
     - Performance on your Hardware: guides/hardware.md
     - Notebooks: usage/colab.md
-    - Migration Guide: MIGRATION.md
+    - Migration to Restoria: guides/migration.md
     - Accessibility: ACCESSIBILITY.md
+    - Troubleshooting: troubleshooting.md
+    - UI Guide (Gradio): UI_GUIDE.md
+    - Guided Walkthrough: guides/guided.md
+    - Restore a Photo: guides/restore-a-photo.md
+  - Reference:
+    - CLI Usage: usage/cli.md
+    - Backend Matrix: BACKEND_MATRIX.md
+    - Compatibility: COMPATIBILITY.md
+    - ORT Guide: ORT_GUIDE.md
+    - Torch 2 Notes: TORCH2.md
+    - Decision Table: DECISION_TABLE.md
+    - Recipes: usage/recipes.md
+    - Gradio Usage: usage/gradio.md
+    - REST API Usage: usage/api.md
   - API Reference:
     - Overview: api/index.md
     - Core Functions: api/core.md
@@ -79,14 +93,20 @@ nav:
     - Performance: product/performance.md
   - Governance:
     - Contributing: governance/contributing.md
+    - Docs Conventions: governance/docs-conventions.md
+    - Code of Conduct: governance/code-of-conduct.md
+    - Privacy: governance/privacy.md
+    - Ethics: governance/ethics.md
     - Security: governance/security.md
     - Maintainers: governance/maintainers.md
     - Versioning: governance/versioning.md
+    - Repo rename checklist: guides/repo-rename.md
   - About:
     - FAQ: faq.md
     - Changelog: about/changelog.md
     - Acknowledgements: about/acknowledgements.md
     - License: about/license.md
+    - Brand: product/brand.md
 
 markdown_extensions:
   - admonition

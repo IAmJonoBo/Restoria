@@ -19,7 +19,7 @@ runtimes:
 lint:
     enabled:
         - pyright@1.1.405
-        - renovate@41.115.2
+        - renovate@41.115.6
         # flake8 disabled in favor of Ruff
         - hadolint@2.13.1
         # isort disabled in favor of Ruff (import sorting)

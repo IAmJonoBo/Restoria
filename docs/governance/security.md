@@ -9,7 +9,7 @@ We take the security of GFPGAN seriously. If you discover a security vulnerabili
 For security issues, please **do not** create public GitHub issues. Instead, report vulnerabilities privately:
 
 1. **Email**: Send details to security@gfpgan.ai
-2. **GitHub**: Use [private vulnerability reporting](https://github.com/IAmJonoBo/GFPGAN/security/advisories/new)
+2. **GitHub**: Use [private vulnerability reporting](https://github.com/IAmJonoBo/Restoria/security/advisories/new)
 
 ### What to Include
 
@@ -142,7 +142,7 @@ Security updates are released as:
 
 - **Security Email**: security@gfpgan.ai
 - **PGP Key**: Available at https://gfpgan.ai/.well-known/pgp-key.txt
-- **GitHub Security**: https://github.com/IAmJonoBo/GFPGAN/security
+- **GitHub Security**: https://github.com/IAmJonoBo/Restoria/security
 
 ### Acknowledgments
 

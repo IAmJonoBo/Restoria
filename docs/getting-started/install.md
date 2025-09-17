@@ -84,8 +84,8 @@ This installs the core GFPGAN package with basic dependencies.
 For contributing or using the latest features:
 
 ```bash
-git clone https://github.com/IAmJonoBo/GFPGAN.git
-cd GFPGAN
+git clone https://github.com/IAmJonoBo/Restoria.git
+cd Restoria
 pip install -e ".[dev,metrics,web]"
 ```
 
@@ -146,8 +146,8 @@ gfpgan-infer --input test.jpg --dry-run
 If you encounter issues:
 
 1. Check our [troubleshooting guide](../troubleshooting.md)
-2. Search [existing issues](https://github.com/IAmJonoBo/GFPGAN/issues)
-3. Create a [new issue](https://github.com/IAmJonoBo/GFPGAN/issues/new) with:
+2. Search [existing issues](https://github.com/IAmJonoBo/Restoria/issues)
+3. Create a [new issue](https://github.com/IAmJonoBo/Restoria/issues/new) with:
    - Your platform (OS, GPU model)
    - Python version (`python --version`)
    - Error message and full traceback

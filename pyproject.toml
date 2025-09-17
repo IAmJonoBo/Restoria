@@ -117,6 +117,7 @@ gfpgan-download-weights = "gfpgan.cli_download:main"
 gfpgan-gradio = "gfpgan.gradio_app:main"
 gfpgan-api = "gfpgan.api.server:main"
 gfpup = "gfpp.cli:main"
+restoria = "restoria.cli.main:main"
 
 [tool.setuptools]
 include-package-data = true
@@ -127,6 +128,7 @@ exclude = ["options", "datasets", "experiments", "results", "tb_logger", "wandb"
 
 [tool.setuptools.package-dir]
 gfpp = "src/gfpp"
+restoria = "src/restoria"
 
 [tool.setuptools.dynamic]
 version = { file = "VERSION" }
@@ -158,6 +160,7 @@ exclude = [
 # Tests often perform environment setup before imports; keep code intent and avoid risky refactors
 "tests/**" = ["E402"]
 "src/gfpp/cli.py" = ["C901"]
+"src/restoria/cli/run.py" = ["C901"]
 "gfpgan/utils.py" = ["C901"]
 
 [tool.pytest.ini_options]

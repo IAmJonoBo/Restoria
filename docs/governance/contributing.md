@@ -9,8 +9,8 @@ We welcome contributions to GFPGAN! This guide will help you get started with de
 1. **Fork and clone the repository**
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/GFPGAN.git
-   cd GFPGAN
+   git clone https://github.com/YOUR_USERNAME/Restoria.git
+   cd Restoria
    ```
 
 2. **Create a virtual environment**
@@ -273,8 +273,8 @@ python bench/compare_results.py --baseline bench_baseline.json --current bench_r
 
 ## Getting help
 
-- **Questions**: Open a [discussion](https://github.com/IAmJonoBo/GFPGAN/discussions)
-- **Bugs**: Create an [issue](https://github.com/IAmJonoBo/GFPGAN/issues)
+- **Questions**: Open a [discussion](https://github.com/IAmJonoBo/Restoria/discussions)
+- **Bugs**: Create an [issue](https://github.com/IAmJonoBo/Restoria/issues)
 - **Features**: Start with a discussion, then create an issue
 - **Security**: See our [security policy](security.md)
 

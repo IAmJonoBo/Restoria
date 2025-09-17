@@ -1,4 +1,10 @@
-# Quickstart
+# Quick Start
+
+> Note: The new Restoria CLI (`restoria`) is the primary entry point going forward.
+> Legacy commands (`gfpgan-infer`, `gfpup`) remain available during the transition.
+> See the migration guide: [guides/migration.md](../guides/migration.md).
+
+<!-- markdownlint-disable MD013 -->
 
 - Install (editable):
   - `pip install -e .[dev]`
@@ -7,10 +13,12 @@
 - Helpful flags:
   - `--dry-run` (validate args), `--no-download` (require local weights), `--model-path` (override weights)
 - Colab notebook (UI):
-  - https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb
+  - [Open in Colab](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
 
-See: CLI Usage (./usage/cli.md) and Colab Guide (./usage/colab.md).
+See also:
 
+- CLI Usage (./usage/cli.md)
+- Colab Guide (./usage/colab.md)
 
 ## Listing available backends
 
@@ -18,39 +26,46 @@ Check which backends are available in your environment without heavy downloads:
 
 ```bash
 gfpup list-backends
+# or
+restoria list-backends
 ```
 
 Add `--verbose` for per-backend availability, and `--all` to include experimental ones. For machine-readable output:
 
 ```bash
 gfpup list-backends --json
+# or
+restoria list-backends --json
 ```
 
-The JSON output includes a `schema_version` field (currently "1") for forward compatibility, plus `experimental` and a `backends` dictionary mapping backend name to a boolean availability.
+The JSON output includes a `schema_version` field (currently "1") and a `backends` dictionary mapping backend name to availability, with an `experimental` flag indicating whether experimental backends are included.
 
 ## Environment check (doctor)
 
-Print environment and availability information:
-
 ```bash
 gfpup doctor
+# or
+restoria doctor
 ```
 
 For machine-readable output:
 
 ```bash
 gfpup doctor --json
+# or
+restoria doctor --json
 ```
 
 ## Optional perceptual metrics
 
-You can install optional metrics for identity/perceptual scoring:
+Install optional metrics for identity/perceptual scoring:
 
 ```bash
 pip install -e .[metrics]
 ```
 
 Notes:
+
 - Linux: BRISQUE via `imquality[brisque]` is enabled.
 - Windows: BRISQUE via `pybrisque` is enabled.
 - macOS: BRISQUE is not installed by default to avoid resolver/build issues on newer Python versions; metrics gracefully degrade if BRISQUE is unavailable.

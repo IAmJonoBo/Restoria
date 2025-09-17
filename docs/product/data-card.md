@@ -222,7 +222,7 @@ For information about privacy practices and ethical considerations:
 - **Dataset errors**: data-issues@gfpgan.ai
 - **Privacy concerns**: privacy@gfpgan.ai
 - **Bias reports**: bias@gfpgan.ai
-- **General questions**: [GitHub Discussions](https://github.com/IAmJonoBo/GFPGAN/discussions)
+- **General questions**: [GitHub Discussions](https://github.com/IAmJonoBo/Restoria/discussions)
 
 ### Contributing
 

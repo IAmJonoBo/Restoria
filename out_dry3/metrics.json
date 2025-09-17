@@ -1,0 +1,8 @@
+{
+  "metrics": [
+    {
+      "input": "assets/gfpgan_logo.png",
+      "restored_img": "out_dry3/gfpgan_logo.png"
+    }
+  ]
+}

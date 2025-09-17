@@ -247,7 +247,7 @@
 
 ### Reporting Issues
 
-- **Technical issues**: [GitHub Issues](https://github.com/IAmJonoBo/GFPGAN/issues)
+- **Technical issues**: [GitHub Issues](https://github.com/IAmJonoBo/Restoria/issues)
 - **Ethical concerns**: ethics@gfpgan.ai
 - **Security vulnerabilities**: [Security Policy](../governance/security.md)
 - **Bias reports**: bias@gfpgan.ai

@@ -16,7 +16,7 @@ Interactive Google Colab notebook for easy experimentation with GFPGAN:
   - Multiple model comparisons
   - Quality metrics evaluation
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/GFPGAN/blob/main/notebooks/GFPGAN_Colab.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IAmJonoBo/Restoria/blob/main/notebooks/GFPGAN_Colab.ipynb)
 
 ## Development Workflow
 
@@ -229,6 +229,6 @@ print(f"Quality metrics: {metrics}")
 
 - **Documentation**: [User guides](../docs/guides/)
 - **API Reference**: [API documentation](../docs/api/)
-- **Issues**: [GitHub Issues](https://github.com/IAmJonoBo/GFPGAN/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/IAmJonoBo/GFPGAN/discussions)
+- **Issues**: [GitHub Issues](https://github.com/IAmJonoBo/Restoria/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/IAmJonoBo/Restoria/discussions)
 
