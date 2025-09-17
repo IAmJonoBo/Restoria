@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "GFPGAN aims at developing Practical Algorithms for Real-world Face Restoration"
 readme = "README.md"
 requires-python = ">=3.8"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
 authors = [{ name = "Xintao Wang", email = "xintao.wang@outlook.com" }]
 keywords = [
   "computer vision",
@@ -21,7 +21,6 @@ keywords = [
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
-  "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",

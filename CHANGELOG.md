@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD024 -->
 # Changelog
 
 All notable changes to GFPGAN are documented in this file.
@@ -9,12 +10,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- CLI: new `gfpup list-backends` subcommand (flags: `--all`, `--verbose`); lightweight and non-breaking.
+- Placeholder for upcoming changes.
+
+### Changed
+
+- N/A
+
+### Fixed
+
+- N/A
+
+### Security
+
+- N/A
+
+## [2.1.0] - 2025-09-17
+
+### Added
+
+- CLI: new `gfpup list-backends` subcommand (flags: `--all`, `--verbose`);
+  lightweight and non-breaking.
 - CLI: `gfpup list-backends --json` now emits a stable payload with
   `schema_version: "1"`.
 - CLI: `gfpup doctor --json` outputs a stable payload with
   `schema_version: "1"` and environment info.
-- Comprehensive documentation restructure with task-first information architecture
+- Comprehensive documentation restructure with task-first information
+  architecture
 - Model card and data card for responsible AI disclosures
 - Governance documentation (contributing, security, maintainers, versioning)
 - CODEOWNERS file for code review assignments
@@ -38,10 +59,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Documentation organization and navigation flow
 - Consistent branding and messaging throughout project
+- Ensure `guided` backend appears in `gfpup list-backends` default JSON output
+- Add `--output` alias to `gfpup export-onnx` to match docs/tests expectations
+
 
 ## [1.0.0] - 2024-12-01
 
 ### Added
+
 - First standalone release as independent project
 - Complete documentation overhaul with professional structure
 - Responsible AI framework with model and data cards
@@ -49,17 +74,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Modern CI/CD pipeline with automated testing and quality checks
 
 ### Changed
+
 - **BREAKING**: Rebranded from fork to standalone project
 - Updated all documentation to reflect independent project status
 - Modernized packaging with uv and PyTorch 2.x support
 - Enhanced CLI with improved error handling and user experience
 
 ### Removed
+
 - Fork-specific references and upstream dependencies (moved to acknowledgements)
 - Legacy documentation structure
 - Outdated CI workflows
 
 ### Security
+
 - Added comprehensive security policy with private vulnerability reporting
 - Implemented security best practices documentation
 - Added automated security scanning in CI pipeline
@@ -67,12 +95,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v1.3.8-fork1] - 2024-09-11
 
 ### Added
+
 - Initial fork from upstream v1.3.8
 - Fork-specific branding and documentation
 - Enhanced CI workflow with modern Python versions
 - Improved packaging and dependency management
 
 ### Changed
+
 - Updated README with fork-specific information
 - Modified CI badge and repository URLs
 - Enhanced gitignore for modern development
@@ -80,9 +110,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 **Migration Notes:**
+
 - This changelog begins comprehensive tracking from v1.0.0 standalone release
 - For historical changes prior to independence, see git history
 - Breaking changes are clearly marked and migration guides provided in documentation
-- Original research: https://github.com/TencentARC/GFPGAN (historical reference)
-- Current project: https://github.com/IAmJonoBo/GFPGAN
-- Model repository: https://huggingface.co/TencentARC/GFPGANv1
+- Original research: [TencentARC/GFPGAN](https://github.com/TencentARC/GFPGAN)
+  (historical reference)
+- Current project: [IAmJonoBo/GFPGAN](https://github.com/IAmJonoBo/GFPGAN)
+- Model repository: [TencentARC/GFPGANv1](https://huggingface.co/TencentARC/GFPGANv1)
