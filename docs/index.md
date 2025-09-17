@@ -1,19 +1,21 @@
-# GFPGAN (Fork) — Documentation
+# Restoria — Face Restoration Toolkit
 
 <!-- markdownlint-disable MD013 -->
 
-> Note: We are introducing the new Restoria CLI (`restoria`) as the primary
-> entry point going forward. Legacy commands remain available during the
-> transition. See the migration guide: [guides/migration.md](guides/migration.md).
+> Restoria is the project brand and primary CLI (`restoria`). GFPGAN remains the
+> default backend and legacy commands remain available for compatibility
+> (`gfpup`, `gfpgan-infer`). See the migration guide:
+> [guides/migration.md](guides/migration.md).
 
-Welcome to the fork documentation. This fork focuses on modern developer
-ergonomics, a smoother Colab experience, and practical inference.
+Welcome to Restoria’s documentation. Restoria is a modular, CLI‑first face
+restoration toolkit with multiple interchangeable backends (GFPGAN by default),
+deterministic planning, and machine‑readable outputs.
 
-- What’s new vs upstream:
-  - Modern CI and linting
-  - Colab with interactive UI and compatibility fixes (BasicSR master + modern torchvision)
-  - CLI quality-of-life flags and console entrypoint
-  - Safer repository defaults and optional light tests
+- Highlights
+  - Modular backends: GFPGAN (default), CodeFormer, RestoreFormer++
+  - Deterministic runs (`--seed`, `--deterministic`) and stable manifests/metrics
+  - Modern CI and link-checked docs; optional metrics with graceful fallback
+  - Legacy compatibility preserved: existing GFPGAN workflows continue to work
 
 Quick links
 
@@ -27,7 +29,7 @@ Quick links
 - Contribute
   - Contributing: governance/contributing.md
 
-Upstream reference: <https://github.com/TencentARC/GFPGAN>
+Upstream research reference (historical): <https://github.com/TencentARC/GFPGAN>
 
 ## Quick tiles
 
