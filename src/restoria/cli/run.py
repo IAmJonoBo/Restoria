@@ -18,6 +18,38 @@ def _warn(msg: str) -> None:
         pass
 
 
+def _set_deterministic(seed: int | None, deterministic: bool) -> None:
+    """Best-effort deterministic setup.
+
+    - Seeds Python's random, NumPy, and torch (if present)
+    - Enables deterministic CuDNN and disables benchmark mode when requested
+    """
+    try:
+        import random
+
+        if seed is not None:
+            random.seed(seed)
+    except Exception:
+        pass
+    try:
+        import numpy as np  # type: ignore
+
+        if seed is not None:
+            np.random.seed(seed)
+    except Exception:
+        pass
+    try:
+        import torch  # type: ignore
+
+        if seed is not None:
+            torch.manual_seed(seed)
+        if deterministic:
+            torch.backends.cudnn.deterministic = True  # type: ignore[attr-defined]
+            torch.backends.cudnn.benchmark = False  # type: ignore[attr-defined]
+    except Exception:
+        pass
+
+
 def _list_inputs(inp: str) -> list[str]:
     if os.path.isdir(inp):
         return [
@@ -31,8 +63,7 @@ def _list_inputs(inp: str) -> list[str]:
 def _load_image(path: str):
     try:
         import cv2  # type: ignore
-
-        img = cv2.imread(path, cv2.IMREAD_COLOR)
+        img = cv2.imread(path, cv2.IMREAD_COLOR)  # type: ignore[attr-defined]
         return img
     except Exception:
         return None
@@ -43,7 +74,7 @@ def _save_image(path: str, img) -> None:
         import cv2  # type: ignore
 
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        cv2.imwrite(path, img)
+        cv2.imwrite(path, img)  # type: ignore[attr-defined]
     except Exception:
         pass
 
@@ -217,6 +248,8 @@ def _run_with_registry(args, inputs: list[str]) -> int:
                     "device": args.device,
                     "experimental": bool(args.experimental),
                     "plan_only": True,
+                    "seed": args.seed,
+                    "deterministic": bool(args.deterministic),
                 },
                 device=args.device,
                 results=[],
@@ -271,6 +304,8 @@ def _run_with_registry(args, inputs: list[str]) -> int:
                     "device": args.device,
                     "experimental": bool(args.experimental),
                     "dry_run": False,
+                    "seed": args.seed,
+                    "deterministic": bool(args.deterministic),
                 },
                 device=dev,
                 results=recs,
@@ -296,6 +331,8 @@ def run_cmd(argv: list[str]) -> int:
     p.add_argument("--device", default="auto", choices=["auto", "cpu", "cuda"])
     p.add_argument("--experimental", action="store_true")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--seed", type=int, default=None, help="Random seed for reproducibility")
+    p.add_argument("--deterministic", action="store_true", help="Enable deterministic backend behavior when possible")
     p.add_argument("--compile", action="store_true", help="Hint to enable torch.compile if available")
     p.add_argument(
         "--ort-providers",
@@ -305,6 +342,9 @@ def run_cmd(argv: list[str]) -> int:
     )
     p.add_argument("--plan-only", action="store_true", help="Compute plan and write to output without running")
     args = p.parse_args(argv)
+
+    # Best-effort determinism setup before any heavy imports/initialization
+    _set_deterministic(args.seed, bool(args.deterministic))
 
     inputs = _list_inputs(args.input)
     if args.dry_run:

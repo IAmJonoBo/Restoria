@@ -14,18 +14,33 @@ practical limits when using CUDA.
 
 ## Restoria CLI
 
-Restoria's `restoria run` currently focuses on consistent planning and
-best-effort reproducible outputs without exposing new seed flags. Planning is
-deterministic: given the same image and flags (backend, experimental, compile,
-ort providers), the same plan is produced.
+Restoria's `restoria run` provides explicit seeding and deterministic options:
+
+- `--seed <int>`: seeds Python `random`, NumPy, and Torch (if available).
+- `--deterministic`: enables CuDNN deterministic mode and disables benchmarking
+  when Torch is present and CUDA is used.
+
+Example:
+
+```bash
+restoria run \
+  --input samples/portrait.jpg \
+  --output out/ \
+  --backend gfpgan \
+  --device cuda \
+  --seed 123 \
+  --deterministic
+```
+
+Planning is deterministic: given the same image and flags (backend,
+experimental, compile, and ORT providers), the same plan is produced. The seed
+and deterministic choices are recorded in the run manifest.
 
 Tips for reproducibility with Restoria:
 
 - Prefer CPU for stricter determinism when comparing outputs across machines.
 - Keep `--metrics` mode the same between runs; metrics affect what is computed
   but not the restoration itself.
-- Use the legacy GFPP CLI (`gfpup run`) if you need explicit `--seed`/
-  `--deterministic` controls today.
 
 ## GFPP CLI (gfpup)
 
