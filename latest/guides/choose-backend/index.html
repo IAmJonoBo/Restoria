@@ -2421,7 +2421,11 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">GFPGAN v1.4 (Recommended)</label><label for="__tabbed_1_2">GFPGAN v1.3 (Natural)</label><label for="__tabbed_1_3">GFPGAN v1.2 (Sharp)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<div class="highlight"><pre><span></span><code><span class="c1"># New CLI</span>
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
+
+<span class="c1"># Legacy shim</span>
+gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
 </code></pre></div>
 <p><strong>Strengths:</strong>
 - Excellent detail preservation
@@ -2435,7 +2439,11 @@
 <p><strong>Example use case:</strong> Family photo restoration, professional headshots</p>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.3
+<div class="highlight"><pre><span></span><code><span class="c1"># New CLI (select model via param if supported)</span>
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
+
+<span class="c1"># Legacy shim</span>
+gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.3
 </code></pre></div>
 <p><strong>Strengths:</strong>
 - More natural-looking results
@@ -2452,7 +2460,8 @@
 <p><strong>Example use case:</strong> Old family photos, vintage portraits</p>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.2
+<div class="highlight"><pre><span></span><code><span class="c1"># Legacy shim example only</span>
+gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.2
 </code></pre></div>
 <p><strong>Strengths:</strong>
 - Very sharp output
@@ -2472,7 +2481,11 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">CodeFormer (Fast)</label><label for="__tabbed_2_2">RestoreFormer++ (Premium)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer
+<div class="highlight"><pre><span></span><code><span class="c1"># New CLI</span>
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
+
+<span class="c1"># Legacy shim</span>
+gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer
 </code></pre></div>
 <p><strong>Strengths:</strong>
 - Fastest processing
@@ -2489,7 +2502,11 @@
 <p><strong>Example use case:</strong> Processing thousands of photos, real-time applications</p>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer
+<div class="highlight"><pre><span></span><code><span class="c1"># New CLI uses canonical name restoreformerpp</span>
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/
+
+<span class="c1"># Legacy shim alias</span>
+gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer
 </code></pre></div>
 <p><strong>Strengths:</strong>
 - Highest quality results
@@ -2522,7 +2539,11 @@
 </div>
 <div class="tabbed-block">
 <p><strong>Recommended:</strong> RestoreFormer++
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>portrait.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer<span class="w"> </span>--metrics<span class="w"> </span>detailed
+<div class="highlight"><pre><span></span><code><span class="w">    </span>gfpup<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--input<span class="w"> </span>portrait.jpg<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--metrics<span class="w"> </span>full<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--output<span class="w"> </span>out/
 </code></pre></div>
 - Highest quality output
 - Excellent for client work
@@ -2530,7 +2551,7 @@
 </div>
 <div class="tabbed-block">
 <p><strong>Recommended:</strong> CodeFormer
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--bg_upsampler<span class="w"> </span>none
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 - Fastest processing
 - Lower resource usage
@@ -2542,7 +2563,7 @@
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.3
 
 <span class="c1"># For maximum quality</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div></p>
 </div>
 </div>
@@ -2556,7 +2577,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg
 <li><strong>Recommended:</strong> RestoreFormer++ for quality</li>
 <li><strong>Alternative:</strong> GFPGAN v1.4 for speed</li>
 </ul>
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer<span class="w"> </span>--upscale<span class="w"> </span><span class="m">2</span>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/<span class="w"> </span>--compile
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -2574,7 +2595,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg
 <li>✅ GFPGAN with reduced settings</li>
 <li>❌ RestoreFormer++ (use CPU)</li>
 </ul>
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--bg_upsampler<span class="w"> </span>none
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -2583,7 +2604,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg
 <li><strong>Recommended:</strong> CodeFormer for speed</li>
 <li>Disable background enhancement</li>
 </ul>
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 </div>
@@ -2653,19 +2674,27 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg
 </tr>
 </tbody>
 </table>
-<p><em>Benchmarks based on 512x512 input images with background enhancement</em></p>
+<p>Note: benchmarks based on 512x512 input images with background enhancement.</p>
 <h2 id="quality-evaluation">Quality evaluation<a class="headerlink" href="#quality-evaluation" title="Permanent link">&para;</a></h2>
 <h3 id="objective-metrics">Objective metrics<a class="headerlink" href="#objective-metrics" title="Permanent link">&para;</a></h3>
 <p>Use built-in metrics to compare backends:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Test multiple backends on the same image</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>test_photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4<span class="w"> </span>--metrics<span class="w"> </span>detailed<span class="w"> </span>--output<span class="w"> </span>v14/
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>test_photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--metrics<span class="w"> </span>detailed<span class="w"> </span>--output<span class="w"> </span>cf/
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>test_photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer<span class="w"> </span>--metrics<span class="w"> </span>detailed<span class="w"> </span>--output<span class="w"> </span>rf/
-</code></pre></div>
-<p><strong>Typical metric ranges:</strong>
-- <strong>LPIPS</strong>: 0.1-0.4 (lower is better)
-- <strong>DISTS</strong>: 0.1-0.3 (lower is better)
-- <strong>ArcFace</strong>: 0.7-0.95 (higher is better)</p>
+<pre><code>    # Test multiple backends on the same image
+    gfpup run --input test_photo.jpg \
+        --backend gfpgan --metrics full --output v14/
+    gfpup run --input test_photo.jpg \
+        --backend codeformer --metrics full --output cf/
+    gfpup run \
+        --input test_photo.jpg \
+        --backend restoreformerpp \
+        --metrics full \
+        --output rf/
+</code></pre>
+<p><strong>Typical metric ranges:</strong></p>
+<ul>
+<li><strong>LPIPS</strong>: 0.1-0.4 (lower is better)</li>
+<li><strong>DISTS</strong>: 0.1-0.3 (lower is better)</li>
+<li><strong>ArcFace</strong>: 0.7-0.95 (higher is better)</li>
+</ul>
 <h3 id="visual-quality-checklist">Visual quality checklist<a class="headerlink" href="#visual-quality-checklist" title="Permanent link">&para;</a></h3>
 <p>When comparing results, look for:</p>
 <ul>

@@ -1962,14 +1962,15 @@
 <li>Health: <code>GET /healthz</code></li>
 <li>Restore: <code>POST /restore</code> (multipart/form-data)</li>
 <li>form field <code>files</code>: one or more images</li>
-<li>query params: <code>version=1.4</code>, <code>upscale=2</code>, <code>backend=gfpgan</code>, <code>device=auto</code>, <code>dry_run=true</code></li>
+<li>query params: <code>version=1.4</code>, <code>upscale=2</code>, <code>backend=gfpgan</code>, <code>device=auto</code>,
+    <code>dry_run=true</code>, <code>metrics=fast|full|off</code></li>
 </ul>
 <p>Notes</p>
 <ul>
-<li>Default is <code>dry_run=true</code> for smoke-safety; set <code>dry_run=false</code> to perform
-  actual restoration.</li>
-<li>In non-dry-run, the server resolves weights via env/Hugging Face (see CLI
-  docs) and runs the GFPGAN engine.</li>
+<li>Default is <code>dry_run=true</code> for smoke-safety; set <code>dry_run=false</code> for actual
+  restoration.</li>
+<li>In non-dry-run, the server resolves weights via centralized weight logic
+  (same as CLI) and runs the selected backend.</li>
 <li>CI runs an API smoke check as part of the workflow.</li>
 </ul>
 
