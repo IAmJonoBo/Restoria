@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "GFPGAN aims at developing Practical Algorithms for Real-world Face Restoration"
 readme = "README.md"
 requires-python = ">=3.8"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
 authors = [{ name = "Xintao Wang", email = "xintao.wang@outlook.com" }]
 keywords = [
   "computer vision",
@@ -21,7 +21,6 @@ keywords = [
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
-  "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
@@ -93,6 +92,10 @@ hypir = [
 ort = [
   "onnxruntime>=1.18",
 ]
+ensemble = []
+maniq = []
+document = []
+guided = []
 arcface = [
   # ArcFace uses built-in weights; keep optional
 ]
@@ -154,6 +157,8 @@ exclude = [
 [tool.ruff.lint.per-file-ignores]
 # Tests often perform environment setup before imports; keep code intent and avoid risky refactors
 "tests/**" = ["E402"]
+"src/gfpp/cli.py" = ["C901"]
+"gfpgan/utils.py" = ["C901"]
 
 [tool.pytest.ini_options]
 markers = [

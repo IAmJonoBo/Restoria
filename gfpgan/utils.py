@@ -4,6 +4,24 @@ import importlib
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def _warn(msg: str) -> None:
+    """Best-effort warning: prefer logging; fallback to print.
+
+    Keeps import-time light and avoids adding hard logging deps.
+    """
+    try:
+        import logging  # standard lib
+
+        logging.getLogger("gfpgan").warning(msg)
+        return
+    except Exception:
+        pass
+    try:
+        print(f"[WARN] {msg}")
+    except Exception:
+        pass
+
+
 class GFPGANer:
     """Helper for restoration with GFPGAN.
 
@@ -137,6 +155,11 @@ class GFPGANer:
             loadnet = torch.load(model_path, map_location=self.device, weights_only=True)  # type: ignore[call-arg]
         except TypeError:
             # Older torch versions do not support weights_only
+            # Security note: full deserialization is less safe; prefer upgrading to torch>=2.0
+            _warn(
+                "torch.load(weights_only=True) unsupported by this torch version; "
+                "falling back to full deserialization. Consider upgrading torch for safer loads."
+            )
             loadnet = torch.load(model_path, map_location=self.device)
         keyname = "params_ema" if "params_ema" in loadnet else "params"
         self.gfpgan.load_state_dict(loadnet[keyname], strict=True)

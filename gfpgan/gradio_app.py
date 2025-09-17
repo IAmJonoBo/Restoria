@@ -91,6 +91,26 @@ def build_restorer(
     return restorer, dev
 
 
+def _feedback_enabled() -> bool:
+    try:
+        return os.environ.get("GFPP_FEEDBACK", "0") in {"1", "true", "yes", "on"}
+    except Exception:
+        return False
+
+
+def _append_feedback(record: dict) -> None:
+    try:
+        out_dir = record.get("output_dir") or "results"
+        os.makedirs(out_dir, exist_ok=True)
+        path = os.path.join(out_dir, "feedback.jsonl")
+        with open(path, "a") as f:
+            import json
+
+            f.write(json.dumps({k: v for k, v in record.items() if v is not None}) + "\n")
+    except Exception:
+        pass
+
+
 def app_main():
     with gr.Blocks(title="GFPGAN Local UI") as demo:
         gr.Markdown("# GFPGAN — Local Demo")
@@ -118,11 +138,29 @@ def app_main():
                     multiple=True,
                 )
                 run_btn = gr.Button("Run")
+                # Optional feedback controls
+                fb_enabled = _feedback_enabled()
+                with gr.Accordion("Feedback (optional)", open=False, visible=fb_enabled):
+                    rating = gr.Slider(1, 5, step=1, value=5, label="Quality rating (1-5)")
+                    comments = gr.Textbox(lines=2, label="Comments")
             with gr.Column(scale=2):
                 gallery = gr.Gallery(label="Restored Images", show_label=True)
                 logs = gr.Markdown()
 
-        def infer(images, version, device, upscale, weight, detector, parse, bg_upsampler, bg_precision, bg_tile):
+        def infer(
+            images,
+            version,
+            device,
+            upscale,
+            weight,
+            detector,
+            parse,
+            bg_upsampler,
+            bg_precision,
+            bg_tile,
+            rating=None,
+            comments=None,
+        ):
             import cv2
 
             if not images:
@@ -154,13 +192,33 @@ def app_main():
                         outs.append(cv2.cvtColor(faces[0], cv2.COLOR_BGR2RGB))
                 else:
                     outs.append(cv2.cvtColor(restored, cv2.COLOR_BGR2RGB))
+            # Optional feedback payload
+            if _feedback_enabled():
+                _append_feedback(
+                    {
+                        "ts": __import__("time").time(),
+                        "version": version,
+                        "device": str(dev),
+                        "upscale": int(upscale),
+                        "weight": float(weight),
+                        "detector": str(detector),
+                        "use_parse": bool(parse),
+                        "bg_upsampler": str(bg_upsampler),
+                        "bg_precision": str(bg_precision),
+                        "bg_tile": int(bg_tile),
+                        "rating": int(rating) if rating is not None else None,
+                        "comments": comments or None,
+                        "count": len(outs),
+                        "output_dir": os.environ.get("GFPP_OUTPUT_DIR", "results"),
+                    }
+                )
             return outs, f"Device: {dev}; Processed {len(outs)} images"
 
-        run_btn.click(
-            infer,
-            inputs=[input_imgs, version, device, upscale, weight, detector, parse, bg_upsampler, bg_precision, bg_tile],
-            outputs=[gallery, logs],
-        )
+        # Wire run button with optional feedback inputs
+        inputs = [input_imgs, version, device, upscale, weight, detector, parse, bg_upsampler, bg_precision, bg_tile]
+        if _feedback_enabled():
+            inputs += [rating, comments]
+        run_btn.click(infer, inputs=inputs, outputs=[gallery, logs])
 
     return demo
 

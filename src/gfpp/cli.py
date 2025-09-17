@@ -12,11 +12,32 @@ from .metrics import ArcFaceIdentity, DISTSMetric, LPIPSMetric
 from .restorers.codeformer import CodeFormerRestorer
 from .restorers.gfpgan import GFPGANRestorer
 from .restorers.restoreformerpp import RestoreFormerPP
+from .presets import apply_preset
 
 
 # ------------------------- Small helpers (no behavior change) -------------------------
 TMP_IN = "in.png"
 TMP_OUT = "out.png"
+
+
+def _warn(msg: str) -> None:
+    """Lightweight warning helper.
+
+    - Tries standard logging (logger name: 'gfpp.cli')
+    - Always prints with [WARN] to preserve current CLI behavior
+    """
+    try:
+        import logging
+
+        logging.getLogger("gfpp.cli").warning(msg)
+    except Exception:
+        pass
+    try:
+        print(f"[WARN] {msg}")
+    except Exception:
+        pass
+
+
 def _build_bg_upsampler(background: str, quality: str, device: str):
     if background != "realesrgan":
         return None
@@ -46,19 +67,27 @@ def _instantiate_restorer(name: str, args, bg):
         return RestoreFormerPP(device=args.device, bg_upsampler=bg), "restoreformerpp"
     if name == "hypir":
         if not getattr(args, "experimental", False):
-            print("[WARN] HYPIR is experimental. Enable with --experimental; falling back to gfpgan")
+            _warn("HYPIR is experimental. Enable with --experimental; falling back to gfpgan")
             return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
         try:
             from .restorers.hypir import HYPIRRestorer
 
             return HYPIRRestorer(device=args.device, bg_upsampler=bg), "hypir"
         except Exception:
-            print(
-                "[WARN] HYPIR backend unavailable. Install extras: "
+            _warn(
+                "HYPIR backend unavailable. Install extras: "
                 "pip install -e \".[hypir]\"; falling back to gfpgan"
             )
             return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
-    print(f"[WARN] Backend {name} not yet implemented; falling back to gfpgan")
+    if name in {"ensemble", "guided"}:
+        try:
+            from gfpp.core.registry import get as _get_backend  # type: ignore
+            backend_cls = _get_backend(name)
+            return backend_cls(device=args.device, bg_upsampler=bg), name
+        except Exception:
+            _warn(f"Backend {name} unavailable; falling back to gfpgan")
+            return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
+    _warn(f"Backend {name} not yet implemented; falling back to gfpgan")
     return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
 
 
@@ -221,7 +250,7 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument(
         "--backend",
         default="gfpgan",
-        choices=["gfpgan", "gfpgan-ort", "codeformer", "restoreformerpp", "diffbir", "hypir"],
+    choices=["gfpgan", "gfpgan-ort", "codeformer", "restoreformerpp", "diffbir", "hypir", "ensemble", "guided"],
     )
     p.add_argument("--background", default="realesrgan", choices=["realesrgan", "swinir", "none"])
     p.add_argument("--preset", default="natural", choices=["natural", "detail", "document"])
@@ -243,6 +272,7 @@ def cmd_run(argv: list[str]) -> int:
     )
     p.add_argument("--identity-lock", action="store_true", help="Retry with stricter preset if identity drops")
     p.add_argument("--identity-threshold", type=float, default=0.25)
+    p.add_argument("--collect-feedback", action="store_true", help="Opt-in: log per-image feedback to feedback.jsonl")
     p.add_argument("--optimize", action="store_true", help="Try multiple weights and pick best by metric")
     p.add_argument("--weights-cand", default="0.3,0.5,0.7", help="Comma-separated candidate weights for --optimize")
     p.add_argument("--video", action="store_true")
@@ -253,6 +283,11 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--no-download", action="store_true")
     p.add_argument("--model-path-onnx", default=None, help="Path to ONNX model (for gfpgan-ort backend)")
     p.add_argument("--codeformer-fidelity", type=float, default=None, help="CodeFormer fidelity (0..1)")
+    # Ensemble-specific optional args
+    p.add_argument("--ensemble-backends", default=None, help="Comma-separated backends for ensemble")
+    p.add_argument("--ensemble-weights", default=None, help="Comma-separated weights for ensemble")
+    # Guided-specific optional args
+    p.add_argument("--reference", default=None, help="Path to reference image for guided restoration")
     # HYPIR-specific optional args (ignored by other backends)
     p.add_argument("--prompt", default=None, help="HYPIR: prompt for light text-guided biasing")
     p.add_argument("--texture-richness", type=float, default=None, help="HYPIR: texture richness (0..1)")
@@ -276,7 +311,19 @@ def cmd_run(argv: list[str]) -> int:
     preset_weight = {"natural": 0.5, "detail": 0.7, "document": 0.3}.get(preset, 0.5)
 
     cfg: Dict[str, Any] = _base_cfg(args, preset_weight)
+    # Apply optional preset adjustments (non-destructive)
+    cfg = apply_preset(preset, cfg)
+    # Ensemble/guided pass-through config keys
+    if args.ensemble_backends:
+        cfg["ensemble_backends"] = args.ensemble_backends
+    if args.ensemble_weights:
+        cfg["ensemble_weights"] = args.ensemble_weights
+    if args.reference:
+        cfg["reference"] = args.reference
     _apply_backend_cfg(chosen_backend, args, cfg)
+    # Pass feedback flag to downstream consumers
+    if getattr(args, "collect_feedback", False):
+        cfg["collect_feedback"] = True
 
     inputs = list_inputs(args.input)
     # Optional orchestrator (new path). If import fails, we silently fall back.
@@ -308,6 +355,15 @@ def cmd_run(argv: list[str]) -> int:
                         rec["metrics"][k] = v
                 except Exception:
                     pass
+                # Optional advanced IQA (proxy) metrics
+                try:
+                    from gfpp.metrics.adv_quality import advanced_scores  # type: ignore
+
+                    adv = advanced_scores(out_img)
+                    for k, v in adv.items():
+                        rec["metrics"][k] = v
+                except Exception:
+                    pass
             results.append(rec)
 
         # Write manifest + optional CSV/HTML
@@ -317,7 +373,11 @@ def cmd_run(argv: list[str]) -> int:
                 json.dump({"metrics": results}, f, indent=2)
         man = RunManifest(args=vars(args), device=args.device, results=results, metrics_file=metrics_file)
         # Attach runtime details in dry-run as well
-        runtime_info = {"compile_mode": args.compile, "auto_backend": bool(args.auto or args.auto_backend)}
+        runtime_info = {
+            "compile_mode": args.compile,
+            "auto_backend": bool(args.auto or args.auto_backend),
+            "collect_feedback": bool(getattr(args, "collect_feedback", False)),
+        }
         try:
             import onnxruntime as _ort  # type: ignore
 
@@ -363,7 +423,7 @@ def cmd_run(argv: list[str]) -> int:
     for pth in inputs:
         img = load_image_bgr(pth)
         if img is None:
-            print(f"[WARN] Failed to load: {pth}")
+            _warn(f"Failed to load: {pth}")
             continue
         cfg["input_path"] = pth
         # If orchestrator active, create a plan
@@ -486,6 +546,15 @@ def cmd_run(argv: list[str]) -> int:
                     rec["metrics"][k] = v
             except Exception:
                 pass
+            # Optional advanced IQA metrics
+            try:
+                from gfpp.metrics.adv_quality import advanced_scores  # type: ignore
+
+                adv = advanced_scores(out_img)
+                for k, v in adv.items():
+                    rec["metrics"][k] = v
+            except Exception:
+                pass
         rec["metrics"]["runtime_sec"] = dur
         if vram_mb is not None:
             rec["metrics"]["vram_mb"] = vram_mb
@@ -502,7 +571,11 @@ def cmd_run(argv: list[str]) -> int:
 
     man = RunManifest(args=vars(args), device=args.device, results=results, metrics_file=metrics_file)
     # Attach runtime details: compile mode and ORT providers (best-effort)
-    runtime_info = {"compile_mode": args.compile, "auto_backend": bool(args.auto or args.auto_backend)}
+    runtime_info = {
+        "compile_mode": args.compile,
+        "auto_backend": bool(args.auto or args.auto_backend),
+        "collect_feedback": bool(getattr(args, "collect_feedback", False)),
+    }
     try:
         import onnxruntime as _ort  # type: ignore
 
@@ -574,7 +647,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
             }
             try:
                 print(json.dumps(payload))
-            except Exception:
+            except (TypeError, ValueError):
                 # Best-effort fallback to string repr
                 print(str(payload))
         else:
@@ -659,7 +732,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
             }
             try:
                 print(json.dumps(payload))
-            except Exception:
+            except (TypeError, ValueError):
                 print(str(payload))
             return 0
 
@@ -706,11 +779,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
         # Minimal stub to document export path without heavy operations
         import argparse
         from .export import export_gfpgan_onnx
-
         p = argparse.ArgumentParser(prog="gfpup export-onnx")
         p.add_argument("--version", default="1.4")
         p.add_argument("--model-path", default=None)
-        p.add_argument("--out", default="gfpgan.onnx")
+        # Support both --out and --output for ergonomics/backward-compat
+        p.add_argument("--out", dest="out", default="gfpgan.onnx")
+        p.add_argument("--output", dest="out", help=argparse.SUPPRESS)
         args = p.parse_args(argv[1:])
         try:
             export_gfpgan_onnx(version=args.version, model_path=args.model_path, out_path=args.out)

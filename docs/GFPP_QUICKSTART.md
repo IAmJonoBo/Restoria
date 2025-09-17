@@ -6,6 +6,33 @@ Install (editable) with optional extras:
 pip install -e ".[dev,metrics,arcface,codeformer,restoreformerpp,ort,web]"
 ```
 
+Common lightweight combos:
+
+```bash
+# Core + CLI only
+pip install -e "."
+
+# Add metrics (NIQE/BRISQUE/LPIPS/DISTS where available)
+pip install -e ".[metrics]"
+
+# Add ArcFace (identity metric) and guided backend helper (optional)
+pip install -e ".[arcface,guided]"
+
+# ONNX Runtime backend support
+pip install -e ".[ort]"
+
+# CodeFormer / RestoreFormer++ adapters (no extra deps needed right now)
+pip install -e ".[codeformer,restoreformerpp]"
+```
+
+Notes:
+
+- Some IQA dependencies may be platform-specific (e.g., BRISQUE variants).
+  Missing pieces are skipped gracefully; results may contain `null` values
+  instead of failing.
+- Heavy experimental backends (DiffBIR/HYPIR) remain opt-in and install-free by
+  default.
+
 Run the new CLI (GFPGAN baseline):
 
 ```bash
@@ -43,12 +70,15 @@ Plan & Metrics:
 }
 ```
 
-- Dry-run still writes a manifest and now computes no‑reference quality metrics (NIQE / BRISQUE) when `--metrics` is not `off`.
-- If a probe or metric dependency is missing the corresponding values are omitted or set to `null` without failing the run.
+- Dry-run still writes a manifest and now computes no‑reference quality metrics
+  (NIQE / BRISQUE) when `--metrics` is not `off`.
+- If a probe or metric dependency is missing the corresponding values are
+  omitted or set to `null` without failing the run.
 
 Experimental (opt-in):
 
-- HYPIR backend is experimental and not installed by default. Enable via `--experimental` and install extras when available:
+- HYPIR backend is experimental and not installed by default. Enable via
+  `--experimental` and install extras when available:
 
 ```bash
 pip install -e ".[hypir]"
@@ -87,9 +117,22 @@ pnpm i
 pnpm dev
 ```
 
+## Guided backend (reference-aware)
+
+The Guided backend adjusts restoration strength based on identity similarity to a
+reference image when ArcFace is available. It falls back safely if the metric or
+reference is missing.
+
+```bash
+gfpup run --input inputs/whole_imgs --backend guided \
+  --reference inputs/reference.jpg --metrics fast --output out/
+```
+
 ## List available backends (lightweight)
 
-You can quickly see which restoration backends are registered and whether they appear available in your current environment. This does not load heavy models.
+You can quickly see which restoration backends are registered and whether
+they appear available in your current environment. This does not load
+heavy models.
 
 ```bash
 # Stable backends only

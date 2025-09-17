@@ -4,6 +4,10 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
 from gfpp.probe.quality import probe_quality
+try:
+    from gfpp.metrics.adv_quality import advanced_scores  # type: ignore
+except Exception:  # pragma: no cover - optional
+    advanced_scores = None  # type: ignore
 
 
 @dataclass
@@ -37,6 +41,18 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
         q = probe_quality(image_path)
     except Exception:
         q = None
+    adv: Dict[str, Optional[float]] = {}
+    try:
+        if advanced_scores is not None:
+            _adv_raw = advanced_scores(image_path)
+            if isinstance(_adv_raw, dict):
+                for k, v in _adv_raw.items():
+                    try:
+                        adv[k] = float(v) if isinstance(v, (int, float)) else None
+                    except Exception:
+                        adv[k] = None
+    except Exception:
+        adv = {}
     faces: Dict[str, Any] = {}
     # Optional face probe
     try:
@@ -84,7 +100,8 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
     # Face-aware adjustment: for many faces, bias toward GFPGAN for speed/stability
     face_count = None
     try:
-        face_count = int(faces.get("face_count")) if isinstance(faces.get("face_count"), (int, float)) else None
+        _fc = faces.get("face_count") if isinstance(faces, dict) else None
+        face_count = int(_fc) if isinstance(_fc, (int, float)) else None
     except Exception:
         face_count = None
     if reason == "heavy_degradation" and face_count is not None and face_count >= 3:
@@ -170,13 +187,25 @@ def plan(image_path: str, opts: Dict[str, Any]) -> Plan:
     except Exception:
         conf_boost = 0.0
     conf = min(0.99, float(conf) + max(0.0, conf_boost))
+    qual: Dict[str, Optional[float]] = {"niqe": niqe, "brisque": bris}
+    # attach advanced metrics if present
+    try:
+        if isinstance(adv, dict):
+            for k in ("maniqa", "contrique"):
+                v = adv.get(k)
+                if isinstance(v, (int, float)):
+                    qual[k] = float(v)
+                elif v is None:
+                    qual[k] = None
+    except Exception:
+        pass
     return Plan(
         backend=backend,
         params=params,
         postproc=post,
         reason=reason,
         confidence=float(conf),
-        quality={"niqe": niqe, "brisque": bris},
+        quality=qual,
         faces=faces,
         detail=detail,
     )

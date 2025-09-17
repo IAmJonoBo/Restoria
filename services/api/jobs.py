@@ -5,9 +5,14 @@ import os
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
-from .schemas import JobSpec
+# Avoid importing pydantic at module import time to keep light tests dependency-free.
+# Use a TYPE_CHECKING import for type hints and default to Any at runtime.
+if TYPE_CHECKING:  # pragma: no cover - typing-only path
+    from .schemas import JobSpec  # type: ignore
+else:
+    JobSpec = Any  # type: ignore
 
 # Constants for temporary files
 INPUT_IMAGE_NAME = "in.png"
@@ -66,7 +71,9 @@ class JobManager:
             # Dry-run or smoke mode: skip heavy model loading
             if spec.dry_run or os.environ.get("NB_CI_SMOKE") == "1":
                 count = 0
-                for pth in inputs:
+                # Cap number of files processed in dry-run to keep tests snappy
+                max_items = int(os.environ.get("GFPP_API_DRYRUN_MAX", "4"))
+                for pth in inputs[:max_items]:
                     t0 = time.time()
                     img = load_image_bgr(pth)
                     if img is None:

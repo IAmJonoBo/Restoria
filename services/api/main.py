@@ -73,16 +73,19 @@ def restore(spec: JobSpec):
 @app.post("/jobs")
 async def submit_job(spec: JobSpec):
     job = manager.create(spec)
-    # Fire-and-forget: schedule in background
     import asyncio
 
-    # Save task reference to prevent garbage collection
-    task = asyncio.create_task(manager.run(job.id))
-    # Store task reference (could use WeakSet in production)
-    if not hasattr(app.state, "background_tasks"):
-        app.state.background_tasks = set()
-    app.state.background_tasks.add(task)
-    task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
+    if spec.dry_run:
+        # Synchronous, fast path for dry-run jobs: complete before returning
+        await manager.run(job.id)
+    else:
+        # Fire-and-forget: schedule in background for real runs
+        task = asyncio.create_task(manager.run(job.id))
+        # Store task reference (could use WeakSet in production)
+        if not hasattr(app.state, "background_tasks"):
+            app.state.background_tasks = set()
+        app.state.background_tasks.add(task)
+        task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
 
     return JobStatus(
         id=job.id,
