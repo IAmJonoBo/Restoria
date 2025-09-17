@@ -1443,7 +1443,8 @@
 
 
 <h1 id="auto-mode-experimental-opt-in">Auto mode (experimental, opt-in)<a class="headerlink" href="#auto-mode-experimental-opt-in" title="Permanent link">&para;</a></h1>
-<p>Auto mode selects a backend and parameters per image using lightweight probes. It is disabled by default and can be enabled with:</p>
+<p>Auto mode selects a backend and parameters per image using lightweight probes.
+It is disabled by default and can be enabled with:</p>
 <ul>
 <li>CLI: <code>gfpup run --auto --input &lt;path&gt; --output out/</code></li>
 <li>API/UI: toggle the auto backend option</li>
@@ -1451,12 +1452,27 @@
 <p>What it does (transparent rules):</p>
 <ul>
 <li>Probes image quality (NIQE, BRISQUE where available)</li>
-<li>Routes to GFPGAN (clean), CodeFormer (more fidelity on strong degradation), or keeps your choice</li>
-<li>Suggests background upsampling (Real-ESRGAN by default) when global quality remains low</li>
+<li>Routes to GFPGAN (clean), CodeFormer (more fidelity on strong degradation),
+  or keeps your choice</li>
+<li>Suggests background upsampling (Real-ESRGAN by default) when global quality
+  remains low</li>
+</ul>
+<p>Advanced metrics (optional)</p>
+<ul>
+<li>If installed, advanced no-reference IQA (e.g., MANIQA/CONTRIQUE) may be
+  recorded by the planner.</li>
+<li>These are purely informational today and do not change routing unless we add
+  explicit opt-in rules.</li>
+</ul>
+<p>Ensemble mode</p>
+<ul>
+<li>Auto mode never selects ensemble implicitly. Use <code>--backend ensemble</code>
+  explicitly to enable blending.</li>
 </ul>
 <p>Notes</p>
 <ul>
-<li>Probes are best-effort and skipped if dependencies are missing. Behavior gracefully falls back to your chosen backend.</li>
+<li>Probes are best-effort and skipped if dependencies are missing. Behavior
+  gracefully falls back to your chosen backend.</li>
 <li>Identity guardrails are part of the metrics/identity lock path and remain opt-in.</li>
 </ul>
 <p>TODO</p>

@@ -1475,7 +1475,15 @@
 <p>OpenCV import errors</p>
 </li>
 <li>The CLI and tests fall back to PIL for image I/O when OpenCV isn’t available.</li>
-<li>If you need strict OpenCV behavior, install <code>opencv-python</code> or <code>opencv-python-headless</code> explicitly.</li>
+<li>
+<p>If you need strict OpenCV behavior, install <code>opencv-python</code> or <code>opencv-python-headless</code> explicitly.</p>
+</li>
+<li>
+<p>Warning: falling back from <code>weights_only=True</code></p>
+</li>
+<li>Symptom: A warning like <code>torch.load(weights_only=True) unsupported by this torch version; falling back to full deserialization.</code></li>
+<li>Context: Safer deserialization uses <code>weights_only=True</code> (PyTorch &gt;= 2.0). On older Torch, GFPGAN will warn and proceed with full deserialization to preserve compatibility.</li>
+<li>Fix: Prefer upgrading to PyTorch 2.x when possible. Example: <code>pip install --upgrade 'torch&gt;=2'</code> (match CUDA version as needed), or keep current Torch if upgrading isn’t feasible (the warning is informational).</li>
 </ul>
 
 

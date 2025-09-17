@@ -854,6 +854,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#optional-ensemble-experimental" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optional ensemble (experimental)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#backend-specific-parameters" class="md-nav__link">
     <span class="md-ellipsis">
       Backend-specific parameters
@@ -1786,6 +1795,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#optional-ensemble-experimental" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optional ensemble (experimental)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#backend-specific-parameters" class="md-nav__link">
     <span class="md-ellipsis">
       Backend-specific parameters
@@ -2149,6 +2167,17 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>test_photo.jp
 <li><strong>Consistency</strong>: Similar quality across multiple faces?</li>
 </ul>
 <h2 id="advanced-configuration">Advanced configuration<a class="headerlink" href="#advanced-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="optional-ensemble-experimental">Optional ensemble (experimental)<a class="headerlink" href="#optional-ensemble-experimental" title="Permanent link">&para;</a></h3>
+<p>You can blend outputs from multiple backends by selecting the ensemble backend.
+This is off by default and requires no extra installs for a simple blend.</p>
+<p>Example:</p>
+<pre><code>    gfpup run --input photo.jpg \
+        --backend ensemble \
+        --ensemble-backends gfpgan,codeformer \
+        --ensemble-weights 0.5,0.5 \
+        --output out/
+</code></pre>
+<p>Missing backends are skipped gracefully and the run proceeds.</p>
 <h3 id="backend-specific-parameters">Backend-specific parameters<a class="headerlink" href="#backend-specific-parameters" title="Permanent link">&para;</a></h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">GFPGAN tuning</label><label for="__tabbed_5_2">CodeFormer tuning</label><label for="__tabbed_5_3">RestoreFormer++ tuning</label></div>
 <div class="tabbed-content">
@@ -2180,21 +2209,23 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 </div>
 </div>
 <h2 id="decision-flowchart">Decision flowchart<a class="headerlink" href="#decision-flowchart" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>Start
-  ↓
-Quality most important? → Yes → Use RestoreFormer++
-  ↓ No
-Speed most important? → Yes → Use CodeFormer
-  ↓ No
-Natural results preferred? → Yes → Use GFPGAN v1.3
-  ↓ No
-General use → Use GFPGAN v1.4
-</code></pre></div>
+<pre><code>    Start
+        ↓
+    Quality most important? → Yes → Use RestoreFormer++
+        ↓ No
+    Speed most important? → Yes → Use CodeFormer
+        ↓ No
+    Natural results preferred? → Yes → Use GFPGAN v1.3
+        ↓ No
+    General use → Use GFPGAN v1.4
+</code></pre>
 <hr />
-<p><strong>Next steps:</strong>
-- <a href="../metrics/">Measure quality with metrics →</a>
-- <a href="../batch-processing/">Process multiple photos →</a>
-- <a href="../../HARDWARE_GUIDE/">Optimize hardware performance →</a></p>
+<p><strong>Next steps:</strong></p>
+<ul>
+<li><a href="../metrics/">Measure quality with metrics →</a></li>
+<li><a href="../batch-processing/">Process multiple photos →</a></li>
+<li><a href="../../HARDWARE_GUIDE/">Optimize hardware performance →</a></li>
+</ul>
 
 
 

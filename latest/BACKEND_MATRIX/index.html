@@ -1478,6 +1478,22 @@
 <td>Optional</td>
 </tr>
 <tr>
+<td>Ensemble</td>
+<td>✓</td>
+<td>–</td>
+<td>–</td>
+<td>✓</td>
+<td>Weighted blend</td>
+</tr>
+<tr>
+<td>Guided</td>
+<td>✓</td>
+<td>–</td>
+<td>–</td>
+<td>✓</td>
+<td>Reference‑aware</td>
+</tr>
+<tr>
 <td>DiffBIR</td>
 <td>EXPERIMENTAL</td>
 <td>–</td>
@@ -1525,11 +1541,14 @@
 <ul>
 <li>NIQE / BRISQUE (no‑ref quality) thresholds:</li>
 <li><code>few_artifacts</code>: niqe &lt; 7.5 or brisque &lt; 35 → stay on GFPGAN (weight preserved)</li>
-<li><code>heavy_degradation</code>: niqe ≥ 12 or brisque ≥ 55 → switch to CodeFormer (weight ≥ 0.6)</li>
+<li><code>heavy_degradation</code>: niqe ≥ 12 or brisque ≥ 55 → switch to CodeFormer
+    (weight ≥ 0.6)</li>
 <li><code>moderate_degradation</code>: values in between → GFPGAN with standardized weight 0.6</li>
-<li>Face stats (if detector available): recorded (<code>face_count</code>, size stats) but not yet influencing routing (planned).</li>
+<li>Face stats (if detector available): recorded (<code>face_count</code>, size stats)
+  but not yet influencing routing (planned).</li>
 </ul>
-<p>All signals and applied rule are embedded per image under <code>plan.quality</code>, <code>plan.faces</code>, and <code>plan.detail.routing_rules</code> in the manifest.</p>
+<p>All signals and applied rule are embedded per image under <code>plan.quality</code>,
+<code>plan.faces</code>, and <code>plan.detail.routing_rules</code> in the manifest.</p>
 
 
 

@@ -1437,6 +1437,15 @@
 <span class="nb">cd</span><span class="w"> </span>apps/web<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>pnpm<span class="w"> </span>i<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>pnpm<span class="w"> </span>dev
 </code></pre></div>
 <p>Images are proxied via <code>/file?path=</code> for convenience in dev; in production, serve static files via a proper file server.</p>
+<p>Feedback (optional):</p>
+<ul>
+<li>The local Gradio demo supports lightweight feedback logging to
+    <code>results/feedback.jsonl</code> when enabled.</li>
+<li>Enable by setting an environment variable before launch:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">GFPP_FEEDBACK</span><span class="o">=</span><span class="m">1</span>
+python<span class="w"> </span>-m<span class="w"> </span>gfpgan.gradio_app
+</code></pre></div>
 
 
 

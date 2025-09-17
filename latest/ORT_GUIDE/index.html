@@ -1434,27 +1434,34 @@
 <li>
 <p>Export ONNX graph (outline):</p>
 </li>
-<li>The CLI has a stub: <code>gfpup export-onnx --version 1.4 --model-path /path/GFPGANv1.4.pth --out gfpgan.onnx</code></li>
+<li>The CLI has a stub:
+    <code>gfpup export-onnx --version 1.4 --model-path /path/GFPGANv1.4.pth --out gfpgan.onnx</code>
+    (alias: <code>--output gfpgan.onnx</code>)</li>
 <li>
-<p>Implement export by initializing <code>restorer.gfpgan</code> and calling <code>torch.onnx.export</code> with a 512x512 BCHW normalized dummy input. Validate with ORT.</p>
+<p>Implement export by initializing <code>restorer.gfpgan</code> and calling <code>torch.onnx.export</code>
+    with a 512x512 BCHW normalized dummy input. Validate with ORT.</p>
 </li>
 <li>
 <p>Run ORT backend:</p>
 </li>
-<li>CLI: <code>gfpup run --input inputs/whole_imgs --backend gfpgan-ort --model-path-onnx /path/gfpgan.onnx --output out/</code></li>
+<li>CLI: <code>gfpup run --input inputs/whole_imgs --backend gfpgan-ort --model-path-onnx
+    /path/gfpgan.onnx --output out/</code></li>
 <li>
-<p>API: pass <code>{\"backend\":\"gfpgan-ort\",\"model_path_onnx\":\"/path/gfpgan.onnx\"}</code> in the JobSpec.</p>
+<p>API: pass <code>{\"backend\":\"gfpgan-ort\",\"model_path_onnx\":\"/path/gfpgan.onnx\"}</code>
+    in the JobSpec.</p>
 </li>
 <li>
 <p>Providers:</p>
 </li>
 <li>
-<p>The runtime logs available providers and the selected provider; metrics include <code>ort_provider</code> and <code>ort_init_sec</code>.</p>
+<p>The runtime logs available providers and the selected provider; metrics include
+    <code>ort_provider</code> and <code>ort_init_sec</code>.</p>
 </li>
 <li>
 <p>Fallback:</p>
 </li>
-<li>If ORT initialization or inference is not available, the system falls back to the Torch backend transparently and records <code>backend: onnxruntime+torch-fallback</code>.</li>
+<li>If ORT initialization or inference is not available, the system falls back to
+    the Torch backend transparently and records <code>backend: onnxruntime+torch-fallback</code>.</li>
 </ul>
 
 
