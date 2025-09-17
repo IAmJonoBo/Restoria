@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#gfpgan-fork-documentation" class="md-skip">
+        <a href="#restoria-face-restoration-toolkit" class="md-skip">
           Skip to content
         </a>
       
@@ -2052,22 +2052,24 @@
   
 
 
-<h1 id="gfpgan-fork-documentation">GFPGAN (Fork) — Documentation<a class="headerlink" href="#gfpgan-fork-documentation" title="Permanent link">&para;</a></h1>
+<h1 id="restoria-face-restoration-toolkit">Restoria — Face Restoration Toolkit<a class="headerlink" href="#restoria-face-restoration-toolkit" title="Permanent link">&para;</a></h1>
 <!-- markdownlint-disable MD013 -->
 
 <blockquote>
-<p>Note: We are introducing the new Restoria CLI (<code>restoria</code>) as the primary
-entry point going forward. Legacy commands remain available during the
-transition. See the migration guide: <a href="guides/migration/">guides/migration.md</a>.</p>
+<p>Restoria is the project brand and primary CLI (<code>restoria</code>). GFPGAN remains the
+default backend and legacy commands remain available for compatibility
+(<code>gfpup</code>, <code>gfpgan-infer</code>). See the migration guide:
+<a href="guides/migration/">guides/migration.md</a>.</p>
 </blockquote>
-<p>Welcome to the fork documentation. This fork focuses on modern developer
-ergonomics, a smoother Colab experience, and practical inference.</p>
+<p>Welcome to Restoria’s documentation. Restoria is a modular, CLI‑first face
+restoration toolkit with multiple interchangeable backends (GFPGAN by default),
+deterministic planning, and machine‑readable outputs.</p>
 <ul>
-<li>What’s new vs upstream:</li>
-<li>Modern CI and linting</li>
-<li>Colab with interactive UI and compatibility fixes (BasicSR master + modern torchvision)</li>
-<li>CLI quality-of-life flags and console entrypoint</li>
-<li>Safer repository defaults and optional light tests</li>
+<li>Highlights</li>
+<li>Modular backends: GFPGAN (default), CodeFormer, RestoreFormer++</li>
+<li>Deterministic runs (<code>--seed</code>, <code>--deterministic</code>) and stable manifests/metrics</li>
+<li>Modern CI and link-checked docs; optional metrics with graceful fallback</li>
+<li>Legacy compatibility preserved: existing GFPGAN workflows continue to work</li>
 </ul>
 <p>Quick links</p>
 <ul>
@@ -2081,7 +2083,7 @@ ergonomics, a smoother Colab experience, and practical inference.</p>
 <li>Contribute</li>
 <li>Contributing: governance/contributing.md</li>
 </ul>
-<p>Upstream reference: <a href="https://github.com/TencentARC/GFPGAN">https://github.com/TencentARC/GFPGAN</a></p>
+<p>Upstream research reference (historical): <a href="https://github.com/TencentARC/GFPGAN">https://github.com/TencentARC/GFPGAN</a></p>
 <h2 id="quick-tiles">Quick tiles<a class="headerlink" href="#quick-tiles" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
