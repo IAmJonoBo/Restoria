@@ -385,6 +385,8 @@ def run_cmd(argv: list[str]) -> int:
                     "device": args.device,
                     "experimental": bool(args.experimental),
                     "dry_run": True,
+                    "seed": args.seed,
+                    "deterministic": bool(args.deterministic),
                 },
                 device=args.device,
                 results=recs,

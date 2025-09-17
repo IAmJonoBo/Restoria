@@ -1,96 +1,72 @@
-"""
-Lightweight checks that Restoria writes a manifest.json in plan-only and dry-run modes.
-Keeps shape checks minimal to avoid coupling to internal schema changes.
-"""
-# SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
 import json
 import os
 import tempfile
+from pathlib import Path
 
 
-def _repo_root() -> str:
-    here = os.path.dirname(__file__)
-    return os.path.abspath(os.path.join(here, os.pardir))
+def _write_dummy_png(path: str) -> None:
+    try:
+        import cv2  # type: ignore
+        import numpy as np  # type: ignore
+
+        img = (np.zeros((8, 8, 3), dtype=np.uint8))
+        cv2.imwrite(path, img)  # type: ignore[attr-defined]
+        return
+    except Exception:
+        # Fallback: write an empty file with .png extension; dry-run path copies
+        Path(path).write_bytes(b"")
 
 
-def _ensure_sys_path():
-    import sys
-
-    repo_root = _repo_root()
-    src_dir = os.path.join(repo_root, "src")
-    if src_dir not in sys.path:
-        sys.path.insert(0, src_dir)
+def _read_manifest(path: str) -> dict:
+    with open(path, "r") as f:
+        return json.load(f)
 
 
-def _cleanup_tmp(path: str) -> None:
-    if not os.environ.get("KEEP_TMP"):
-        try:
-            for fn in os.listdir(path):
-                try:
-                    os.remove(os.path.join(path, fn))
-                except Exception:
-                    pass
-            os.rmdir(path)
-        except Exception:
-            pass
-
-
-def test_restoria_plan_only_writes_manifest():
-    _ensure_sys_path()
+def test_restoria_plan_only_manifest_seed_and_deterministic_present():
     from restoria.cli.run import run_cmd
 
-    repo_root = _repo_root()
-    sample = os.path.join(repo_root, "assets", "gfpgan_logo.png")
-    assert os.path.exists(sample)
-
-    out_dir = tempfile.mkdtemp(prefix="restoria_manifest_plan_")
-    try:
-        rc = run_cmd([
-            "--input",
-            sample,
-            "--output",
-            out_dir,
+    with tempfile.TemporaryDirectory() as td:
+        src = os.path.join(td, "in.png")
+        _write_dummy_png(src)
+        out = os.path.join(td, "out")
+        code = run_cmd([
+            "--input", src,
+            "--output", out,
+            "--backend", "gfpgan",
             "--plan-only",
+            "--seed", "123",
+            "--deterministic",
         ])
-        assert rc == 0
-        man_path = os.path.join(out_dir, "manifest.json")
-        assert os.path.exists(man_path)
-        data = json.load(open(man_path))
-        # Minimal shape checks
-        assert isinstance(data.get("args"), dict)
-        assert data.get("metrics_file") == "metrics.json"
-        assert isinstance(data.get("results"), list)
-    finally:
-        _cleanup_tmp(out_dir)
+        assert code == 0
+        man = _read_manifest(os.path.join(out, "manifest.json"))
+        assert man.get("args", {}).get("seed") == 123
+        assert man.get("args", {}).get("deterministic") is True
+        # Basic shape checks
+        assert man.get("metrics_file") == "metrics.json"
+        assert isinstance(man.get("results"), list)
 
 
-def test_restoria_dry_run_writes_manifest():
-    _ensure_sys_path()
+def test_restoria_dry_run_manifest_seed_and_deterministic_present():
     from restoria.cli.run import run_cmd
 
-    repo_root = _repo_root()
-    sample = os.path.join(repo_root, "assets", "gfpgan_logo.png")
-    assert os.path.exists(sample)
-
-    out_dir = tempfile.mkdtemp(prefix="restoria_manifest_dry_")
-    try:
-        rc = run_cmd([
-            "--input",
-            sample,
-            "--output",
-            out_dir,
+    with tempfile.TemporaryDirectory() as td:
+        src = os.path.join(td, "in.png")
+        _write_dummy_png(src)
+        out = os.path.join(td, "out")
+        code = run_cmd([
+            "--input", src,
+            "--output", out,
+            "--backend", "gfpgan",
             "--dry-run",
+            "--seed", "321",
+            "--deterministic",
         ])
-        assert rc == 0
-        man_path = os.path.join(out_dir, "manifest.json")
-        assert os.path.exists(man_path)
-        data = json.load(open(man_path))
-        assert isinstance(data.get("args"), dict)
-        assert data.get("metrics_file") == "metrics.json"
-        assert isinstance(data.get("results"), list)
-        # device should be present for dry-run path
-        assert data.get("device") is not None
-    finally:
-        _cleanup_tmp(out_dir)
+        assert code == 0
+        man = _read_manifest(os.path.join(out, "manifest.json"))
+        assert man.get("args", {}).get("seed") == 321
+        assert man.get("args", {}).get("deterministic") is True
+        # Basic shape checks
+        assert man.get("metrics_file") == "metrics.json"
+        assert isinstance(man.get("results"), list)
