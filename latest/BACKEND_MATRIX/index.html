@@ -563,6 +563,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/cloud/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Run in the Cloud
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1829,6 +1852,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../governance/release-playbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release Playbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../guides/repo-rename/" class="md-nav__link">
         
   
@@ -2186,6 +2232,8 @@
 <li><code>moderate_degradation</code>: values in between → GFPGAN with standardized weight 0.6</li>
 <li>Face stats (if detector available): recorded (<code>face_count</code>, size stats)
   but not yet influencing routing (planned).</li>
+<li><code>no_faces_detected</code>: routes to RestoreFormer++ when no faces are detected
+  and the backend is available, improving document/scene quality.</li>
 </ul>
 <p>All signals and applied rule are embedded per image under <code>plan.quality</code>,
 <code>plan.faces</code>, and <code>plan.detail.routing_rules</code> in the manifest.</p>

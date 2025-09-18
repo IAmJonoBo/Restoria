@@ -563,6 +563,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/cloud/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Run in the Cloud
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2015,6 +2038,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../release-playbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release Playbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/repo-rename/" class="md-nav__link">
         
   
@@ -2504,12 +2550,11 @@
 </li>
 </ol>
 <div class="highlight"><pre><span></span><code><span class="c1"># Run linting and formatting</span>
-ruff<span class="w"> </span>check<span class="w"> </span>.
-black<span class="w"> </span>.
+nox<span class="w"> </span>-s<span class="w"> </span>lint
 
 <span class="c1"># Run tests</span>
-pytest<span class="w"> </span>tests_light/<span class="w">  </span><span class="c1"># Quick tests</span>
-pytest<span class="w"> </span>tests/<span class="w">        </span><span class="c1"># Full test suite</span>
+make<span class="w"> </span><span class="nb">test</span><span class="w">            </span><span class="c1"># Light + default suites</span>
+nox<span class="w"> </span>-s<span class="w"> </span>tests_full<span class="w">    </span><span class="c1"># Full marker-aware run</span>
 </code></pre></div>
 <ol>
 <li><strong>Commit and push</strong></li>
@@ -2567,11 +2612,13 @@ fix(web): handle missing face detection gracefully
 docs(guides): update hardware requirements
 </code></pre></div></p>
 <h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
-<p>All user-facing features should include documentation:</p>
+<p>All user-facing features should include documentation.  Follow the style guide in
+<a href="../docs-conventions/"><code>docs/governance/docs-conventions.md</code></a>:</p>
 <ul>
 <li><strong>API functions</strong>: Docstrings with examples</li>
 <li><strong>CLI commands</strong>: Help text and guide updates</li>
 <li><strong>New features</strong>: Usage guides and examples</li>
+<li><strong>Release-facing changes</strong>: Update the <a href="../release-playbook/">release playbook</a> if the process evolves</li>
 </ul>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <h3 id="test-structure">Test structure<a class="headerlink" href="#test-structure" title="Permanent link">&para;</a></h3>
@@ -2589,7 +2636,7 @@ tests_light/           # Quick tests for CI
 pytest<span class="w"> </span>tests_light/<span class="w"> </span>-v
 
 <span class="c1"># Full test suite (for comprehensive validation)</span>
-pytest<span class="w"> </span>tests/<span class="w"> </span>-v
+pytest<span class="w"> </span>tests/<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;not gpu_required and not ort_required&quot;</span><span class="w"> </span>-v
 
 <span class="c1"># Test specific functionality</span>
 pytest<span class="w"> </span>tests/test_gfpgan_model.py<span class="w"> </span>-v

@@ -563,6 +563,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/cloud/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Run in the Cloud
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1526,6 +1549,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Performance
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1537,6 +1573,81 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-wins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick wins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#torch-and-onnx-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      Torch and ONNX Runtime
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provider-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provider matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capturing-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capturing telemetry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1786,6 +1897,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../governance/release-playbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release Playbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/repo-rename/" class="md-nav__link">
         
   
@@ -1998,6 +2132,68 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-wins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick wins
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#torch-and-onnx-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      Torch and ONNX Runtime
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provider-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provider matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capturing-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capturing telemetry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2021,14 +2217,107 @@
 
 
 <h1 id="performance-guide">Performance Guide<a class="headerlink" href="#performance-guide" title="Permanent link">&para;</a></h1>
-<p>Tips to get the best performance on your hardware.</p>
+<p>This guide summarises the knobs that have the biggest impact on runtime and how to measure them.</p>
+<h2 id="quick-wins">Quick wins<a class="headerlink" href="#quick-wins" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Torch 2 compile path: <code>--compile</code> (falls back safely)</li>
-<li>ONNX Runtime providers: <code>--ort-providers</code> (if using ORT backend)</li>
-<li>Batch processing strategies</li>
-<li>CPU vs CUDA vs MPS notes</li>
+<li><strong>Use the planner</strong> – <code>restoria run --auto</code> or <code>auto_backend=true</code> on the API will pick the fastest backend
+  that still meets quality targets and skips heavyweight models when unnecessary.</li>
+<li><strong>Scale with hardware</strong> – on CUDA devices pass <code>--device cuda</code>; on Apple Silicon use the default <code>auto</code>
+  which resolves to <code>mps</code>; fall back to <code>cpu</code> only for validation.</li>
+<li><strong>Prefer cached weights</strong> – call <code>restoria doctor --download</code> or use the <code>scripts/cache_weights.py</code> helper
+  from the release playbook to avoid repeated downloads when benchmarking.</li>
 </ul>
-<p>TODO: Add benchmarks and provider matrices.</p>
+<h2 id="torch-and-onnx-runtime">Torch and ONNX Runtime<a class="headerlink" href="#torch-and-onnx-runtime" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended flag</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Torch eager (default)</td>
+<td><em>none</em></td>
+<td>Lowest startup overhead; best for small batches.</td>
+</tr>
+<tr>
+<td>Torch compile (Ampere+)</td>
+<td><code>--compile</code></td>
+<td>Uses <code>torch.compile</code>, adds a warm-up compile step but often halves runtime after the first batch.</td>
+</tr>
+<tr>
+<td>ONNX Runtime CUDA</td>
+<td><code>--backend gfpgan-ort --ort-providers CUDAExecutionProvider TensorRTExecutionProvider</code></td>
+<td>Requires <code>onnxruntime-gpu</code>; best latency for batch workloads.</td>
+</tr>
+<tr>
+<td>ONNX Runtime CPU</td>
+<td><code>--backend gfpgan-ort --ort-providers CPUExecutionProvider</code></td>
+<td>Faster than eager on CPU-only hosts; avoid on GPU machines.</td>
+</tr>
+</tbody>
+</table>
+<p>On the API, the same flags are supported via <code>JobSpec.compile</code> (set to anything other than <code>none</code>) and
+<code>JobSpec.auto_backend</code>/<code>JobSpec.metrics</code>/<code>JobSpec.background</code>.</p>
+<h2 id="benchmarking">Benchmarking<a class="headerlink" href="#benchmarking" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Collect a representative folder of inputs (mixed lighting, resolution, and face counts).</li>
+<li>Run the light benchmarking harness to capture per-backend telemetry:
+   <div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>bench<span class="w"> </span>--input<span class="w"> </span>inputs/portraits<span class="w"> </span>--output<span class="w"> </span>bench/out<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--metrics<span class="w"> </span>fast
+</code></pre></div></li>
+<li>Re-run with the alternative backend or flag you want to compare (<code>--backend gfpgan-ort</code>, <code>--compile</code>, etc.).</li>
+<li>Each run emits <code>metrics.json</code> with <code>runtime_sec</code>, planner decisions, and quality metrics.  Compare the JSON files or
+   load them into the provided <code>notebooks/Restoria_Benchmark.ipynb</code> quick-start.</li>
+</ol>
+<p>For automation, the CI job <code>bench-smoke.yml</code> runs a smoke-sized run on every PR and uploads the raw metrics artifact.</p>
+<h2 id="provider-matrix">Provider matrix<a class="headerlink" href="#provider-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Hardware</th>
+<th>Recommended providers</th>
+<th>Fallbacks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA (CUDA 11)</td>
+<td><code>CUDAExecutionProvider</code>, then <code>TensorRTExecutionProvider</code></td>
+<td><code>CPUExecutionProvider</code></td>
+</tr>
+<tr>
+<td>NVIDIA (legacy)</td>
+<td><code>CUDAExecutionProvider</code></td>
+<td><code>CPUExecutionProvider</code></td>
+</tr>
+<tr>
+<td>CPU only</td>
+<td><code>CPUExecutionProvider</code></td>
+<td>–</td>
+</tr>
+<tr>
+<td>Apple Silicon</td>
+<td>(Torch eager with <code>--device auto</code>; ORT MPS is experimental)</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<h2 id="capturing-telemetry">Capturing telemetry<a class="headerlink" href="#capturing-telemetry" title="Permanent link">&para;</a></h2>
+<p>Set <code>RESTORIA_PROFILE=1</code> before invoking the CLI to append per-image timing to <code>metrics.json</code>.  The job manager also
+records the planner summary in every API response, so telemetry is available whether you run via CLI or the FastAPI
+service.</p>
+<p>For long-running workloads, consider running under <code>python -m cProfile -o profile.out restoria run ...</code> or using the
+<code>bench</code> command to collect a canonical CSV/HTML report.</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Compile path slower than eager</strong> – the first batch includes the compilation cost.  Warm up with a single dry run or
+  enable the planner so compile is used only on heavy inputs.</li>
+<li><strong>ORT falls back to CPU</strong> – check <code>restoria doctor --json</code> or <code>/doctor?format=json</code> in the API; ensure the CUDA/TensorRT
+  providers are installed and listed first.</li>
+<li><strong>MPS accuracy issues</strong> – for critical work, prefer running on CUDA until Apple releases the next MPS update.</li>
+</ul>
 
 
 

@@ -563,6 +563,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/cloud/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Run in the Cloud
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1786,6 +1809,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../governance/release-playbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release Playbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/repo-rename/" class="md-nav__link">
         
   
@@ -2041,7 +2087,44 @@
 <li>In non-dry-run, the server resolves weights via centralized weight logic
   (same as CLI) and runs the selected backend.</li>
 <li>CI runs an API smoke check as part of the workflow.</li>
+<li>The default deployment enforces lightweight rate limiting (~20 requests/sec,
+  240/min) to protect shared hosts; tune via <code>services.api.security</code>.</li>
+<li>Generated outputs have EXIF metadata stripped to avoid leaking camera data in
+  production downloads.</li>
+<li>
+<p>Non-dry runs are queued and executed by a background worker so the REST API
+  responds quickly even when restorers perform GPU-heavy work.</p>
+</li>
+<li>
+<p>You can opt into planner-driven routing with <code>auto_backend=true</code>; metrics include the chosen backend and reason per image.</p>
+</li>
 </ul>
+<p>Example response (trimmed):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;job&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;job-1234&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;done&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;inputs/photo.png&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;restored_img&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;results/job-1234/photo.png&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;plan&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;backend&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;codeformer&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;reason&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auto_route&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.82</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.7</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;runtime_sec&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.31</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;plan_backend&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;codeformer&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
 
 
 

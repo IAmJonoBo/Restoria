@@ -563,6 +563,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/cloud/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Run in the Cloud
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1895,6 +1918,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../governance/release-playbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release Playbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/repo-rename/" class="md-nav__link">
         
   
@@ -2216,6 +2262,8 @@
 <p>This page documents the JSON files written by Restoria and GFPP: <code>manifest.json</code>
 (run summary) and <code>metrics.json</code> (per-image records and optional plan block).</p>
 <ul>
+<li>Both files include a top-level <code>schema_version</code> field which is currently
+  set to <code>"2"</code> for Restoria/GFPP runs.</li>
 <li><code>manifest.json</code> captures args, device, results summary, an optional
   <code>metrics_file</code> pointer, and environment info.</li>
 <li><code>metrics.json</code> contains per-image records under <code>metrics</code>, plus (in Restoria)

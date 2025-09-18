@@ -563,6 +563,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/cloud/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Run in the Cloud
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1847,6 +1870,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../governance/release-playbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release Playbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/repo-rename/" class="md-nav__link">
         
   
@@ -2128,13 +2174,18 @@
 <ul>
 <li><code>--input</code> file or folder of images</li>
 <li><code>--backend</code> one of: gfpgan, codeformer, restoreformerpp, ensemble, ...</li>
-<li><code>--auto</code> enable planner to choose a backend and normalized params</li>
+<li><code>--auto</code> enable planner to choose a backend and normalized params (off by default; without it the requested backend is preserved)</li>
 <li><code>--metrics</code> off|fast|full (fast = ArcFace; full = ArcFace + LPIPS + DISTS)</li>
 <li><code>--device</code> auto|cpu|cuda|mps</li>
 <li><code>--dry-run</code> parse/plan and write manifest without executing</li>
 <li><code>--plan-only</code> print the plan and exit (no IO)</li>
 <li><code>--compile</code> try torch.compile (safe fallback)</li>
 <li><code>--ort-providers</code> providers for ORT when applicable</li>
+<li>Precision and tiling (optional and safe-by-default):</li>
+<li><code>--precision {auto,fp16,bf16,fp32}</code></li>
+<li><code>--tile &lt;size&gt;</code> and <code>--tile-overlap &lt;pixels&gt;</code></li>
+<li>Flags degrade gracefully when unsupported on your hardware</li>
+<li><code>--detector</code> can select between available face detectors (default: retinaface)</li>
 </ul>
 <p>Examples (Restoria):</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Basic run with GFPGAN backend</span>
@@ -2160,6 +2211,11 @@ restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w
 <li>Optional features degrade gracefully; missing metrics result in <code>null</code>
   values rather than errors.</li>
 <li>Heavy libraries (torch, cv2) are imported lazily to keep startup fast.</li>
+<li>CodeFormer is non-commercial (NTU S-Lab 1.0). It’s blocked by default and
+  requires <code>--allow-noncommercial</code> or <code>RESTORIA_ALLOW_NONCOMMERCIAL=1</code>.</li>
+<li>External backends can be added via Python entry points under the group
+  <code>gfpp.restorers</code> (mapping <code>name -&gt; module:Class</code>). Discovered plugins are
+  merged with built-ins; plugin errors are isolated.</li>
 </ul>
 <h2 id="gfpup-run-compatibility-shim">gfpup run (compatibility shim)<a class="headerlink" href="#gfpup-run-compatibility-shim" title="Permanent link">&para;</a></h2>
 <p>Examples:</p>
