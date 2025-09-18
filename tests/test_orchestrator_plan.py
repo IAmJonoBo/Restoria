@@ -49,3 +49,17 @@ def test_plan_moderate_defaults_to_gfpgan(monkeypatch, tmp_path):
     assert plan.backend == "gfpgan"
     assert plan.reason == "moderate_degradation"
     assert abs(plan.params.get("weight") - 0.6) < 1e-9  # deterministic
+
+
+def test_plan_no_faces_prefers_restoreformer(monkeypatch, tmp_path):
+    import gfpp.core.planner as planner
+
+    monkeypatch.setattr("gfpp.core.planner.probe_quality", lambda p: _fake_quality(niqe=10.0, brisque=50))
+    monkeypatch.setattr("gfpp.probe.faces.detect_faces", lambda p: {"face_count": 0}, raising=False)
+    monkeypatch.setattr(
+        "gfpp.core.registry.list_backends",
+        lambda include_experimental=False: {"restoreformerpp": {"available": True, "metadata": {}}},
+    )
+    plan = planner.compute_plan(str(tmp_path / "img.png"), {"backend": "gfpgan", "auto": True})
+    assert plan.backend == "restoreformerpp"
+    assert plan.reason == "no_faces_detected"

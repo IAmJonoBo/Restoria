@@ -1,35 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from pathlib import Path
+from typing import Any
+
+from .schemas import RunManifest
 
 
-@dataclass
-class RunManifest:
-    args: Dict[str, Any]
-    device: str | None
-    results: List[Dict[str, Any]]
-    metrics_file: Optional[str] = None
-    env: Dict[str, Any] = field(default_factory=dict)
-
-
-def write_manifest(path: str, man: RunManifest) -> None:
+def write_manifest(path: str, man: RunManifest | dict[str, Any]) -> None:
+    payload = man if isinstance(man, dict) else man.model_dump(exclude_none=True)
     try:
         import json
-        import os
 
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as f:
-            json.dump(
-                {
-                    "args": man.args,
-                    "device": man.device,
-                    "results": man.results,
-                    "metrics_file": man.metrics_file,
-                    "env": man.env,
-                },
-                f,
-                indent=2,
-            )
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=2)
     except Exception:
         pass
+
+
+__all__ = ["RunManifest", "write_manifest"]

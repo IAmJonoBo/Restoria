@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import os
-import uuid
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import FileResponse, JSONResponse
 
 from .jobs import manager
-from .schemas import JobSpec, JobStatus, Result
-from .security import apply_security
+from .schemas import JobSpec, JobStatus, Result, MetricCard
+from .security import apply_security, rate_limit
 
 # Error message constants
 NOT_FOUND_MSG = "not found"
@@ -18,9 +17,19 @@ app = FastAPI(title="GFPP API", version="0.0.1")
 apply_security(app)
 
 
+@app.on_event("startup")
+async def _startup() -> None:
+    manager.start()
+
+
+@app.on_event("shutdown")
+async def _shutdown() -> None:
+    await manager.stop()
+
+
 @app.get("/healthz")
 def healthz():
-    info: Dict[str, Any] = {"status": "ok"}
+    info: dict[str, Any] = {"status": "ok"}
     try:
         import torch  # type: ignore
 
@@ -33,59 +42,39 @@ def healthz():
 
 
 @app.post("/restore", response_model=Result)
-def restore(spec: JobSpec):
-    # Synchronous single call; for batch/video, prefer /jobs + worker.
-    job_id = uuid.uuid4().hex[:8]
-    out_dir = os.path.join(spec.output, f"job-{job_id}")
-    try:
-        from src.gfpp.cli import cmd_run  # type: ignore
-    except Exception:
-        from gfpp.cli import cmd_run  # type: ignore
-
-    args = [
-        "--input",
-        spec.input,
-        "--backend",
-        spec.backend,
-        "--background",
-        spec.background,
-        "--preset",
-        spec.preset,
-        "--compile",
-        spec.compile,
-        "--metrics",
-        spec.metrics,
-        "--output",
-        out_dir,
+@rate_limit("30/minute")
+async def restore(spec: JobSpec):
+    job = manager.create(spec)
+    await manager.run(job.id)
+    status = JobStatus(
+        id=job.id,
+        status=job.status,
+        progress=job.progress,
+        result_count=job.result_count,
+        results_path=job.results_path,
+        error=job.error,
+    )
+    cards = [
+        MetricCard(
+            input=entry.get("input"),
+            restored_img=entry.get("restored_img"),
+            metrics=entry.get("metrics", {}),
+            plan=entry.get("plan", {}),
+        )
+        for entry in job.results
     ]
-    if spec.seed is not None:
-        args += ["--seed", str(spec.seed)]
-    if spec.deterministic:
-        args += ["--deterministic"]
-
-    # Execute synchronously (in-process) for now
-    code = cmd_run(args)
-    status = JobStatus(id=job_id, status="done" if code == 0 else "error", result_count=0, results_path=out_dir)
-    # Build a minimal result body
-    return Result(job=status, metrics=[])
+    return Result(job=status, metrics=cards)
 
 
 @app.post("/jobs")
+@rate_limit("60/minute")
 async def submit_job(spec: JobSpec):
     job = manager.create(spec)
-    import asyncio
-
     if spec.dry_run:
         # Synchronous, fast path for dry-run jobs: complete before returning
         await manager.run(job.id)
     else:
-        # Fire-and-forget: schedule in background for real runs
-        task = asyncio.create_task(manager.run(job.id))
-        # Store task reference (could use WeakSet in production)
-        if not hasattr(app.state, "background_tasks"):
-            app.state.background_tasks = set()
-        app.state.background_tasks.add(task)
-        task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
+        await manager.enqueue(job.id)
 
     return JobStatus(
         id=job.id,
@@ -97,6 +86,7 @@ async def submit_job(spec: JobSpec):
 
 
 @app.get("/jobs")
+@rate_limit("120/minute")
 async def list_jobs():
     items = []
     for j in manager.list():
@@ -114,6 +104,7 @@ async def list_jobs():
 
 
 @app.get("/jobs/{job_id}")
+@rate_limit("120/minute")
 async def get_job(job_id: str):
     job = manager.get(job_id)
     if not job:
@@ -129,6 +120,7 @@ async def get_job(job_id: str):
 
 
 @app.post("/jobs/{job_id}/rerun")
+@rate_limit("60/minute")
 async def rerun_job(job_id: str, overrides: dict | None = None):
     """Re-run a job with optional overrides to its original spec.
 
@@ -153,20 +145,14 @@ async def rerun_job(job_id: str, overrides: dict | None = None):
         "output",
         "dry_run",
         "model_path_onnx",
+        "auto_backend",
     }
     new_spec = {**base, **{k: v for k, v in overrides.items() if k in allowed}}
     # Create new job
     from .schemas import JobSpec as _JobSpec
 
     j = manager.create(_JobSpec(**new_spec))
-    import asyncio
-
-    # Save task reference to prevent garbage collection
-    task = asyncio.create_task(manager.run(j.id))
-    if not hasattr(app.state, "background_tasks"):
-        app.state.background_tasks = set()
-    app.state.background_tasks.add(task)
-    task.add_done_callback(lambda t: app.state.background_tasks.discard(t))
+    await manager.enqueue(j.id)
 
     return JobStatus(
         id=j.id, status=j.status, progress=j.progress, result_count=j.result_count, results_path=j.results_path
@@ -211,9 +197,14 @@ async def get_file(path: str):
     return FileResponse(abspath)
 
 
-def main():  # pragma: no cover
-    import uvicorn
-
-    port = int(os.environ.get("PORT", "8001"))
-    host = os.environ.get("HOST", "127.0.0.1")  # Default to localhost for security
-    uvicorn.run("services.api.main:app", host=host, port=port, reload=False)
+__all__ = [
+    "app",
+    "restore",
+    "submit_job",
+    "list_jobs",
+    "get_job",
+    "rerun_job",
+    "download_results",
+    "ws_stream",
+    "get_file",
+]

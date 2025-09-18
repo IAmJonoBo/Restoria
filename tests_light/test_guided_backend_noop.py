@@ -1,12 +1,4 @@
-import os
-import sys
-
-
 def test_guided_backend_no_reference():
-    # Ensure src on path
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-    sys.path.insert(0, os.path.join(repo_root, "src"))
-
     from gfpp.restorers.guided import GuidedRestorer  # type: ignore
 
     # Minimal 1x1 BGR image

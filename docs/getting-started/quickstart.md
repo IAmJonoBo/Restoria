@@ -40,7 +40,7 @@ gfpup list-backends --json
 restoria list-backends --json
 ```
 
-The JSON output includes a `schema_version` field (currently "1") and a `backends` dictionary mapping backend name to availability, with an `experimental` flag indicating whether experimental backends are included.
+The JSON output includes a `schema_version` field (currently "2") and a `backends` dictionary mapping backend name to availability, with an `experimental` flag indicating whether experimental backends are included.
 
 ## Environment check (doctor)
 

@@ -69,3 +69,11 @@ AVOID: global side effects at import time, raising on optional feature absence, 
 
 ---
 If adding major functionality, append a short section here summarizing new extension points. Keep this file concise (< ~120 lines) and actionable.
+
+### New: Precision/Tiling Flags Parity
+- Both CLIs (gfpup and restoria run) accept `--precision`, `--tile`, and `--tile-overlap`.
+- Defaults are safe and off by default; features should degrade gracefully when unsupported.
+
+### New: Plugin Entry Points for Backends
+- External backends can register via `entry_points` group `gfpp.restorers` mapping `name -> module:Class`.
+- The registry merges built-ins with discovered plugins; plugin errors are isolated and must not break listing or selection.

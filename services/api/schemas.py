@@ -30,6 +30,7 @@ class MetricCard(BaseModel):
     input: str
     restored_img: Optional[str]
     metrics: Dict[str, Any] = {}
+    plan: Dict[str, Any] = {}
 
 
 class JobStatus(BaseModel):

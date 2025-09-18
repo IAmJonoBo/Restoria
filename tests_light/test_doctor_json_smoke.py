@@ -14,7 +14,7 @@ def test_doctor_json_smoke():
     assert proc.returncode == 0
     data = json.loads(proc.stdout.strip())
     assert isinstance(data, dict)
-    assert data.get("schema_version") == "1"
+    assert data.get("schema_version") == "2"
     backends = data.get("backends") or {}
     assert isinstance(backends, dict)
     # Must at least include stable baseline

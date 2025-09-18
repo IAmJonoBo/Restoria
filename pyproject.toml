@@ -55,16 +55,20 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest",
+  "pytest-cov",
   "pre-commit",
   "black",
   "ruff",
   "codespell",
   "nbstripout",
+  "nox",
 ]
 api = [
   "fastapi>=0.115",
   "uvicorn[standard]>=0.30",
   "python-multipart>=0.0.9",
+  "slowapi>=0.1.9",
+  "piexif>=1.1.3",
 ]
 metrics = [
   "Pillow>=9",
@@ -150,15 +154,15 @@ extend-exclude = '''
 [tool.ruff]
 line-length = 120
 target-version = "py38"
-lint.select = ["E", "F", "I", "W"]
+lint.select = ["E", "F", "I", "W", "B", "UP"]
 lint.ignore = ["I001"]
 exclude = [
   "notebooks/**"
 ]
 
 [tool.pyrightconfig]
-include = ["src/restoria"]
-exclude = ["legacy_module"]
+include = ["src", "services", "gfpgan"]
+exclude = ["legacy_module", "notebooks"]
 [tool.ruff.lint.per-file-ignores]
 # Tests often perform environment setup before imports; keep code intent and avoid risky refactors
 "tests/**" = ["E402"]
@@ -169,4 +173,6 @@ exclude = ["legacy_module"]
 [tool.pytest.ini_options]
 markers = [
   "heavy: tests that require heavy optional dependencies or model files",
+  "gpu_required: tests that require a CUDA-capable GPU",
+  "ort_required: tests that need ONNX Runtime GPU providers",
 ]

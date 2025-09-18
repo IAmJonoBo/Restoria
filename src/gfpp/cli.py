@@ -7,6 +7,8 @@ import time
 from typing import Any, Dict
 import os as _os
 
+SCHEMA_VERSION = "2"
+
 from .background import build_realesrgan
 from .io import RunManifest, list_inputs, load_image_bgr, save_image, write_manifest
 from .metrics import ArcFaceIdentity, DISTSMetric, LPIPSMetric
@@ -58,7 +60,15 @@ def _warn(msg: str) -> None:
         pass
 
 
-def _build_bg_upsampler(background: str, quality: str, device: str):
+def _build_bg_upsampler(
+    background: str,
+    quality: str,
+    device: str,
+    *,
+    precision_override: str | None = None,
+    tile_override: int | None = None,
+    tile_overlap: int | None = None,
+):
     if background != "realesrgan":
         return None
     if quality == "quick":
@@ -70,6 +80,11 @@ def _build_bg_upsampler(background: str, quality: str, device: str):
     else:
         tile = 400
         prec = "auto"
+    if isinstance(tile_override, int) and tile_override >= 0:
+        tile = tile_override
+    if precision_override in {"auto", "fp16", "bf16", "fp32"}:
+        prec = precision_override
+    # tile_overlap currently unused by realesrgan builder; keep in cfg for future
     return build_realesrgan(device=device, tile=tile, precision=prec)
 
 
@@ -82,6 +97,16 @@ def _instantiate_restorer(name: str, args, bg):
 
         return ORTGFPGANRestorer(device=args.device, bg_upsampler=bg), "gfpgan-ort"
     if name == "codeformer":
+        # Licensing gate: CodeFormer is non-commercial by default
+        allow_nc = bool(getattr(args, "allow_noncommercial", False)) or (
+            os.environ.get("RESTORIA_ALLOW_NONCOMMERCIAL") == "1"
+        )
+        if not allow_nc:
+            _warn(
+                "CodeFormer uses NTU S-Lab 1.0 (non-commercial). "
+                "Enable with --allow-noncommercial or RESTORIA_ALLOW_NONCOMMERCIAL=1; falling back to gfpgan"
+            )
+            return GFPGANRestorer(device=args.device, bg_upsampler=bg, compile_mode=args.compile), "gfpgan"
         return CodeFormerRestorer(device=args.device, bg_upsampler=bg), "codeformer"
     if name in {"restoreformer", "restoreformerpp"}:
         return RestoreFormerPP(device=args.device, bg_upsampler=bg), "restoreformerpp"
@@ -116,7 +141,7 @@ def _base_cfg(args, preset_weight: float) -> Dict[str, Any]:
         "version": args.version,
         "upscale": 2,
         "use_parse": True,
-        "detector": "retinaface_resnet50",
+        "detector": getattr(args, "detector", "retinaface_resnet50"),
         "weight": preset_weight,
         "no_download": args.no_download,
     }
@@ -300,9 +325,20 @@ def cmd_run(argv: list[str]) -> int:
     p.add_argument("--output", required=True)
     p.add_argument("--device", default="auto", choices=["auto", "cpu", "cuda"])
     p.add_argument("--version", default="1.4")
+    p.add_argument(
+        "--detector",
+        default="retinaface_resnet50",
+        choices=["retinaface_resnet50", "retinaface_mobilenet", "scrfd", "insightface"],
+        help="Face detector to use when available",
+    )
     p.add_argument("--no-download", action="store_true")
     p.add_argument("--model-path-onnx", default=None, help="Path to ONNX model (for gfpgan-ort backend)")
     p.add_argument("--codeformer-fidelity", type=float, default=None, help="CodeFormer fidelity (0..1)")
+    p.add_argument(
+        "--allow-noncommercial",
+        action="store_true",
+        help="Allow non-commercial backends like CodeFormer (alternatively set RESTORIA_ALLOW_NONCOMMERCIAL=1)",
+    )
     # Ensemble-specific optional args
     p.add_argument("--ensemble-backends", default=None, help="Comma-separated backends for ensemble")
     p.add_argument("--ensemble-weights", default=None, help="Comma-separated weights for ensemble")
@@ -311,13 +347,30 @@ def cmd_run(argv: list[str]) -> int:
     # HYPIR-specific optional args (ignored by other backends)
     p.add_argument("--prompt", default=None, help="HYPIR: prompt for light text-guided biasing")
     p.add_argument("--texture-richness", type=float, default=None, help="HYPIR: texture richness (0..1)")
+    # Precision / tiling flags must be defined before parse_args so they are available
+    p.add_argument(
+        "--precision",
+        default="auto",
+        choices=["auto", "fp16", "bf16", "fp32"],
+        help="Precision hint for inference and background upscaler",
+    )
+    p.add_argument("--tile", type=int, default=0, help="Tile size for background upscaling; 0 disables tiling")
+    p.add_argument("--tile-overlap", type=int, default=16, help="Tile overlap (for future tiling support)")
     args = p.parse_args(argv)
 
     os.makedirs(args.output, exist_ok=True)
     _set_deterministic(args.seed, args.deterministic)
 
-    # Background upsampler
-    bg = _build_bg_upsampler(args.background, args.quality, args.device)
+    # Background upsampler (single build honoring overrides)
+    bg = _build_bg_upsampler(
+        args.background,
+        args.quality,
+        args.device,
+        precision_override=args.precision,
+        tile_override=args.tile,
+        tile_overlap=args.tile_overlap,
+    )
+    # Pass precision hint downstream in cfg
 
     # Support --auto alias
     if args.auto:
@@ -333,6 +386,10 @@ def cmd_run(argv: list[str]) -> int:
     cfg: Dict[str, Any] = _base_cfg(args, preset_weight)
     # Apply optional preset adjustments (non-destructive)
     cfg = apply_preset(preset, cfg)
+    # Precision / tiling hints for engines/restorers
+    cfg["precision"] = args.precision
+    cfg["tile"] = int(args.tile)
+    cfg["tile_overlap"] = int(args.tile_overlap)
     # Ensemble/guided pass-through config keys
     if args.ensemble_backends:
         cfg["ensemble_backends"] = args.ensemble_backends
@@ -662,7 +719,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
         avail = list_backends(include_experimental=bool(args.all))
         if args.json:
             payload = {
-                "schema_version": "1",
+                "schema_version": SCHEMA_VERSION,
                 "experimental": bool(args.all),
                 "backends": avail,
             }
@@ -742,7 +799,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901 - central CLI disp
 
         if _args.json:
             payload = {
-                "schema_version": "1",
+                "schema_version": SCHEMA_VERSION,
                 "python": py_ver,
                 "torch": torch_ver,
                 "cuda_available": cuda_avail,

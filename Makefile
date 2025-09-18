@@ -7,7 +7,7 @@ help:
 	@echo "  install      - install dev deps (uv or pip)"
 	@echo "  lint         - run ruff and black --check"
 	@echo "  format       - run black and ruff --fix"
-	@echo "  test         - run light tests"
+	@echo "  test         - run light + default tests"
 	@echo "  docs-serve   - mkdocs serve"
 	@echo "  docs-build   - mkdocs build"
 	@echo "  nb-smoke     - run notebook smoke test (nbmake)"
@@ -32,6 +32,7 @@ format:
 
 test:
 	pytest -q tests_light
+	pytest -q tests -m "not gpu_required and not ort_required"
 
 docs-serve:
 	$(PY) -m pip install -q mkdocs mkdocs-material

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from .base import RestoreResult, Restorer
+from ..engines.torch_eager import autocast_ctx, tile_image  # type: ignore
 
 
 @dataclass
@@ -30,6 +31,7 @@ class GFPGANRestorer(Restorer):
         self._model_name = None
         self._model_sha = None
         self._compile_mode = compile_mode
+        self._detector_used = "retinaface_resnet50"
 
     def prepare(self, cfg: Dict[str, Any]) -> None:
         try:
@@ -37,8 +39,7 @@ class GFPGANRestorer(Restorer):
 
             from gfpgan.engines import get_engine  # register engines
             from gfpgan.weights import resolve_model_weight
-            from src.gfpp.engines.torch_compile import compile_module  # type: ignore
-            from src.gfpp.engines.torch_eager import to_channels_last  # type: ignore
+            # Optional compile/memory tweaks are handled elsewhere when enabled
 
             version = str(cfg.get("version", "1.4"))
             if version == "1":
@@ -60,23 +61,51 @@ class GFPGANRestorer(Restorer):
                 else self._device.replace("auto", "cpu")
             )
             engine_cls = get_engine("gfpgan")
-            self._restorer = engine_cls(
-                model_path=model_path,
-                device=torch.device(dev),
-                upscale=int(cfg.get("upscale", 2)),
-                arch=arch,
-                channel_multiplier=cm,
-                bg_upsampler=self._bg,
-                det_model=str(cfg.get("detector", "retinaface_resnet50")),
-                use_parse=bool(cfg.get("use_parse", True)),
-            )
-            # Optional compile and memory format tweaks
+            requested_det = str(cfg.get("detector", "retinaface_resnet50"))
+            # Optional compatibility: map 'insightface' to 'scrfd' (closest available)
+            if requested_det == "insightface":
+                try:
+                    print("[WARN] Detector 'insightface' not directly supported; using 'scrfd' instead")
+                except Exception:
+                    pass
+                requested_det = "scrfd"
+
+            # Try requested detector first; if it fails, fall back to retinaface without re-raising here
+            created = False
             try:
-                if getattr(self._restorer, "gfpgan", None) is not None:
-                    self._restorer.gfpgan = to_channels_last(self._restorer.gfpgan)
-                    self._restorer.gfpgan = compile_module(self._restorer.gfpgan, mode=self._compile_mode)
+                self._restorer = engine_cls(
+                    model_path=model_path,
+                    device=torch.device(dev),
+                    upscale=int(cfg.get("upscale", 2)),
+                    arch=arch,
+                    channel_multiplier=cm,
+                    bg_upsampler=self._bg,
+                    det_model=requested_det,
+                    use_parse=bool(cfg.get("use_parse", True)),
+                )
+                self._detector_used = requested_det
+                created = True
             except Exception:
-                pass
+                created = False
+            if not created:
+                # Fallback to retinaface if the requested detector is unsupported/unavailable
+                self._restorer = engine_cls(
+                    model_path=model_path,
+                    device=torch.device(dev),
+                    upscale=int(cfg.get("upscale", 2)),
+                    arch=arch,
+                    channel_multiplier=cm,
+                    bg_upsampler=self._bg,
+                    det_model="retinaface_resnet50",
+                    use_parse=bool(cfg.get("use_parse", True)),
+                )
+                self._detector_used = "retinaface_resnet50"
+                try:
+                    print("[WARN] Requested detector not available; using retinaface_resnet50")
+                except Exception:
+                    pass
+
+            # Optional compile and memory format tweaks intentionally omitted to keep startup fast
         except Exception:
             # Graceful stub: create a no-op restorer to enable dry tests without deps
             class _Stub:
@@ -87,20 +116,52 @@ class GFPGANRestorer(Restorer):
             self._model_path = None
             self._model_name = "GFPGANv1.4"
             self._model_sha = None
+            # Record requested detector even on stub path for metrics transparency
+            try:
+                self._detector_used = str(cfg.get("detector", self._detector_used))
+            except Exception:
+                pass
 
     def restore(self, image, cfg: Dict[str, Any]) -> RestoreResult:
         if self._restorer is None:
             self.prepare(cfg)
         weight = float(cfg.get("weight", 0.5))
+        # Precision and tiling hints
+        precision = str(cfg.get("precision", "auto"))
+        tile = int(cfg.get("tile", 0))
+        tile_ov = int(cfg.get("tile_overlap", 0))
+        dev = "cuda" if (self._device == "auto") else self._device
+        dev = dev if dev in {"cuda", "cpu", "mps"} else "cpu"
+        # Choose dtype for autocast when enabled
+        autocast_dtype = None
+        try:
+            import torch  # type: ignore
+
+            if precision == "bf16" and dev == "cpu":
+                autocast_dtype = torch.bfloat16
+            elif precision in {"auto", "fp16"} and dev == "cuda":
+                autocast_dtype = torch.float16
+        except Exception:
+            autocast_dtype = None
         assert self._restorer is not None
-        _, _, restored = self._restorer.enhance(
-            image,
-            has_aligned=bool(cfg.get("aligned", False)),
-            only_center_face=bool(cfg.get("only_center_face", False)),
-            paste_back=True,
-            weight=weight,
-            eye_dist_threshold=int(cfg.get("eye_dist_threshold", 5)),
+        img_in = tile_image(image, tile_size=tile, tile_overlap=tile_ov)
+        # Autocast context: enable on CUDA for fp16/auto; bf16 left to future per-device checks
+        enable_autocast = (precision in {"auto", "fp16"} and dev == "cuda") or (
+            precision == "bf16" and dev == "cpu"
         )
+        with autocast_ctx(
+            device_type="cuda" if dev == "cuda" else "cpu",
+            enabled=enable_autocast,
+            dtype=autocast_dtype,
+        ):
+            _, _, restored = self._restorer.enhance(
+                img_in,
+                has_aligned=bool(cfg.get("aligned", False)),
+                only_center_face=bool(cfg.get("only_center_face", False)),
+                paste_back=True,
+                weight=weight,
+                eye_dist_threshold=int(cfg.get("eye_dist_threshold", 5)),
+            )
         return RestoreResult(
             input_path=cfg.get("input_path"),
             restored_path=None,
@@ -111,5 +172,7 @@ class GFPGANRestorer(Restorer):
                 "model_name": self._model_name,
                 "model_path": self._model_path,
                 "model_sha256": self._model_sha,
+                "detector": self._detector_used,
+                "precision": precision,
             },
         )

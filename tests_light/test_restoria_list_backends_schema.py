@@ -14,7 +14,7 @@ def test_restoria_list_backends_schema():
     assert proc.returncode == 0
     data = json.loads(proc.stdout.strip())
     assert isinstance(data, dict)
-    assert data.get("schema_version") == "1"
+    assert data.get("schema_version") == "2"
     b = data.get("backends")
     assert isinstance(b, dict)
     # Ensure at least default backend is present

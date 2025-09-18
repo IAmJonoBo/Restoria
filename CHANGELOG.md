@@ -14,7 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- N/A
+- REST API & CLI JSON payloads (`doctor`, manifests, metrics) now advertise
+  `schema_version: "2"` to account for additional routing metadata.
+- API server now queues non-dry jobs and offloads heavy processing to a
+  background worker, preventing the event loop from blocking on GPU workloads.
 
 ### Fixed
 

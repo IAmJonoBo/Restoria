@@ -29,7 +29,8 @@ When `--auto-backend` is enabled, routing currently considers:
   - `moderate_degradation`: values in between → GFPGAN with standardized weight 0.6
 - Face stats (if detector available): recorded (`face_count`, size stats)
   but not yet influencing routing (planned).
+- `no_faces_detected`: routes to RestoreFormer++ when no faces are detected
+  and the backend is available, improving document/scene quality.
 
 All signals and applied rule are embedded per image under `plan.quality`,
 `plan.faces`, and `plan.detail.routing_rules` in the manifest.
-

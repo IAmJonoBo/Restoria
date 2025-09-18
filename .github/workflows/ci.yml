@@ -51,7 +51,28 @@ jobs:
           enable-cache: true
       - name: Run tests_light
         run: |
-          uv run --no-project --with pytest --with numpy python -m pytest -q tests_light
+          uv run --no-project --with pytest --with pytest-cov --with numpy \
+            python -m pytest tests_light --cov=restoria --cov=gfpp --cov-report=term-missing \
+            --cov-report=xml --cov-fail-under=70
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-light
+          path: coverage.xml
+
+  pre-commit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - name: Run pre-commit hooks
+        run: |
+          uv run --no-project --with pre-commit pre-commit run --all-files --show-diff-on-failure
 
   docs:
     name: Docs build
@@ -94,25 +115,24 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: '3.10'
-          cache: pip
-      - name: Install minimal deps
+          enable-cache: true
+      - name: Install test deps (uv-run pip)
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          # Optional extras, best-effort
-          pip install '.[metrics,arcface,codeformer,restoreformerpp]'
-          pip install pytest
+          uv run --no-project --with pip python -m pip install --upgrade pip
+          uv run --no-project --with pip pip install -r requirements.txt
+          # Optional extras, best-effort (exclude non-commercial by default)
+          uv run --no-project --with pip pip install '.[metrics,arcface,restoreformerpp]'
+          uv run --no-project --with pytest python -c "import pytest; print(pytest.__version__)"
       - name: Run tests (emit JUnit)
         env:
           GFPP_NO_DEPRECATION: 1
         run: |
           mkdir -p junit
-          pytest -q tests --junitxml=junit/tests.xml || true
-          pytest -q tests_light --junitxml=junit/tests_light.xml || true
+          uv run --no-project --with pytest pytest -q tests --junitxml=junit/tests.xml || true
+          uv run --no-project --with pytest pytest -q tests_light --junitxml=junit/tests_light.xml || true
       - name: Compress JUnit reports
         run: |
           tar -czf junit.tar.gz junit
@@ -171,11 +191,16 @@ jobs:
       - name: Generate SBOM
         run: |
           uv run --no-project --with cyclonedx-bom cyclonedx-py -e -o sbom.json || true
+      - name: Create SBOM diff
+        run: |
+          git diff -- sbom.json > sbom.diff || true
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
         with:
           name: sbom-cyclonedx
-          path: sbom.json
+          path: |
+            sbom.json
+            sbom.diff
 
   windows-smoke:
     name: Windows CLI smoke
@@ -215,6 +240,43 @@ jobs:
           assert os.path.exists(os.path.join(out, 'metrics.json'))
           print('OK')
           PY
+
+  notebooks-smoke:
+    name: Notebooks smoke (nbmake)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - name: Run nbmake on smoke notebook
+        run: |
+          uv run --no-project --with pytest --with nbmake pytest --nbmake notebooks/continue_statement_patterns.ipynb -q || true
+
+  noncommercial-backends:
+    name: Non-commercial backends (opt-in)
+    runs-on: ubuntu-latest
+    env:
+      RESTORIA_ALLOW_NONCOMMERCIAL: ${{ vars.RESTORIA_ALLOW_NONCOMMERCIAL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        if: ${{ env.RESTORIA_ALLOW_NONCOMMERCIAL == '1' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install with CodeFormer
+        if: ${{ env.RESTORIA_ALLOW_NONCOMMERCIAL == '1' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install '.[metrics,arcface,codeformer]'
+          pip install pytest
+      - name: Run light tests with non-commercial gate
+        if: ${{ env.RESTORIA_ALLOW_NONCOMMERCIAL == '1' }}
+        run: |
+          pytest -q tests_light || true
 
   markdownlint:
     name: Markdown lint

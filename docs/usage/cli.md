@@ -13,13 +13,18 @@ Key flags:
 
 - `--input` file or folder of images
 - `--backend` one of: gfpgan, codeformer, restoreformerpp, ensemble, ...
-- `--auto` enable planner to choose a backend and normalized params
+- `--auto` enable planner to choose a backend and normalized params (off by default; without it the requested backend is preserved)
 - `--metrics` off|fast|full (fast = ArcFace; full = ArcFace + LPIPS + DISTS)
 - `--device` auto|cpu|cuda|mps
 - `--dry-run` parse/plan and write manifest without executing
 - `--plan-only` print the plan and exit (no IO)
 - `--compile` try torch.compile (safe fallback)
 - `--ort-providers` providers for ORT when applicable
+- Precision and tiling (optional and safe-by-default):
+  - `--precision {auto,fp16,bf16,fp32}`
+  - `--tile <size>` and `--tile-overlap <pixels>`
+  - Flags degrade gracefully when unsupported on your hardware
+  - `--detector` can select between available face detectors (default: retinaface)
 
 Examples (Restoria):
 
@@ -48,6 +53,11 @@ Notes:
 - Optional features degrade gracefully; missing metrics result in `null`
   values rather than errors.
 - Heavy libraries (torch, cv2) are imported lazily to keep startup fast.
+- CodeFormer is non-commercial (NTU S-Lab 1.0). It’s blocked by default and
+  requires `--allow-noncommercial` or `RESTORIA_ALLOW_NONCOMMERCIAL=1`.
+- External backends can be added via Python entry points under the group
+  `gfpp.restorers` (mapping `name -> module:Class`). Discovered plugins are
+  merged with built-ins; plugin errors are isolated.
 
 ## gfpup run (compatibility shim)
 

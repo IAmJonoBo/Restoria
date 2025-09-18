@@ -55,12 +55,11 @@ We welcome contributions to GFPGAN! This guide will help you get started with de
 
    ```bash
    # Run linting and formatting
-   ruff check .
-   black .
+   nox -s lint
 
    # Run tests
-   pytest tests_light/  # Quick tests
-   pytest tests/        # Full test suite
+   make test            # Light + default suites
+   nox -s tests_full    # Full marker-aware run
    ```
 
 4. **Commit and push**
@@ -128,11 +127,13 @@ docs(guides): update hardware requirements
 
 ### Documentation
 
-All user-facing features should include documentation:
+All user-facing features should include documentation.  Follow the style guide in
+[`docs/governance/docs-conventions.md`](../governance/docs-conventions.md):
 
 - **API functions**: Docstrings with examples
 - **CLI commands**: Help text and guide updates
 - **New features**: Usage guides and examples
+- **Release-facing changes**: Update the [release playbook](../governance/release-playbook.md) if the process evolves
 
 ## Testing
 
@@ -156,7 +157,7 @@ tests_light/           # Quick tests for CI
 pytest tests_light/ -v
 
 # Full test suite (for comprehensive validation)
-pytest tests/ -v
+pytest tests/ -m "not gpu_required and not ort_required" -v
 
 # Test specific functionality
 pytest tests/test_gfpgan_model.py -v

@@ -188,6 +188,19 @@ gfpgan-infer --input photo.jpg --device cpu
 gfpgan-infer --input photo.jpg --bg_upsampler none
 ```
 
+#### Performance hints (optional)
+
+Both CLIs accept safe-by-default performance hints:
+
+- `--precision {auto,fp16,bf16,fp32}`
+- `--tile <size>` and `--tile-overlap <pixels>`
+
+These degrade gracefully when unsupported on your hardware.
+
+#### Plugin backends
+
+You can extend backends via Python entry points with the group `gfpp.restorers` mapping `name -> module:Class`. Discovered plugins are merged with built-ins and errors are isolated.
+
 ### Web interface
 
 Launch the interactive web UI:

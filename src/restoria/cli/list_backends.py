@@ -18,16 +18,24 @@ def list_backends_cmd(argv: list[str]) -> int:
         data = list_backends(include_experimental=bool(args.all))
         if args.json:
             out: dict[str, Any] = {
-                "schema_version": "1",
+                "schema_version": "2",
                 "experimental": bool(args.all),
                 "backends": data,
             }
             print(json.dumps(out))
         else:
             print("Available backends:")
-            for k, ok in sorted(data.items()):
-                mark = "✓" if ok else "✗"
-                print(f"  {mark} {k}")
+            for name, entry in sorted(data.items()):
+                available = bool(entry.get("available"))
+                mark = "✓" if available else "✗"
+                meta = entry.get("metadata", {})
+                latency = meta.get("latency", "?")
+                devices = ",".join(meta.get("devices", []) or []) or "?"
+                description = meta.get("description", "")
+                extras = f"(latency: {latency}; devices: {devices})"
+                if description:
+                    extras = f"{extras} {description}"
+                print(f"  {mark} {name} {extras}")
         return 0
     except Exception as e:
         print(f"[WARN] Failed to list backends: {e}")

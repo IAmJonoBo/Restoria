@@ -57,6 +57,7 @@ nav:
     - Quick Start: getting-started/quickstart.md
     - Installation: getting-started/install.md
     - Development Environment: DEV_ENV.md
+    - Run in the Cloud: getting-started/cloud.md
   - User Guides:
     - Face Enhancement: guides/face-enhancement.md
     - Batch Processing: guides/batch-processing.md
@@ -103,6 +104,7 @@ nav:
     - Security: governance/security.md
     - Maintainers: governance/maintainers.md
     - Versioning: governance/versioning.md
+    - Release Playbook: governance/release-playbook.md
     - Repo rename checklist: guides/repo-rename.md
   - About:
     - FAQ: faq.md

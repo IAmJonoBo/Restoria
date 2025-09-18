@@ -5,7 +5,7 @@ Release date: 2025-09-17
 Highlights:
 
 - New power CLI JSON modes: `gfpup list-backends --json` and
-  `gfpup doctor --json` (schema_version "1").
+  `gfpup doctor --json` (schema_version "2").
 - Opt-in backends: Guided and Ensemble (safe fallbacks, lazy imports).
 - Safer weight loading defaults to `torch.load(weights_only=True)` with
   warned fallback.
@@ -35,4 +35,3 @@ Notes:
 ---
 
 For full details, see CHANGELOG.md (section 2.1.0).
-

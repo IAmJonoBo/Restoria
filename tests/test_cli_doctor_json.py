@@ -15,7 +15,7 @@ def test_gfpup_doctor_json():
     out = proc.stdout.strip()
     data = json.loads(out)
     assert isinstance(data, dict)
-    assert data.get("schema_version") in ("1", 1)
+    assert data.get("schema_version") in ("2", 2)
     # basic keys exist (values may be None on minimal env)
     assert "python" in data
     assert "torch" in data

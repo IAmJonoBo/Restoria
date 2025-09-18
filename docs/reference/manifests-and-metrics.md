@@ -3,6 +3,8 @@
 This page documents the JSON files written by Restoria and GFPP: `manifest.json`
 (run summary) and `metrics.json` (per-image records and optional plan block).
 
+- Both files include a top-level `schema_version` field which is currently
+  set to `"2"` for Restoria/GFPP runs.
 - `manifest.json` captures args, device, results summary, an optional
   `metrics_file` pointer, and environment info.
 - `metrics.json` contains per-image records under `metrics`, plus (in Restoria)

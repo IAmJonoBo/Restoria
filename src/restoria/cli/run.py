@@ -5,10 +5,15 @@ import argparse
 import json
 import os
 import shutil
+import time
+import tracemalloc
 from typing import Any
+
+from ..io.schemas import MetricsPayload, PlanSummary, ResultRecord, RunManifest, plan_summary_from
 
 METRICS_FILENAME = "metrics.json"
 MANIFEST_FILENAME = "manifest.json"
+_PROFILE_ENABLED = os.environ.get("RESTORIA_PROFILE", "").lower() in {"1", "true", "yes", "on"}
 
 
 def _warn(msg: str) -> None:
@@ -126,6 +131,18 @@ def _delegate_legacy(args) -> int:
             "--device",
             args.device,
         ]
+        # Pass through precision/tiling when specified
+        mapped += [
+            "--precision",
+            getattr(args, "precision", "auto"),
+            "--tile",
+            str(getattr(args, "tile", 0)),
+            "--tile-overlap",
+            str(getattr(args, "tile_overlap", 16)),
+        ]
+        # Pass through detector if present
+        if getattr(args, "detector", None):
+            mapped += ["--detector", args.detector]
         return _gfpp_run(mapped)
     except Exception as e2:
         _warn(f"Delegation to legacy CLI failed: {e2}")
@@ -141,6 +158,7 @@ def _compute_plan(args, inputs: list[str]):
         "experimental": bool(args.experimental),
         "compile": bool(getattr(args, "compile", False)),
         "ort_providers": list(getattr(args, "ort_providers", []) or []),
+        "auto": bool(getattr(args, "auto", False)),
     }
     return _orch.plan(first_img_path or "", plan_opts)
 
@@ -155,6 +173,13 @@ def _make_restorer(args, plan, resolved_device: str | None):
     except TypeError:
         rest = rest_cls()
     base_cfg: dict[str, Any] = dict(plan.params)
+    # Precision/tiling hints
+    base_cfg["precision"] = getattr(args, "precision", "auto")
+    base_cfg["tile"] = int(getattr(args, "tile", 0))
+    base_cfg["tile_overlap"] = int(getattr(args, "tile_overlap", 16))
+    # Detector hint if provided
+    if getattr(args, "detector", None):
+        base_cfg["detector"] = args.detector
     rest.prepare(base_cfg)
     return rest, base_cfg
 
@@ -238,66 +263,78 @@ def _compute_metrics(pth: str, out_img: str, res, args, arc, lpips, dists) -> di
     return metrics
 
 
-def _process_one(pth: str, rest, base_cfg: dict[str, Any], arc, lpips, dists, args, plan) -> dict[str, Any] | None:
+def _process_one(
+    pth: str,
+    rest,
+    base_cfg: dict[str, Any],
+    arc,
+    lpips,
+    dists,
+    args,
+    plan_backend: str,
+    plan_summary: PlanSummary,
+) -> ResultRecord | None:
+    profile_enabled = _PROFILE_ENABLED
+    if profile_enabled:
+        tracemalloc.start()
+    start = time.perf_counter()
+
+    def finalize_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
+        metrics = dict(metrics)
+        metrics["runtime_sec"] = time.perf_counter() - start
+        if profile_enabled:
+            _current, peak = tracemalloc.get_traced_memory()
+            metrics["memory_peak_mb"] = peak / (1024 * 1024)
+        return metrics
+
     img = _load_image(pth)
     base, _ = os.path.splitext(os.path.basename(pth))
     out_img = os.path.join(args.output, f"{base}.png")
 
     # If image failed to load, fallback to copying source and record minimal result
-    if img is None:
-        _warn(f"Failed to load: {pth}")
-        _save_or_copy_image(out_img, None, pth)  # force copy
-        metrics = _compute_metrics(pth, out_img, None, args, arc, lpips, dists)
-        return {
-            "input": pth,
-            "backend": plan.backend,
-            "restored_img": out_img,
-            "metrics": metrics,
-        }
-
-    cfg_img = dict(base_cfg)
-    cfg_img["input_path"] = pth
-    res = None
     try:
-        res = rest.restore(img, cfg_img)
-    except Exception as e:
-        # Graceful fallback: copy source and continue with empty metrics
-        _warn(f"Restore failed for {pth}: {e}")
-        _save_or_copy_image(out_img, None, pth)  # force copy to avoid cv2 dependency
-        metrics = _compute_metrics(pth, out_img, None, args, arc, lpips, dists)
-        return {
-            "input": pth,
-            "backend": plan.backend,
-            "restored_img": out_img,
-            "metrics": metrics,
-        }
+        if img is None:
+            _warn(f"Failed to load: {pth}")
+            _save_or_copy_image(out_img, None, pth)  # force copy
+            metrics = finalize_metrics(_compute_metrics(pth, out_img, None, args, arc, lpips, dists))
+            return ResultRecord(input=pth, backend=plan_backend, restored_img=out_img, metrics=metrics, plan=plan_summary)
 
-    if res and getattr(res, "restored_image", None) is not None:
-        _save_image(out_img, res.restored_image)
-    else:
-        # No restored image produced, copy source as best-effort
-        _save_or_copy_image(out_img, None, pth)
-    metrics = _compute_metrics(pth, out_img, res, args, arc, lpips, dists)
-    return {
-        "input": pth,
-        "backend": plan.backend,
-        "restored_img": out_img,
-        "metrics": metrics,
-    }
+        cfg_img = dict(base_cfg)
+        cfg_img["input_path"] = pth
+        try:
+            res = rest.restore(img, cfg_img)
+        except Exception as e:
+            # Graceful fallback: copy source and continue with empty metrics
+            _warn(f"Restore failed for {pth}: {e}")
+            _save_or_copy_image(out_img, None, pth)  # force copy to avoid cv2 dependency
+            metrics = finalize_metrics(_compute_metrics(pth, out_img, None, args, arc, lpips, dists))
+            return ResultRecord(input=pth, backend=plan_backend, restored_img=out_img, metrics=metrics, plan=plan_summary)
+
+        if res and getattr(res, "restored_image", None) is not None:
+            _save_image(out_img, res.restored_image)
+        else:
+            # No restored image produced, copy source as best-effort
+            _save_or_copy_image(out_img, None, pth)
+        metrics = finalize_metrics(_compute_metrics(pth, out_img, res, args, arc, lpips, dists))
+        return ResultRecord(input=pth, backend=plan_backend, restored_img=out_img, metrics=metrics, plan=plan_summary)
+    finally:
+        if profile_enabled and tracemalloc.is_tracing():
+            tracemalloc.stop()
 
 
 def _do_dry_run(args, inputs: list[str], resolved_device: str) -> int:
-    recs: list[dict[str, Any]] = []
+    records: list[ResultRecord] = []
     for pth in inputs:
         base, _ = os.path.splitext(os.path.basename(pth))
         out_img = os.path.join(args.output, f"{base}.png")
         # Avoid heavy deps in dry-run: just copy bytes if possible
         _save_or_copy_image(out_img, None, pth)
-        recs.append({"input": pth, "restored_img": out_img})
+        records.append(ResultRecord(input=pth, backend=args.backend, restored_img=out_img))
     os.makedirs(args.output, exist_ok=True)
-    with open(os.path.join(args.output, METRICS_FILENAME), "w") as f:
-        json.dump({"metrics": recs}, f, indent=2)
-    print(f"Processed {len(recs)} files (dry-run) -> {args.output}")
+    metrics_payload = MetricsPayload(metrics=records)
+    with open(os.path.join(args.output, METRICS_FILENAME), "w", encoding="utf-8") as f:
+        json.dump(metrics_payload.model_dump(exclude_none=True), f, indent=2)
+    print(f"Processed {len(records)} files (dry-run) -> {args.output}")
     # Write minimal manifest for dry-run
     try:
         from ..io.manifest import RunManifest, write_manifest  # type: ignore
@@ -319,7 +356,7 @@ def _do_dry_run(args, inputs: list[str], resolved_device: str) -> int:
                 "deterministic": bool(args.deterministic),
             },
             device=resolved_device,
-            results=recs,
+            results=records,
             metrics_file=METRICS_FILENAME,
             env=runtime_env,
         )
@@ -334,15 +371,10 @@ def _run_with_registry(args, inputs: list[str], resolved_device: str | None) -> 
     plan = _compute_plan(args, inputs)
     rc = 0
     if getattr(args, "plan_only", False):
-        with open(os.path.join(args.output, METRICS_FILENAME), "w") as f:
-            json.dump({
-                "metrics": [],
-                "plan": {
-                    "backend": plan.backend,
-                    "reason": plan.reason,
-                    "params": plan.params,
-                },
-            }, f, indent=2)
+        plan_summary = plan_summary_from(plan)
+        payload = MetricsPayload(metrics=[], plan=plan_summary)
+        with open(os.path.join(args.output, METRICS_FILENAME), "w", encoding="utf-8") as f:
+            json.dump(payload.model_dump(exclude_none=True), f, indent=2)
         print(f"Wrote plan only -> {args.output}")
         # Also write a lightweight manifest with runtime hints
         try:
@@ -373,24 +405,39 @@ def _run_with_registry(args, inputs: list[str], resolved_device: str | None) -> 
         except Exception:
             pass
     else:
+        # Licensing gate: if planner selected CodeFormer but user didn't allow non-commercial, switch to GFPGAN
+        allow_nc = bool(getattr(args, "allow_noncommercial", False)) or (
+            os.environ.get("RESTORIA_ALLOW_NONCOMMERCIAL") == "1"
+        )
+        if getattr(plan, "backend", None) == "codeformer" and not allow_nc:
+            _warn(
+                "CodeFormer uses NTU S-Lab 1.0 (non-commercial). "
+                "Enable with --allow-noncommercial or RESTORIA_ALLOW_NONCOMMERCIAL=1; using gfpgan instead"
+            )
+            class _SimplePlan:
+                def __init__(self, backend: str, params: dict[str, Any], reason: str) -> None:
+                    self.backend = backend
+                    self.params = params
+                    self.reason = reason
+
+            plan = _SimplePlan(
+                backend="gfpgan",
+                params=getattr(plan, "params", {}) or {},
+                reason=f"{getattr(plan, 'reason', 'orchestrator')} (codeformer blocked: non-commercial)",
+            )
         rest, base_cfg = _make_restorer(args, plan, resolved_device)
+        plan_summary = plan_summary_from(plan)
         arc = _maybe_arcface(args)
         lp, ds = _maybe_lpips_dists(args)
-        recs: list[dict[str, Any]] = []
+        records: list[ResultRecord] = []
         for pth in inputs:
-            rec = _process_one(pth, rest, base_cfg, arc, lp, ds, args, plan)
+            rec = _process_one(pth, rest, base_cfg, arc, lp, ds, args, plan.backend, plan_summary)
             if rec is not None:
-                recs.append(rec)
-        with open(os.path.join(args.output, METRICS_FILENAME), "w") as f:
-            json.dump({
-                "metrics": recs,
-                "plan": {
-                    "backend": plan.backend,
-                    "reason": plan.reason,
-                    "params": getattr(plan, "params", {}),
-                },
-            }, f, indent=2)
-        print(f"Processed {len(recs)} files -> {args.output}")
+                records.append(rec)
+        payload = MetricsPayload(metrics=records, plan=plan_summary)
+        with open(os.path.join(args.output, METRICS_FILENAME), "w", encoding="utf-8") as f:
+            json.dump(payload.model_dump(exclude_none=True), f, indent=2)
+        print(f"Processed {len(records)} files -> {args.output}")
         # Write manifest with runtime info (best-effort)
         try:
             from ..io.manifest import RunManifest, write_manifest  # type: ignore
@@ -412,7 +459,7 @@ def _run_with_registry(args, inputs: list[str], resolved_device: str | None) -> 
                     "deterministic": bool(args.deterministic),
                 },
                 device=resolved_device,
-                results=recs,
+                results=records,
                 metrics_file=METRICS_FILENAME,
                 env=runtime_env,
             )
@@ -433,11 +480,22 @@ def run_cmd(argv: list[str]) -> int:
     )
     p.add_argument("--metrics", default="off", choices=["off", "fast", "full"])
     p.add_argument("--device", default="auto", choices=["auto", "cpu", "cuda", "mps"])
+    p.add_argument(
+        "--detector",
+        default="retinaface_resnet50",
+        choices=["retinaface_resnet50", "retinaface_mobilenet", "scrfd", "insightface"],
+        help="Face detector to use when available",
+    )
     p.add_argument("--experimental", action="store_true")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--seed", type=int, default=None, help="Random seed for reproducibility")
     p.add_argument("--deterministic", action="store_true", help="Enable deterministic backend behavior when possible")
     p.add_argument("--compile", action="store_true", help="Hint to enable torch.compile if available")
+    p.add_argument(
+        "--allow-noncommercial",
+        action="store_true",
+        help="Allow non-commercial backends like CodeFormer (or set RESTORIA_ALLOW_NONCOMMERCIAL=1)",
+    )
     p.add_argument(
         "--ort-providers",
         nargs="+",
@@ -445,6 +503,16 @@ def run_cmd(argv: list[str]) -> int:
         help="Preferred ONNX Runtime providers (e.g., CPUExecutionProvider CUDAExecutionProvider)",
     )
     p.add_argument("--plan-only", action="store_true", help="Compute plan and write to output without running")
+    p.add_argument("--auto", action="store_true", help="Let planner choose backend/params based on probes")
+    # Optional precision/tiling flags (default-off)
+    p.add_argument(
+        "--precision",
+        default="auto",
+        choices=["auto", "fp16", "bf16", "fp32"],
+        help="Precision hint for inference and background upscaler",
+    )
+    p.add_argument("--tile", type=int, default=0, help="Tile size for background stages; 0 disables tiling")
+    p.add_argument("--tile-overlap", type=int, default=16, help="Tile overlap when tiling is enabled")
     args = p.parse_args(argv)
 
     # Best-effort determinism setup before any heavy imports/initialization

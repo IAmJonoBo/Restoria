@@ -1,0 +1,49 @@
+[
+  {
+    "id": 9999,
+    "title": "merge-test",
+    "status": "PASS",
+    "notes": [
+      "first",
+      "second",
+      "merge works"
+    ],
+    "updated_at": 1758199188.039704
+  },
+  {
+    "id": 1001,
+    "title": "",
+    "status": "PASS",
+    "notes": [
+      "CodeFormer gate strings present in gfpp/cli.py"
+    ],
+    "updated_at": 1758199359.154336
+  },
+  {
+    "id": 1002,
+    "title": "",
+    "status": "PASS",
+    "notes": [
+      "Precision/tiling flags wired in CLI and GFPGAN restorer"
+    ],
+    "updated_at": 1758199366.222558
+  },
+  {
+    "id": 1003,
+    "title": "",
+    "status": "PASS",
+    "notes": [
+      "Detector heuristic and mapping implemented"
+    ],
+    "updated_at": 1758199377.991779
+  },
+  {
+    "id": 1004,
+    "title": "",
+    "status": "PASS",
+    "notes": [
+      "Face probe SCRFD preference implemented"
+    ],
+    "updated_at": 1758199796.451862
+  }
+]

@@ -1,6 +1,8 @@
 {
   "include": [
     "src/restoria",
+    "src/gfpp",
+    "services",
     "tests_light"
   ],
   "exclude": [
@@ -9,7 +11,7 @@
     "tests",
     "conftest.py"
   ],
-  "typeCheckingMode": "basic",
+  "typeCheckingMode": "standard",
   "reportMissingImports": "none",
   "reportMissingModuleSource": "none"
 }
