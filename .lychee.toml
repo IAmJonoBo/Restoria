@@ -1,0 +1,32 @@
+# Lychee link checker configuration
+# This file helps stabilize CI by excluding locally-hosted URLs and
+# known flaky/external endpoints that are not actionable.
+
+# Exclude patterns (regex)
+exclude = [
+  # Local development servers
+  "http://localhost(:\\d+)?/.*",
+  "https://localhost(:\\d+)?/.*",
+  "http://127\\.0\\.0\\.1(:\\d+)?/.*",
+  "https://127\\.0\\.0\\.1(:\\d+)?/.*",
+  # Non-critical external domain that may be intermittently unavailable
+  "https://gfpgan\\.ai/.*"
+]
+
+# Retry and timeout behavior
+max_retries = 2
+retry_wait_time = "2s"
+timeout = "20s"
+
+# Respect redirects up to a reasonable limit
+max_redirects = 5
+
+# Cache results to reduce flakiness across runs
+cache = true
+max_cache_age = "1d"
+
+# Accept common statuses we consider OK in CI (also set in workflow args)
+accept = [200, 403, 429]
+
+# Set a friendly user agent to avoid some site blocks
+user_agent = "Mozilla/5.0 (compatible; Lychee-CI; +https://github.com/lycheeverse/lychee)"
