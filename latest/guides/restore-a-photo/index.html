@@ -1021,6 +1021,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#device-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Device selection
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1199,6 +1208,29 @@
   
   <span class="md-ellipsis">
     CLI Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/doctor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Doctor
     
   </span>
   
@@ -2211,6 +2243,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#device-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Device selection
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2343,7 +2384,7 @@
 <p>Learn how to restore a single image using GFPGAN's CLI and web interface.</p>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <p>For a damaged or blurry photo, restoration takes just one command:</p>
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>damaged_photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>damaged_photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 <p>Results are saved to <code>results/</code> with before/after comparison images.</p>
 <h2 id="cli-workflow">CLI workflow<a class="headerlink" href="#cli-workflow" title="Permanent link">&para;</a></h2>
@@ -2351,15 +2392,15 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Single image</label><label for="__tabbed_1_2">Custom output location</label><label for="__tabbed_1_3">Upscale while restoring</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--output<span class="w"> </span>restored/<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--output<span class="w"> </span>restored/<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4<span class="w"> </span>--upscale<span class="w"> </span><span class="m">2</span>
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 </div>
@@ -2369,21 +2410,21 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">GFPGAN v1.4 (recommended)</label><label for="__tabbed_2_2">GFPGAN v1.3 (natural)</label><label for="__tabbed_2_3">CodeFormer (fast)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<p><div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<p><div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 - <strong>Best for</strong>: General photos and portraits
 - <strong>Quality</strong>: High detail preservation
 - <strong>Speed</strong>: Medium</p>
 </div>
 <div class="tabbed-block">
-<p><div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.3
+<p><div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 - <strong>Best for</strong>: Natural-looking results
 - <strong>Quality</strong>: Good, less sharp than v1.4
 - <strong>Speed</strong>: Medium</p>
 </div>
 <div class="tabbed-block">
-<p><div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer
+<p><div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer
 </code></pre></div>
 - <strong>Best for</strong>: Batch processing
 - <strong>Quality</strong>: Good
@@ -2392,34 +2433,27 @@
 </div>
 </div>
 <h3 id="advanced-options">Advanced options<a class="headerlink" href="#advanced-options" title="Permanent link">&para;</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Background enhancement</label><label for="__tabbed_3_2">Face detection options</label><label for="__tabbed_3_3">Device selection</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Background enhancement</label><label for="__tabbed_3_2">Face detection options</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># Enhance background with Real-ESRGAN</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--bg_upsampler<span class="w"> </span>realesrgan
-
-<span class="c1"># Disable background enhancement for speed</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--bg_upsampler<span class="w"> </span>none
+<div class="highlight"><pre><span></span><code><span class="c1"># Restore with GFPGAN backend</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># Only restore the center face</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--only_center_face
-
-<span class="c1"># Input is already an aligned face crop</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>face_crop.jpg<span class="w"> </span>--aligned
+<div class="highlight"><pre><span></span><code><span class="c1"># Single-image restoration</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 </div>
-<div class="tabbed-block">
+</div>
+</div>
+<h3 id="device-selection">Device selection<a class="headerlink" href="#device-selection" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Force CPU (if GPU has issues)</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer
 
 <span class="c1"># Auto-detect best device</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>auto
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>auto<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
-</div>
-</div>
-</div>
 <h2 id="web-interface">Web interface<a class="headerlink" href="#web-interface" title="Permanent link">&para;</a></h2>
 <p>Launch the interactive web UI for drag-and-drop restoration:</p>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>gfpgan.gradio_app
@@ -2436,9 +2470,11 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 <p>For more control, use the FastAPI server:</p>
 <div class="highlight"><pre><span></span><code>uvicorn<span class="w"> </span>services.api.main:app<span class="w"> </span>--reload<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
 </code></pre></div>
-<p>API documentation available at:
-- Interactive docs: <a href="http://localhost:8000/docs">http://localhost:8000/docs</a>
-- ReDoc format: <a href="http://localhost:8000/redoc">http://localhost:8000/redoc</a></p>
+<p>API documentation available at:</p>
+<ul>
+<li>Interactive docs: <a href="http://localhost:8000/docs">http://localhost:8000/docs</a></li>
+<li>ReDoc format: <a href="http://localhost:8000/redoc">http://localhost:8000/redoc</a></li>
+</ul>
 <h2 id="understanding-results">Understanding results<a class="headerlink" href="#understanding-results" title="Permanent link">&para;</a></h2>
 <h3 id="output-structure">Output structure<a class="headerlink" href="#output-structure" title="Permanent link">&para;</a></h3>
 <p>After running restoration, you'll find:</p>
@@ -2449,44 +2485,51 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 └── photo.jpg               # Full restored image
 </code></pre></div>
 <h3 id="quality-assessment">Quality assessment<a class="headerlink" href="#quality-assessment" title="Permanent link">&para;</a></h3>
-<p>Visual indicators to check:
-- <strong>Sharpness</strong>: Are facial features well-defined?
-- <strong>Identity preservation</strong>: Does the person still look like themselves?
-- <strong>Artifacts</strong>: Any unnatural textures or distortions?
-- <strong>Background</strong>: Is the non-face area properly enhanced?</p>
+<p>Visual indicators to check:</p>
+<ul>
+<li><strong>Sharpness</strong>: Are facial features well-defined?</li>
+<li><strong>Identity preservation</strong>: Does the person still look like themselves?</li>
+<li><strong>Artifacts</strong>: Any unnatural textures or distortions?</li>
+<li><strong>Background</strong>: Is the non-face area properly enhanced?</li>
+</ul>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="common-issues">Common issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">No faces detected</p>
-<p><div class="highlight"><pre><span></span><code>Warning: No faces detected in the input image.
-</code></pre></div>
-<strong>Solutions:</strong>
-- Ensure the image contains visible faces
-- Try a different face detection threshold
-- Check if the image is too small or low quality</p>
+<p>A common message during face detection.</p>
 </div>
+<div class="highlight"><pre><span></span><code>Warning: No faces detected in the input image.
+</code></pre></div>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Ensure the image contains visible faces</li>
+<li>Try a different face detection threshold</li>
+<li>Check if the image is too small or low quality</li>
+</ul>
 <div class="admonition error">
 <p class="admonition-title">CUDA out of memory</p>
-<p><div class="highlight"><pre><span></span><code>RuntimeError: CUDA out of memory
-</code></pre></div>
-<strong>Solutions:</strong>
-<div class="highlight"><pre><span></span><code><span class="c1"># Use CPU instead</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu
-
-<span class="c1"># Reduce image size first</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--upscale<span class="w"> </span><span class="m">1</span>
-</code></pre></div></p>
+<p>Insufficient GPU memory for the selected settings.</p>
 </div>
+<div class="highlight"><pre><span></span><code>RuntimeError: CUDA out of memory
+</code></pre></div>
+<p><strong>Solutions:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use CPU instead</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer
+
+<span class="c1"># Reduce processing load</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--metrics<span class="w"> </span>off
+</code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Poor restoration quality</p>
-<p><strong>Try different backends:</strong>
-<div class="highlight"><pre><span></span><code><span class="c1"># More natural results</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.3
+<p>If results look off, try an alternative backend.</p>
+</div>
+<p><strong>Try different backends:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Natural results</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 
 <span class="c1"># Better identity preservation</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer
-</code></pre></div></p>
-</div>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp
+</code></pre></div>
 <h3 id="getting-help">Getting help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h3>
 <p>If restoration quality isn't satisfactory:</p>
 <ol>
@@ -2495,10 +2538,12 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 <li>See <a href="../../troubleshooting/">troubleshooting</a> for technical issues</li>
 </ol>
 <hr />
-<p><strong>Next steps:</strong>
-- <a href="../batch-processing/">Process multiple photos →</a>
-- <a href="../metrics/">Measure restoration quality →</a>
-- <a href="../choose-backend/">Choose the right backend →</a></p>
+<p><strong>Next steps:</strong></p>
+<ul>
+<li><a href="../batch-processing/">Process multiple photos →</a></li>
+<li><a href="../metrics/">Measure restoration quality →</a></li>
+<li><a href="../choose-backend/">Choose the right backend →</a></li>
+</ul>
 
 
 

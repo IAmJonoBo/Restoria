@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://IAmJonoBo.github.io/Restoria/latest/usage/cli/">
+        <link rel="canonical" href="https://IAmJonoBo.github.io/Restoria/latest/reference/doctor/">
       
       
-        <link rel="prev" href="../../guides/restore-a-photo/">
+        <link rel="prev" href="../../usage/cli/">
       
       
-        <link rel="next" href="../../reference/doctor/">
+        <link rel="next" href="../../BACKEND_MATRIX/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>CLI Usage - Restoria</title>
+        <title>Doctor - Restoria</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cli-usage" class="md-skip">
+        <a href="#doctor-command" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CLI Usage
+              Doctor
             
           </span>
         </div>
@@ -290,7 +290,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../../usage/cli/" class="md-tabs__link">
           
   
   
@@ -783,7 +783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../colab/" class="md-nav__link">
+      <a href="../../usage/colab/" class="md-nav__link">
         
   
   
@@ -996,6 +996,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CLI Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1013,7 +1036,7 @@
   
   
   <span class="md-ellipsis">
-    CLI Usage
+    Doctor
     
   </span>
   
@@ -1026,7 +1049,7 @@
   
   
   <span class="md-ellipsis">
-    CLI Usage
+    Doctor
     
   </span>
   
@@ -1051,27 +1074,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#restoria-run" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
-      restoria run
+      Usage
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#gfpup-run-compatibility-shim" class="md-nav__link">
+  <a href="#what-it-checks" class="md-nav__link">
     <span class="md-ellipsis">
-      gfpup run (compatibility shim)
+      What it checks
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#legacy-shim-gfpgan-infer" class="md-nav__link">
+  <a href="#interpreting-results" class="md-nav__link">
     <span class="md-ellipsis">
-      Legacy shim: gfpgan-infer
+      Interpreting results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting tips
     </span>
   </a>
   
@@ -1081,29 +1113,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../reference/doctor/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Doctor
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -1231,7 +1240,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/determinism/" class="md-nav__link">
+      <a href="../determinism/" class="md-nav__link">
         
   
   
@@ -1254,7 +1263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/manifests-and-metrics/" class="md-nav__link">
+      <a href="../manifests-and-metrics/" class="md-nav__link">
         
   
   
@@ -1277,7 +1286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../recipes/" class="md-nav__link">
+      <a href="../../usage/recipes/" class="md-nav__link">
         
   
   
@@ -1300,7 +1309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gradio/" class="md-nav__link">
+      <a href="../../usage/gradio/" class="md-nav__link">
         
   
   
@@ -1323,7 +1332,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../../usage/api/" class="md-nav__link">
         
   
   
@@ -2066,27 +2075,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#restoria-run" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
-      restoria run
+      Usage
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#gfpup-run-compatibility-shim" class="md-nav__link">
+  <a href="#what-it-checks" class="md-nav__link">
     <span class="md-ellipsis">
-      gfpup run (compatibility shim)
+      What it checks
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#legacy-shim-gfpgan-infer" class="md-nav__link">
+  <a href="#interpreting-results" class="md-nav__link">
     <span class="md-ellipsis">
-      Legacy shim: gfpgan-infer
+      Interpreting results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting tips
     </span>
   </a>
   
@@ -2108,7 +2126,7 @@
 
 
   
-    <a href="https://github.com/IAmJonoBo/Restoria/edit/main/docs/usage/cli.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/IAmJonoBo/Restoria/edit/main/docs/reference/doctor.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
     </a>
@@ -2116,83 +2134,43 @@
   
 
 
-<h1 id="cli-usage">CLI Usage<a class="headerlink" href="#cli-usage" title="Permanent link">&para;</a></h1>
-<p>Primary CLI: <code>restoria</code> (recommended)</p>
-<p>Compatibility shims:</p>
-<ul>
-<li><code>gfpup</code> — modular CLI powered by <code>gfpp</code></li>
-<li><code>gfpgan-infer</code> — legacy GFPGAN CLI kept for backward compatibility</li>
-</ul>
-<h2 id="restoria-run">restoria run<a class="headerlink" href="#restoria-run" title="Permanent link">&para;</a></h2>
-<p>Key flags:</p>
-<ul>
-<li><code>--input</code> file or folder of images</li>
-<li><code>--backend</code> one of: gfpgan, codeformer, restoreformerpp, ensemble, ...</li>
-<li><code>--auto</code> enable planner to choose a backend and normalized params</li>
-<li><code>--metrics</code> off|fast|full (fast = ArcFace; full = ArcFace + LPIPS + DISTS)</li>
-<li><code>--device</code> auto|cpu|cuda|mps</li>
-<li><code>--dry-run</code> parse/plan and write manifest without executing</li>
-<li><code>--plan-only</code> print the plan and exit (no IO)</li>
-<li><code>--compile</code> try torch.compile (safe fallback)</li>
-<li><code>--ort-providers</code> providers for ORT when applicable</li>
-</ul>
-<p>Examples (Restoria):</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Basic run with GFPGAN backend</span>
-restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>inputs/whole_imgs<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
+<h1 id="doctor-command">Doctor command<a class="headerlink" href="#doctor-command" title="Permanent link">&para;</a></h1>
+<p>The <code>doctor</code> command inspects your environment and reports available backends
+and providers.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># JSON output for automation</span>
+python<span class="w"> </span>-m<span class="w"> </span>gfpp.cli<span class="w"> </span>doctor<span class="w"> </span>--json
 
-<span class="c1"># Let the planner pick a backend and parameters</span>
-restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span>--auto<span class="w"> </span>--metrics<span class="w"> </span>fast<span class="w"> </span>--output<span class="w"> </span>out/
-
-<span class="c1"># Plan-only / dry-run</span>
-restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span>--plan-only
-restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span>--dry-run<span class="w"> </span>--output<span class="w"> </span>out/
-
-<span class="c1"># Deterministic with seed</span>
-restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span>--seed<span class="w"> </span><span class="m">123</span><span class="w"> </span>--deterministic
+<span class="c1"># Human-readable output</span>
+python<span class="w"> </span>-m<span class="w"> </span>gfpp.cli<span class="w"> </span>doctor
 </code></pre></div>
-<p>Outputs:</p>
+<h2 id="what-it-checks">What it checks<a class="headerlink" href="#what-it-checks" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>manifest.json</code> — args, runtime, results, models used</li>
-<li><code>metrics.json</code> — per-image metrics (values may be None if unavailable)</li>
+<li>Python version and platform</li>
+<li>Installed optional dependencies (e.g., torch, onnxruntime)</li>
+<li>Available GPU/accelerators (CUDA, MPS, DirectML if applicable)</li>
+<li>Registered backends and their availability</li>
+<li>ONNX Runtime providers and selection order</li>
 </ul>
-<p>Notes:</p>
+<h2 id="interpreting-results">Interpreting results<a class="headerlink" href="#interpreting-results" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Optional features degrade gracefully; missing metrics result in <code>null</code>
-  values rather than errors.</li>
-<li>Heavy libraries (torch, cv2) are imported lazily to keep startup fast.</li>
+<li>A backend listed with <code>available: false</code> will be skipped automatically when
+  selected by auto mode. You can still request a specific backend; the CLI will
+  warn and fall back to GFPGAN if unavailable.</li>
+<li>If ONNX Runtime is present, the <code>ort_providers</code> array shows which providers
+  will be attempted in order; unsupported providers are ignored.</li>
+<li>Warnings are prefixed with <code>[WARN]</code> and should not block restoration. They
+  are informational to help you improve setup.</li>
 </ul>
-<h2 id="gfpup-run-compatibility-shim">gfpup run (compatibility shim)<a class="headerlink" href="#gfpup-run-compatibility-shim" title="Permanent link">&para;</a></h2>
-<p>Examples:</p>
-<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>inputs/whole_imgs<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span>--auto<span class="w"> </span>--metrics<span class="w"> </span>fast<span class="w"> </span>--output<span class="w"> </span>out/
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span>--plan-only
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>samples/portrait.jpg<span class="w"> </span>--dry-run<span class="w"> </span>--output<span class="w"> </span>out/
-</code></pre></div>
-<p>Notes:</p>
+<h2 id="troubleshooting-tips">Troubleshooting tips<a class="headerlink" href="#troubleshooting-tips" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Mirrors Restoria behavior; heavy features degrade gracefully.</li>
-<li>Keep flags stable; may be removed in a future major.</li>
-</ul>
-<h2 id="legacy-shim-gfpgan-infer">Legacy shim: gfpgan-infer<a class="headerlink" href="#legacy-shim-gfpgan-infer" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>usage:<span class="w"> </span>gfpgan-infer<span class="w"> </span><span class="o">[</span>-i<span class="w"> </span>INPUT<span class="o">]</span><span class="w"> </span><span class="o">[</span>-o<span class="w"> </span>OUTPUT<span class="o">]</span><span class="w"> </span><span class="o">[</span>-v<span class="w"> </span>VERSION<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="w"> </span>UPSCALE<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--bg_upsampler<span class="w"> </span>BG_UPSAMPLER<span class="o">]</span><span class="w"> </span><span class="o">[</span>--bg_tile<span class="w"> </span>BG_TILE<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--suffix<span class="w"> </span>SUFFIX<span class="o">]</span><span class="w"> </span><span class="o">[</span>--only_center_face<span class="o">]</span><span class="w"> </span><span class="o">[</span>--aligned<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--ext<span class="w"> </span>EXT<span class="o">]</span><span class="w"> </span><span class="o">[</span>-w<span class="w"> </span>WEIGHT<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--device<span class="w"> </span><span class="o">{</span>auto,cpu,cuda<span class="o">}]</span><span class="w"> </span><span class="o">[</span>--dry-run<span class="o">]</span><span class="w"> </span><span class="o">[</span>--no-download<span class="o">]</span>
-<span class="w">                    </span><span class="o">[</span>--model-path<span class="w"> </span>MODEL_PATH<span class="o">]</span><span class="w"> </span><span class="o">[</span>--seed<span class="w"> </span>SEED<span class="o">]</span><span class="w"> </span><span class="o">[</span>--no-cmp<span class="o">]</span>
-</code></pre></div>
-<p>Common examples:</p>
-<ul>
-<li><code>gfpgan-infer -i inputs/whole_imgs -o results -v 1.4 -s 2 --device auto</code></li>
-<li><code>gfpgan-infer -i my.jpg -v 1.3 --no-download --model-path ./weights/GFPGANv1.3.pth</code></li>
-<li><code>gfpgan-infer --dry-run -v 1.4</code> (validate and exit)</li>
-</ul>
-<p>Notes:</p>
-<ul>
-<li>On CPU, Real-ESRGAN background upsampling may be disabled for speed.</li>
-<li><code>--seed</code> sets seeds for random, numpy, and torch.</li>
-<li>The shim prints a deprecation warning to stderr but maintains flag behavior
-  and output layout for backward compatibility.</li>
+<li>If GPU is not detected, ensure the correct driver and toolkit are installed
+  and the Python package matches your environment.</li>
+<li>If ONNX Runtime is missing or only CPU is available, you can:</li>
+<li>install GPU-enabled ORT for your platform, or</li>
+<li>proceed with CPU or the eager backend; results will still be produced.</li>
+<li>When <code>--compile</code> is used and fails, the model is left unmodified and the run
+  proceeds. This is expected and safe.</li>
 </ul>
 
 

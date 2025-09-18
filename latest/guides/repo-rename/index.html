@@ -1019,6 +1019,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/doctor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Doctor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../BACKEND_MATRIX/" class="md-nav__link">
         
   
@@ -2150,7 +2173,7 @@ for existing workflows until users opt in.</p>
 <p>Rename GitHub repo to the new name in Settings.</p>
 </li>
 <li>Verify redirects are auto-created (GitHub handles this). Keep old
-    remote URLs in docs for one minor release.</li>
+  remote URLs in docs for one minor release.</li>
 <li>
 <p>Update badges and links in README and docs.</p>
 </li>
@@ -2161,36 +2184,36 @@ for existing workflows until users opt in.</p>
 <p>Update <code>pyproject.toml</code> project name and URLs.</p>
 </li>
 <li>Keep console scripts for both new and legacy entry points during the
-    transition.</li>
+  transition.</li>
 <li>
 <p>Bump minor version and add a changelog entry noting the rename and
-    deprecation window.</p>
+  deprecation window.</p>
 </li>
 <li>
 <p>CI and docs</p>
 </li>
 <li>
 <p>Update release workflows to publish to the new package name (if
-    changing on PyPI).</p>
+  changing on PyPI).</p>
 </li>
 <li>Keep a compatibility wheel that provides legacy entry points if
-    feasible.</li>
+  feasible.</li>
 <li>
 <p>Use mike to version the docs. Add a banner on latest docs highlighting
-    the new name.</p>
+  the new name.</p>
 </li>
 <li>
 <p>Deprecation policy</p>
 </li>
 <li>
 <p>Show a one-time deprecation notice in legacy CLI recommending the new
-    CLI name and commands.</p>
+  CLI name and commands.</p>
 </li>
 <li>Provide a migration guide (see Migration to Restoria) with
-    side-by-side examples.</li>
+  side-by-side examples.</li>
 <li>
 <p>After two minor versions, consider removing the legacy shim, following
-    SemVer (major) if behavior changes.</p>
+  SemVer (major) if behavior changes.</p>
 </li>
 <li>
 <p>Weight and model registries</p>
@@ -2199,7 +2222,7 @@ for existing workflows until users opt in.</p>
 <p>Keep weight resolution modules stable; do not rename on disk abruptly.</p>
 </li>
 <li>Provide redirects or lookup fallbacks for old registry names to new
-    names.</li>
+  names.</li>
 </ol>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2210,8 +2233,8 @@ for existing workflows until users opt in.</p>
 <h2 id="rollback">Rollback<a class="headerlink" href="#rollback" title="Permanent link">&para;</a></h2>
 <ul>
 <li>If users report blockers, you can temporarily restore older wheel
-    versions and mark the latest as yanked on PyPI while issuing a patch
-    release.</li>
+  versions and mark the latest as yanked on PyPI while issuing a patch
+  release.</li>
 </ul>
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>

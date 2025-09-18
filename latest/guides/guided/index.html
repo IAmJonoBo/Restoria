@@ -1032,6 +1032,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/doctor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Doctor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../BACKEND_MATRIX/" class="md-nav__link">
         
   
@@ -2001,33 +2024,49 @@
 <p>The guided backend lets you provide a reference image to bias restoration
 toward preserving identity.</p>
 <ul>
-<li>Enable:
-    <code>gfpup run --backend guided --reference path/to/ref.jpg --input &lt;img&gt; --output out/</code></li>
+<li>Enable (recommended):</li>
+</ul>
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--backend<span class="w"> </span>guided<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--reference<span class="w"> </span>path/to/ref.jpg<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input<span class="w"> </span>&lt;img&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>out/
+</code></pre></div>
+<ul>
+<li>Compatibility shim:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--backend<span class="w"> </span>guided<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--reference<span class="w"> </span>path/to/ref.jpg<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input<span class="w"> </span>&lt;img&gt;<span class="w"> </span><span class="se">\</span>
+</code></pre></div>
+<ul>
 <li>Defaults remain unchanged unless you opt in.</li>
 </ul>
 <p>What it does:</p>
 <ul>
 <li>Computes an identity similarity (ArcFace) between the input and the
-    reference, when available.</li>
+  reference, when available.</li>
 <li>If similarity is low, it slightly lowers the restoration weight to retain
-    more identity.</li>
+  more identity.</li>
 <li>Internally runs GFPGAN with the adjusted weight.</li>
 </ul>
 <p>Notes:</p>
 <ul>
 <li>If ArcFace or the reference image is unavailable, it gracefully falls back
-    to normal GFPGAN settings.</li>
+  to normal GFPGAN settings.</li>
 <li>The plan and metrics record <code>guided.reference</code>, <code>guided.arcface_cosine</code>, and
-    <code>guided.adjusted_weight</code> when applicable.</li>
+  <code>guided.adjusted_weight</code> when applicable.</li>
 <li>This is a lightweight heuristic, not face swapping. No model weights are
-    changed.</li>
+  changed.</li>
 </ul>
 <p>Troubleshooting:</p>
 <ul>
-<li>Install metrics extras for ArcFace support if you want identity similarity:
-    <code>pip install -e ".[metrics,arcface]"</code></li>
+<li>Install metrics extras for ArcFace support if you want identity similarity:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[metrics,arcface]&quot;</span>
+</code></pre></div>
+<ul>
 <li>You can continue using <code>--metrics off</code> and the backend will still run, just
-    without the guidance tweak.</li>
+  without the guidance tweak.</li>
 </ul>
 
 

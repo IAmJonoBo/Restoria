@@ -1249,6 +1249,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/doctor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Doctor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../BACKEND_MATRIX/" class="md-nav__link">
         
   
@@ -2467,10 +2490,11 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">GFPGAN v1.4 (Recommended)</label><label for="__tabbed_1_2">GFPGAN v1.3 (Natural)</label><label for="__tabbed_1_3">GFPGAN v1.2 (Sharp)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># New CLI</span>
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
+<div class="highlight"><pre><span></span><code><span class="c1"># Primary CLI</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 
-<span class="c1"># Legacy shim</span>
+<span class="c1"># Compatibility shims</span>
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
 </code></pre></div>
 <p><strong>Strengths:</strong>
@@ -2485,10 +2509,10 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 <p><strong>Example use case:</strong> Family photo restoration, professional headshots</p>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># New CLI (select model via param if supported)</span>
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
+<div class="highlight"><pre><span></span><code><span class="c1"># Primary CLI</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 
-<span class="c1"># Legacy shim</span>
+<span class="c1"># Compatibility shim</span>
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.3
 </code></pre></div>
 <p><strong>Strengths:</strong>
@@ -2506,7 +2530,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 <p><strong>Example use case:</strong> Old family photos, vintage portraits</p>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># Legacy shim example only</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Compatibility-only example</span>
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.2
 </code></pre></div>
 <p><strong>Strengths:</strong>
@@ -2527,10 +2551,11 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">CodeFormer (Fast)</label><label for="__tabbed_2_2">RestoreFormer++ (Premium)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># New CLI</span>
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
+<div class="highlight"><pre><span></span><code><span class="c1"># Primary CLI</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 
-<span class="c1"># Legacy shim</span>
+<span class="c1"># Compatibility shims</span>
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer
 </code></pre></div>
 <p><strong>Strengths:</strong>
@@ -2548,10 +2573,11 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 <p><strong>Example use case:</strong> Processing thousands of photos, real-time applications</p>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># New CLI uses canonical name restoreformerpp</span>
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/
+<div class="highlight"><pre><span></span><code><span class="c1"># Primary CLI uses canonical name restoreformerpp</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/
 
-<span class="c1"># Legacy shim alias</span>
+<span class="c1"># Compatibility shims</span>
+gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformer
 </code></pre></div>
 <p><strong>Strengths:</strong>
@@ -2585,7 +2611,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 </div>
 <div class="tabbed-block">
 <p><strong>Recommended:</strong> RestoreFormer++
-<div class="highlight"><pre><span></span><code><span class="w">    </span>gfpup<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code><span class="w">    </span>restoria<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
 <span class="w">        </span>--input<span class="w"> </span>portrait.jpg<span class="w"> </span><span class="se">\</span>
 <span class="w">        </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span><span class="se">\</span>
 <span class="w">        </span>--metrics<span class="w"> </span>full<span class="w"> </span><span class="se">\</span>
@@ -2597,7 +2623,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 </div>
 <div class="tabbed-block">
 <p><strong>Recommended:</strong> CodeFormer
-<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 - Fastest processing
 - Lower resource usage
@@ -2609,7 +2635,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photo.jpg<spa
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.3
 
 <span class="c1"># For maximum quality</span>
-gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>old_photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div></p>
 </div>
 </div>
@@ -2623,7 +2649,7 @@ gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> 
 <li><strong>Recommended:</strong> RestoreFormer++ for quality</li>
 <li><strong>Alternative:</strong> GFPGAN v1.4 for speed</li>
 </ul>
-<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/<span class="w"> </span>--compile
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span>--output<span class="w"> </span>out/<span class="w"> </span>--compile
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -2641,7 +2667,7 @@ gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> 
 <li>✅ GFPGAN with reduced settings</li>
 <li>❌ RestoreFormer++ (use CPU)</li>
 </ul>
-<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -2650,7 +2676,7 @@ gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> 
 <li><strong>Recommended:</strong> CodeFormer for speed</li>
 <li>Disable background enhancement</li>
 </ul>
-<div class="highlight"><pre><span></span><code>gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photo.jpg<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 </div>
@@ -2725,11 +2751,11 @@ gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> 
 <h3 id="objective-metrics">Objective metrics<a class="headerlink" href="#objective-metrics" title="Permanent link">&para;</a></h3>
 <p>Use built-in metrics to compare backends:</p>
 <pre><code>    # Test multiple backends on the same image
-    gfpup run --input test_photo.jpg \
+    restoria run --input test_photo.jpg \
         --backend gfpgan --metrics full --output v14/
-    gfpup run --input test_photo.jpg \
+    restoria run --input test_photo.jpg \
         --backend codeformer --metrics full --output cf/
-    gfpup run \
+    restoria run \
         --input test_photo.jpg \
         --backend restoreformerpp \
         --metrics full \
@@ -2755,7 +2781,7 @@ gfpup<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> 
 <p>You can blend outputs from multiple backends by selecting the ensemble backend.
 This is off by default and requires no extra installs for a simple blend.</p>
 <p>Example:</p>
-<pre><code>    gfpup run --input photo.jpg \
+<pre><code>    restoria run --input photo.jpg \
         --backend ensemble \
         --ensemble-backends gfpgan,codeformer \
         --ensemble-weights 0.5,0.5 \

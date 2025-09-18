@@ -2,202 +2,214 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/ACCESSIBILITY/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/BACKEND_MATRIX/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/COMPATIBILITY/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/DECISION_TABLE/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/DEV_ENV/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/HARDWARE_GUIDE/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/ORT_GUIDE/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/TORCH2/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/UI_GUIDE/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
+    </url>
+    <url>
+         <loc>https://IAmJonoBo.github.io/Restoria/latest/contributing/</loc>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/faq/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
+    </url>
+    <url>
+         <loc>https://IAmJonoBo.github.io/Restoria/latest/quickstart/</loc>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/troubleshooting/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/about/acknowledgements/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/about/changelog/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/about/license/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/api/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/api/core/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/api/models/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/api/utils/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/getting-started/install/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/getting-started/quickstart/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/code-of-conduct/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/contributing/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/docs-conventions/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/ethics/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/maintainers/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/privacy/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/security/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/governance/versioning/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/auto-mode/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/batch-processing/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/choose-backend/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/face-enhancement/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/guided/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/hardware/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/metrics/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/migration/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/repo-rename/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/guides/restore-a-photo/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/product/brand/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/product/data-card/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/product/model-card/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/product/performance/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/reference/determinism/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
+    </url>
+    <url>
+         <loc>https://IAmJonoBo.github.io/Restoria/latest/reference/doctor/</loc>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/reference/manifests-and-metrics/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/usage/api/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/usage/cli/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/usage/colab/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/usage/gradio/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
     <url>
          <loc>https://IAmJonoBo.github.io/Restoria/latest/usage/recipes/</loc>
-         <lastmod>2025-09-17</lastmod>
+         <lastmod>2025-09-18</lastmod>
     </url>
 </urlset>

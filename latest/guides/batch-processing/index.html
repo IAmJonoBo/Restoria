@@ -1324,6 +1324,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../reference/doctor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Doctor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../BACKEND_MATRIX/" class="md-nav__link">
         
   
@@ -2555,11 +2578,13 @@
   
 
 
+<!-- markdownlint-disable MD031 MD032 MD046 MD013 -->
+
 <h1 id="batch-processing">Batch processing<a class="headerlink" href="#batch-processing" title="Permanent link">&para;</a></h1>
 <p>Process entire folders of images with consistent settings and quality tracking.</p>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <p>Restore all images in a folder:</p>
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>results/<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>results/<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 <p>GFPGAN automatically processes all supported image formats (JPG, PNG, WEBP) in the input folder.</p>
 <h2 id="basic-batch-operations">Basic batch operations<a class="headerlink" href="#basic-batch-operations" title="Permanent link">&para;</a></h2>
@@ -2567,43 +2592,49 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Default settings</label><label for="__tabbed_1_2">Custom output folder</label><label for="__tabbed_1_3">With quality metrics</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>restored_photos/<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>restored_photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>fast<span class="w"> </span>--report-path<span class="w"> </span>batch_report.json
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>fast<span class="w"> </span>--output<span class="w"> </span>batch_fast/
 </code></pre></div>
 </div>
 </div>
 </div>
 <h3 id="supported-file-formats">Supported file formats<a class="headerlink" href="#supported-file-formats" title="Permanent link">&para;</a></h3>
-<p>GFPGAN processes these image formats:
-- <strong>JPEG/JPG</strong> - Most common format
-- <strong>PNG</strong> - Lossless format, good for high quality
-- <strong>WEBP</strong> - Modern format with good compression
-- <strong>BMP</strong> - Uncompressed bitmap
-- <strong>TIFF</strong> - High quality, often used professionally</p>
+<p>GFPGAN processes these image formats:</p>
+<ul>
+<li><strong>JPEG/JPG</strong> - Most common format</li>
+<li><strong>PNG</strong> - Lossless format, good for high quality</li>
+<li><strong>WEBP</strong> - Modern format with good compression</li>
+<li><strong>BMP</strong> - Uncompressed bitmap</li>
+<li><strong>TIFF</strong> - High quality, often used professionally</li>
+</ul>
 <h2 id="advanced-batch-processing">Advanced batch processing<a class="headerlink" href="#advanced-batch-processing" title="Permanent link">&para;</a></h2>
 <h3 id="choose-processing-backend">Choose processing backend<a class="headerlink" href="#choose-processing-backend" title="Permanent link">&para;</a></h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Quality-focused</label><label for="__tabbed_2_2">Speed-focused</label><label for="__tabbed_2_3">Balanced</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="c1"># Best quality, slower processing</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>restoreformer<span class="w"> </span>--metrics<span class="w"> </span>detailed
+<span class="w">    </span>restoria<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--input<span class="w"> </span>photos/<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--backend<span class="w"> </span>restoreformerpp<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--metrics<span class="w"> </span>full<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--output<span class="w"> </span>out_rfpp/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="c1"># Faster processing, good quality</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--bg_upsampler<span class="w"> </span>none
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out_cf/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="c1"># Good balance of speed and quality</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--version<span class="w"> </span><span class="m">1</span>.4<span class="w"> </span>--metrics<span class="w"> </span>fast
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--metrics<span class="w"> </span>fast<span class="w"> </span>--output<span class="w"> </span>out_v14/
 </code></pre></div>
 </div>
 </div>
@@ -2612,13 +2643,13 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span 
 <div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Full enhancement</label><label for="__tabbed_3_2">Face-only (faster)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># Restore faces and enhance backgrounds</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--bg_upsampler<span class="w"> </span>realesrgan<span class="w"> </span>--upscale<span class="w"> </span><span class="m">2</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Restore faces (background handled by backend pipeline if available)</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># Skip background processing for speed</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--bg_upsampler<span class="w"> </span>none
+<div class="highlight"><pre><span></span><code><span class="c1"># Keep minimal processing for speed</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out_fast/
 </code></pre></div>
 </div>
 </div>
@@ -2627,16 +2658,16 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span 
 <div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Auto device selection</label><label for="__tabbed_4_2">Force CPU (low memory)</label><label for="__tabbed_4_3">GPU with memory limits</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--device<span class="w"> </span>auto
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--device<span class="w"> </span>auto<span class="w"> </span>--backend<span class="w"> </span>gfpgan
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--device<span class="w"> </span>cpu
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># Process smaller batches if GPU memory is limited</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--device<span class="w"> </span>cuda<span class="w"> </span>--bg_tile<span class="w"> </span><span class="m">200</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Prefer lighter backends if GPU memory is limited</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 </div>
@@ -2646,15 +2677,15 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span 
 <div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Fast metrics (LPIPS only)</label><label for="__tabbed_5_2">Detailed metrics (LPIPS, DISTS, ArcFace)</label><label for="__tabbed_5_3">No metrics (fastest)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>fast<span class="w"> </span>--report-path<span class="w"> </span>quick_report.json
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>fast<span class="w"> </span>--output<span class="w"> </span>out_fast/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>detailed<span class="w"> </span>--report-path<span class="w"> </span>full_report.json
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>full<span class="w"> </span>--output<span class="w"> </span>out_full/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>none
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>off<span class="w"> </span>--output<span class="w"> </span>out_nometrics/
 </code></pre></div>
 </div>
 </div>
@@ -2680,75 +2711,87 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span 
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><strong>Metric meanings:</strong>
-- <strong>LPIPS</strong>: Lower is better (perceptual similarity)
-- <strong>DISTS</strong>: Lower is better (structural similarity)
-- <strong>ArcFace</strong>: Higher is better (identity preservation)</p>
+<p><strong>Metric meanings:</strong></p>
+<ul>
+<li><strong>LPIPS</strong>: Lower is better (perceptual similarity)</li>
+<li><strong>DISTS</strong>: Lower is better (structural similarity)</li>
+<li><strong>ArcFace</strong>: Higher is better (identity preservation)</li>
+</ul>
 <h2 id="provenance-and-reproducibility">Provenance and reproducibility<a class="headerlink" href="#provenance-and-reproducibility" title="Permanent link">&para;</a></h2>
 <h3 id="deterministic-processing">Deterministic processing<a class="headerlink" href="#deterministic-processing" title="Permanent link">&para;</a></h3>
 <p>For reproducible results across runs:</p>
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--deterministic<span class="w"> </span>--random-seed<span class="w"> </span><span class="m">42</span>
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--input<span class="w"> </span>photos/<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--seed<span class="w"> </span><span class="m">42</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--deterministic<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output<span class="w"> </span>out/
 </code></pre></div>
 <h3 id="preserve-metadata">Preserve metadata<a class="headerlink" href="#preserve-metadata" title="Permanent link">&para;</a></h3>
 <p>Keep original EXIF data:</p>
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--preserve-metadata
+<div class="highlight"><pre><span></span><code><span class="c1"># Restoria preserves core provenance via manifest.json.</span>
+<span class="c1"># EXIF preservation may depend on backend.</span>
 </code></pre></div>
 <h3 id="provenance-tracking">Provenance tracking<a class="headerlink" href="#provenance-tracking" title="Permanent link">&para;</a></h3>
 <p>GFPGAN automatically saves processing information:</p>
-<div class="highlight"><pre><span></span><code>results/
-├── restored_photos/         # Processed images
-├── batch_report.json       # Quality metrics
-├── processing_log.txt      # Detailed log
-└── provenance.json         # Settings and environment info
+<div class="highlight"><pre><span></span><code>out/
+├── restored_imgs/           # Processed images (if backend writes them separately)
+├── metrics.json             # Per-image metrics (+ plan for Restoria)
+└── manifest.json            # Run manifest (args, device, runtime env)
 </code></pre></div>
 <h2 id="monitoring-progress">Monitoring progress<a class="headerlink" href="#monitoring-progress" title="Permanent link">&para;</a></h2>
 <h3 id="progress-indicators">Progress indicators<a class="headerlink" href="#progress-indicators" title="Permanent link">&para;</a></h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Simple progress bar</label><label for="__tabbed_6_2">Detailed logging</label><label for="__tabbed_6_3">Silent mode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--progress
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--verbose<span class="w"> </span>--log-file<span class="w"> </span>batch.log
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--quiet
+<div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 </div>
 </div>
 </div>
 <h3 id="handling-interruptions">Handling interruptions<a class="headerlink" href="#handling-interruptions" title="Permanent link">&para;</a></h3>
 <p>If processing is interrupted:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Resume from where it left off</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--resume<span class="w"> </span>--checkpoint-dir<span class="w"> </span>.checkpoints/
+<div class="highlight"><pre><span></span><code><span class="c1"># Resume strategy varies by backend; Restoria records args/manifests for reproducibility.</span>
 </code></pre></div>
 <h2 id="presets-and-automation">Presets and automation<a class="headerlink" href="#presets-and-automation" title="Permanent link">&para;</a></h2>
 <h3 id="create-processing-presets">Create processing presets<a class="headerlink" href="#create-processing-presets" title="Permanent link">&para;</a></h3>
 <p>Save commonly used settings:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">High quality preset</label><label for="__tabbed_7_2">Fast processing preset</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:1"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">High quality preset (example alias)</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="c1"># Create alias or script</span>
-<span class="nb">alias</span><span class="w"> </span>gfpgan-hq<span class="o">=</span><span class="s1">&#39;gfpgan-infer --version 1.4 --bg_upsampler realesrgan --metrics detailed&#39;</span>
-
+<div class="tabbed-block"></div>
+</div>
+</div>
+<p><div class="highlight"><pre><span></span><code><span class="c1"># Create alias or script</span>
+<span class="nb">alias</span><span class="w"> </span>restoria-hq<span class="o">=</span><span class="s1">&#39;restoria run --backend restoreformerpp --metrics full&#39;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="sb">```</span>bash
 <span class="c1"># Use the preset</span>
-gfpgan-hq<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>results/
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nb">alias</span><span class="w"> </span>gfpgan-fast<span class="o">=</span><span class="s1">&#39;gfpgan-infer --backend codeformer --bg_upsampler none --metrics fast&#39;</span>
-
-gfpgan-fast<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>results/
-</code></pre></div>
-</div>
-</div>
-</div>
-<h3 id="automation-scripts">Automation scripts<a class="headerlink" href="#automation-scripts" title="Permanent link">&para;</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Bash script example</label><label for="__tabbed_8_2">Python script example</label></div>
+restoria-hq<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>results/
+</code></pre></div></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:1"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Fast processing preset (example alias)</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block">
+<div class="tabbed-block"></div>
+</div>
+</div>
+<p><div class="highlight"><pre><span></span><code><span class="nb">alias</span><span class="w"> </span>restoria-fast<span class="o">=</span><span class="s1">&#39;restoria run --backend codeformer --metrics fast&#39;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="sb">```</span>bash
+restoria-fast<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--output<span class="w"> </span>results/
+</code></pre></div></p>
+<h3 id="automation-scripts">Automation scripts<a class="headerlink" href="#automation-scripts" title="Permanent link">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:1"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Bash script example</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
+</div>
+</div>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 <span class="c1"># batch_restore.sh</span>
 
@@ -2760,30 +2803,29 @@ gfpgan-fast<span class="w"> </span>--input<span class="w"> </span>photos/<span c
 <span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
 <span class="k">fi</span>
 
-gfpgan-infer<span class="w"> </span><span class="se">\</span>
+restoria<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--input<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$INPUT_DIR</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--output<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUTPUT_DIR</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--version<span class="w"> </span><span class="m">1</span>.4<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--metrics<span class="w"> </span>detailed<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--progress<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--report-path<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OUTPUT_DIR</span><span class="s2">/quality_report.json&quot;</span>
+<span class="w">    </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--metrics<span class="w"> </span>fast
 </code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="10:1"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">Python script example</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
 </div>
-<div class="tabbed-block">
+</div>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">batch_restore</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;gfpgan&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.4&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">batch_restore</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;gfpgan&quot;</span><span class="p">):</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;gfpgan-infer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;restoria&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
         <span class="s2">&quot;--input&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_dir</span><span class="p">),</span>
         <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_dir</span><span class="p">),</span>
         <span class="s2">&quot;--backend&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span>
-        <span class="s2">&quot;--version&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span>
-        <span class="s2">&quot;--metrics&quot;</span><span class="p">,</span> <span class="s2">&quot;detailed&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--progress&quot;</span>
+        <span class="s2">&quot;--metrics&quot;</span><span class="p">,</span> <span class="s2">&quot;fast&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -2791,28 +2833,25 @@ gfpgan-infer<span class="w"> </span><span class="se">\</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">batch_restore</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 </code></pre></div>
-</div>
-</div>
-</div>
 <h2 id="troubleshooting-batch-jobs">Troubleshooting batch jobs<a class="headerlink" href="#troubleshooting-batch-jobs" title="Permanent link">&para;</a></h2>
 <h3 id="common-issues">Common issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h3>
 <div class="admonition error">
 <p class="admonition-title">Out of memory during batch processing</p>
-<p><strong>Solutions:</strong>
+<p><strong>Solutions:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Use CPU mode</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--device<span class="w"> </span>cpu
-
-<span class="c1"># Reduce background tile size</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--bg_tile<span class="w"> </span><span class="m">200</span>
-
-<span class="c1"># Disable background enhancement</span>
-gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--bg_upsampler<span class="w"> </span>none
-</code></pre></div></p>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>--backend<span class="w"> </span>codeformer
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Prefer lighter backend</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Skip metrics</span>
+restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--metrics<span class="w"> </span>off<span class="w"> </span>--backend<span class="w"> </span>gfpgan
+</code></pre></div>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Some images failed to process</p>
-<p>Check the processing log:
-<div class="highlight"><pre><span></span><code>gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--log-file<span class="w"> </span>processing.log<span class="w"> </span>--verbose
+<p>Check the processing log:</p>
+<p><div class="highlight"><pre><span></span><code>restoria<span class="w"> </span>run<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>gfpgan<span class="w"> </span>--output<span class="w"> </span>out/
 </code></pre></div>
 Common causes:
 - Corrupted image files
@@ -2821,7 +2860,7 @@ Common causes:
 </div>
 <div class="admonition info">
 <p class="admonition-title">Processing is too slow</p>
-<p><strong>Speed optimizations:</strong>
+<p><strong>Speed optimizations:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Use faster backend</span>
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--backend<span class="w"> </span>codeformer
 
@@ -2830,7 +2869,7 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span 
 
 <span class="c1"># Disable background processing</span>
 gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span class="w"> </span>--bg_upsampler<span class="w"> </span>none
-</code></pre></div></p>
+</code></pre></div>
 </div>
 <h3 id="performance-tips">Performance tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h3>
 <ol>
@@ -2840,10 +2879,12 @@ gfpgan-infer<span class="w"> </span>--input<span class="w"> </span>photos/<span 
 <li><strong>Parallel processing</strong>: For very large batches, split into chunks</li>
 </ol>
 <hr />
-<p><strong>Next steps:</strong>
-- <a href="../metrics/">Measure quality with metrics →</a>
-- <a href="../choose-backend/">Choose the right backend →</a>
-- <a href="../../HARDWARE_GUIDE/">Optimize hardware performance →</a></p>
+<p><strong>Next steps:</strong></p>
+<ul>
+<li><a href="../metrics/">Measure quality with metrics →</a></li>
+<li><a href="../choose-backend/">Choose the right backend →</a></li>
+<li><a href="../../HARDWARE_GUIDE/">Optimize hardware performance →</a></li>
+</ul>
 
 
 
