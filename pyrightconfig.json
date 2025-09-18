@@ -1,7 +1,6 @@
 {
   "include": [
-    "gfpgan",
-    "src/gfpp",
+    "src/restoria",
     "tests_light"
   ],
   "exclude": [

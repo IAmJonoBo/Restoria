@@ -1,5 +1,6 @@
 {
-  "ignores": [
-    "CHANGELOG.md"
-  ]
+  "MD013": false,
+  "MD041": false,
+  "MD022": false,
+  "MD032": false
 }

@@ -291,8 +291,8 @@ def _do_dry_run(args, inputs: list[str], resolved_device: str) -> int:
     for pth in inputs:
         base, _ = os.path.splitext(os.path.basename(pth))
         out_img = os.path.join(args.output, f"{base}.png")
-        img = _load_image(pth)
-        _save_or_copy_image(out_img, img, pth)
+        # Avoid heavy deps in dry-run: just copy bytes if possible
+        _save_or_copy_image(out_img, None, pth)
         recs.append({"input": pth, "restored_img": out_img})
     os.makedirs(args.output, exist_ok=True)
     with open(os.path.join(args.output, METRICS_FILENAME), "w") as f:

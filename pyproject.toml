@@ -156,6 +156,9 @@ exclude = [
   "notebooks/**"
 ]
 
+[tool.pyrightconfig]
+include = ["src/restoria"]
+exclude = ["legacy_module"]
 [tool.ruff.lint.per-file-ignores]
 # Tests often perform environment setup before imports; keep code intent and avoid risky refactors
 "tests/**" = ["E402"]
