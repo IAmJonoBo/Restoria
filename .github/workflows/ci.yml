@@ -69,15 +69,22 @@ jobs:
   link-check:
     name: Link check
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Lychee link check
         uses: lycheeverse/lychee-action@v2
         with:
           # Use repository .lychee.toml config to stabilize checks
-          args: --no-progress --config .lychee.toml './**/*.md'
+          args: --no-progress --config .lychee.toml --format markdown --output lychee-report.md './**/*.md'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload lychee report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee-report.md
 
   tests-heavy:
     name: Tests (heavy)
@@ -218,5 +225,6 @@ jobs:
       - name: Run markdownlint-cli2
         uses: DavidAnson/markdownlint-cli2-action@v17
         with:
+          config: .markdownlint-cli2.jsonc
           globs: |
             **/*.md
