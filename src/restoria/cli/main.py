@@ -14,6 +14,11 @@ def main(argv: list[str] | None = None) -> int:
     if not argv:
         print("Usage: restoria <run|bench|doctor|list-backends> [options]")
         return 2
+    # Gracefully handle top-level help
+    if argv and argv[0] in {"--help", "-h"}:
+        print("Usage: restoria <run|bench|doctor|list-backends> [options]")
+        print("Try: restoria run --help")
+        return 0
     cmd, *rest = argv
     if cmd == "run":
         return run_cmd(rest)
