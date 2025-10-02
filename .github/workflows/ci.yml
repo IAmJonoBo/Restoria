@@ -285,7 +285,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Run markdownlint-cli2
-        uses: DavidAnson/markdownlint-cli2-action@v17
+        uses: DavidAnson/markdownlint-cli2-action@v20
         with:
           config: .markdownlint-cli2.jsonc
           globs: |
