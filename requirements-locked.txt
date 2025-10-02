@@ -11,7 +11,7 @@ huggingface_hub==0.34.5
 pytest-cov==7.0.0
 
 # API
-fastapi==0.116.2
+fastapi==0.118.0
 uvicorn[standard]==0.37.0
 python-multipart==0.0.20
 slowapi==0.1.9
