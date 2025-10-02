@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Run ruff
@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Run pyright
@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Run tests_light
@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Run pre-commit hooks
@@ -80,7 +80,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Build docs
@@ -116,7 +116,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Install test deps (uv-run pip)
@@ -148,7 +148,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Build sdist+wheel and twine check
@@ -163,7 +163,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Run pip-audit
@@ -185,7 +185,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Generate SBOM
@@ -247,7 +247,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - name: Run nbmake on smoke notebook
